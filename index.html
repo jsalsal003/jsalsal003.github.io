@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Juan Salguero Salguero">
+<meta name="copyright" content="© 2026 Juan Salguero Salguero · CC BY-NC-SA 4.0">
 <title>Tecnología · Herramientas del aula</title>
 <meta name="description" content="AulaCAD 3D y Editor HTML: herramientas para las clases de Tecnología que funcionan en el Chromebook, sin cuenta y sin instalar nada.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314202c'/%3E%3Cpath d='M8 21l8 4 8-4V12l-8-4-8 4z' fill='%23ff6b1a'/%3E%3Cpath d='M8 12l8 4 8-4M16 16v9' stroke='%23fff' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
@@ -92,6 +94,10 @@
 
   .foot{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:1.2rem;font-family:"JetBrains Mono",monospace;font-size:.72rem;color:var(--ink-2)}
   html.embedded .foot{display:none}
+  .foot b{color:var(--ink);font-weight:700}
+  .foot a.cc{display:inline-flex;align-items:center;gap:.35rem;color:var(--ink);font-weight:700;text-decoration:none;border-bottom:1px solid var(--line)}
+  .foot a.cc:hover{border-color:var(--orange)}
+  .foot svg{width:1.05em;height:1.05em}
 
   /* ---------- móvil ---------- */
   @media (max-width:700px){
@@ -201,7 +207,10 @@
     <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span>
     <span>Antes de cerrar, guarda tu trabajo en un archivo: <b>«Guardar archivo»</b> en AulaCAD o <b>«Descargar»</b> en el Editor (<kbd>Ctrl</kbd>+<kbd>S</kbd>), y entrégalo en Classroom. <span class="only-embed">También puedes usar las herramientas desde el menú de arriba.</span></span>
   </aside>
-  <footer class="foot"><span>Tecnología · Herramientas del aula</span><span>Sin anuncios y sin cuentas. Si algo no carga, recarga la página.</span></footer>
+  <footer class="foot">
+    <span>© 2026 <b>Juan Salguero Salguero</b> · Tecnología · Herramientas del aula</span>
+    <span><a class="cc" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es" target="_blank" rel="noopener license"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10.6 9.6a3 3 0 1 0 0 4.8M17.1 9.6a3 3 0 1 0 0 4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>CC BY-NC-SA 4.0</a> · Puedes usarlo y adaptarlo citando al autor, sin fines comerciales.</span>
+  </footer>
 </div>
 <script>
   // En el Sites, las herramientas se abren en otra pestaña (desde el recuadro no se puede cambiar de página).
