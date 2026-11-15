@@ -2,7 +2,7 @@
 
 © 2026 **Juan Salguero Salguero**
 
-AulaCAD 3D, el Editor HTML y la portada «Tecnología · Herramientas del aula» se publican con la licencia
+AulaCAD 3D, el Editor HTML, Vistas 3D y la portada «Tecnología · Herramientas del aula» se publican con la licencia
 **Creative Commons Reconocimiento-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0)**.
 
 - Texto de la licencia: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.es

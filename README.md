@@ -4,6 +4,7 @@ Portada de **https://jsalsal003.github.io/** con las herramientas para las clase
 
 - **AulaCAD 3D** (diseño 3D y exportación a STL): https://jsalsal003.github.io/aulacad/
 - **Editor HTML** (páginas web con resultado al momento): https://jsalsal003.github.io/aulacad/editor-html/
+- **Vistas 3D** (alzado, planta y perfil de piezas de cubos): https://jsalsal003.github.io/aulacad/vistas/
 
 Funcionan en Chromebook y Linux, sin cuenta y sin instalar nada.
 
