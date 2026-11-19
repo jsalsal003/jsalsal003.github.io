@@ -64,19 +64,19 @@
   /* transportador de 45° en la esquina inferior derecha */
   .angles{position:fixed;right:-7rem;bottom:-7rem;width:22rem;height:22rem;pointer-events:none;opacity:.35;z-index:0}
 
-  .page{position:relative;z-index:2;max-width:104rem;margin:0 auto;padding:2.8rem 3.2rem 1.2rem 4rem;display:grid;gap:1.6rem 2rem;
-    grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"hero hero hero" "a b c" "note note block"}
+  .page{position:relative;z-index:2;max-width:112rem;margin:0 auto;padding:2.8rem 3.2rem 1.2rem 4rem;display:grid;gap:1.6rem 2rem;
+    grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"hero hero hero hero" "a b c d" "note note block block"}
 
   /* ---------- cabecera ---------- */
   .hero{grid-area:hero;display:flex;align-items:flex-end;justify-content:space-between;gap:2rem}
   .tag{font-family:var(--mono);font-weight:600;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--yellow);margin:0 0 .6rem;display:flex;align-items:center;gap:.7rem}
   .tag::before{content:"";width:2.2rem;height:.18rem;background:repeating-linear-gradient(90deg,var(--yellow) 0 .5rem,transparent .5rem .75rem)}
-  h1{font-family:var(--display);font-weight:900;font-size:5.2rem;line-height:.82;letter-spacing:.01em;text-transform:uppercase;margin:0;color:var(--chalk)}
+  h1{font-family:var(--display);font-weight:900;font-size:4.6rem;line-height:.82;letter-spacing:.01em;text-transform:uppercase;margin:0;color:var(--chalk)}
   h1 .hi{color:var(--yellow);position:relative;display:inline-block}
   h1 .hi::after{content:"";position:absolute;left:-.05em;right:-.05em;bottom:-.08em;height:.09em;background:var(--orange);transform:skewX(-20deg);transform-origin:left;animation:line .7s .9s cubic-bezier(.6,0,.2,1) both}
-  .lead{font-size:1.08rem;line-height:1.45;color:var(--chalk-2);max-width:31rem;margin:.9rem 0 0}
+  .lead{font-size:1.08rem;line-height:1.45;color:var(--chalk-2);max-width:46rem;margin:.8rem 0 0}
   .lead b{color:var(--chalk)}
-  .stamp{flex:none;width:9.5rem;height:9.5rem;animation:stamp .6s 1.1s cubic-bezier(.3,1.6,.5,1) both}
+  .stamp{flex:none;width:8.4rem;height:8.4rem;animation:stamp .6s 1.1s cubic-bezier(.3,1.6,.5,1) both}
   .stamp svg{width:100%;height:100%;overflow:visible}
 
   /* ---------- láminas de dibujo ---------- */
@@ -87,6 +87,7 @@
   .sheet.a{grid-area:a;animation-delay:.25s}
   .sheet.b{grid-area:b;--r:.8deg;animation-delay:.4s}
   .sheet.c{grid-area:c;--r:-.6deg;animation-delay:.55s}
+  .sheet.d{grid-area:d;--r:1.1deg;animation-delay:.7s}
   .sheet:hover,.sheet:focus-visible{transform:rotate(0) translateY(-.35rem);box-shadow:0 .1rem 0 rgba(0,0,0,.18),0 1.8rem 2.6rem -.6rem rgba(0,0,0,.65)}
   .sheet:focus-visible{outline:.22rem solid var(--yellow);outline-offset:.35rem}
   /* cinta adhesiva */
@@ -97,6 +98,7 @@
   .sheet.a::before,.sheet.a::after{animation-delay:.85s}
   .sheet.b::before,.sheet.b::after{animation-delay:1s}
   .sheet.c::before,.sheet.c::after{animation-delay:1.15s}
+  .sheet.d::before,.sheet.d::after{animation-delay:1.3s}
   /* margen de la lámina */
   .frame{margin:.7rem;border:2px solid var(--ink);display:flex;flex-direction:column;flex:1}
   .art{height:10.4rem;position:relative;border-bottom:1.5px solid var(--ink);overflow:hidden;
@@ -110,13 +112,14 @@
   .row{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:.7rem;margin-top:auto}
   .row .go{margin-left:auto}
   /* lista de características, como una lista de piezas */
-  .parts{border-collapse:collapse;font-family:var(--mono);font-size:.58rem;color:var(--ink)}
+  .parts{border-collapse:collapse;font-family:var(--mono);font-size:.55rem;color:var(--ink)}
   .parts td{border:1px solid var(--ink);padding:.18rem .45rem;white-space:nowrap}
   .parts td:first-child{color:var(--ink-2);width:1.6rem;text-align:center}
   .go{display:inline-flex;align-items:center;gap:.6rem;font-family:var(--display);font-weight:900;font-size:1.35rem;text-transform:uppercase;letter-spacing:.04em;
     padding:.5rem 1.1rem .45rem;border:2px solid var(--ink);color:var(--ink);background:var(--yellow);box-shadow:.25rem .25rem 0 var(--ink);transition:transform .15s,box-shadow .15s}
   .sheet.b .go{background:var(--chalk)}
   .sheet.c .go{background:#ff9f6b}
+  .sheet.d .go{background:#7fe0a8}
   .go i{font-style:normal;transition:transform .2s}
   .sheet:hover .go{transform:translate(-.1rem,-.1rem);box-shadow:.35rem .35rem 0 var(--ink)}
   .sheet:hover .go i{transform:translateX(.35rem)}
@@ -151,7 +154,7 @@
   /* ---------- pantallas estrechas ---------- */
   @media (max-width:760px){
     :root{font-size:14px}
-    .page{grid-template-columns:minmax(0,1fr);grid-template-areas:"hero" "a" "b" "c" "note" "block";padding:2.6rem 1.2rem 1.5rem 2.4rem}
+    .page{grid-template-columns:minmax(0,1fr);grid-template-areas:"hero" "a" "b" "c" "d" "note" "block";padding:2.6rem 1.2rem 1.5rem 2.4rem}
     .hero > div{min-width:0}
     .tag{letter-spacing:.08em;flex-wrap:wrap}
     .row{flex-direction:column;align-items:stretch}
@@ -163,6 +166,8 @@
     h1{font-size:3.1rem}
     .block{justify-self:stretch}
   }
+  /* en pantallas anchas el titular va en una sola línea para que quepan las cuatro láminas */
+  @media (min-width:761px){ h1 br{display:none} }
   @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important;transition:none !important}.ink{stroke-dashoffset:0}}
 </style>
 </head>
@@ -182,8 +187,8 @@
   <header class="hero">
     <div>
       <p class="tag">Taller de Tecnología · Herramientas del aula</p>
-      <h1>Diseña, programa<br><span class="hi">y fabrica.</span></h1>
-      <p class="lead">Tres herramientas para clase que funcionan en el <b>Chromebook</b>, <b>sin cuenta</b> y <b>sin instalar nada</b>. Elige una lámina para empezar.</p>
+      <h1>Diseña, programa <br><span class="hi">y fabrica.</span></h1>
+      <p class="lead">Cuatro herramientas para clase que funcionan en el <b>Chromebook</b>, <b>sin cuenta</b> y <b>sin instalar nada</b>. Elige una lámina para empezar.</p>
     </div>
     <div class="stamp" aria-label="Funciona en Chromebook y Linux, sin iniciar sesión y se guarda solo">
       <svg viewBox="0 0 120 120" aria-hidden="true">
@@ -235,8 +240,10 @@
         <p>Arrastra formas, cámbiales el tamaño con medidas exactas, haz huecos y descarga la pieza para la impresora 3D.</p>
         <div class="row">
           <table class="parts" aria-label="Características">
-            <tr><td>1</td><td>Medidas en mm</td><td>3</td><td>Alinear</td></tr>
-            <tr><td>2</td><td>Agujeros y grupos</td><td>4</td><td>Exportar STL</td></tr>
+            <tr><td>1</td><td>Medidas en mm</td></tr>
+            <tr><td>2</td><td>Agujeros y grupos</td></tr>
+            <tr><td>3</td><td>Alinear</td></tr>
+            <tr><td>4</td><td>Exportar STL</td></tr>
           </table>
           <span class="go">Abrir <i>→</i></span>
         </div>
@@ -274,8 +281,10 @@
         <p>Escribe tu página web y mira el resultado al momento. Te avisa en qué línea hay una etiqueta mal cerrada.</p>
         <div class="row">
           <table class="parts" aria-label="Características">
-            <tr><td>1</td><td>Resultado al instante</td><td>3</td><td>Colores en el código</td></tr>
-            <tr><td>2</td><td>Detecta errores</td><td>4</td><td>Descargar .html</td></tr>
+            <tr><td>1</td><td>Resultado al instante</td></tr>
+            <tr><td>2</td><td>Detecta errores</td></tr>
+            <tr><td>3</td><td>Colores en el código</td></tr>
+            <tr><td>4</td><td>Descargar .html</td></tr>
           </table>
           <span class="go">Abrir <i>→</i></span>
         </div>
@@ -324,8 +333,57 @@
         <p>Gira la pieza de cubos y dibuja su alzado, planta y perfil. Pulsa «Comprobar» y te dice si están bien.</p>
         <div class="row">
           <table class="parts" aria-label="Características">
-            <tr><td>1</td><td>3 niveles · 31 piezas</td><td>3</td><td>Se corrige solo</td></tr>
-            <tr><td>2</td><td>Aristas ocultas</td><td>4</td><td>Reto de 30 min</td></tr>
+            <tr><td>1</td><td>3 niveles · 31 piezas</td></tr>
+            <tr><td>2</td><td>Aristas ocultas</td></tr>
+            <tr><td>3</td><td>Se corrige solo</td></tr>
+            <tr><td>4</td><td>Reto de 30 min</td></tr>
+          </table>
+          <span class="go">Abrir <i>→</i></span>
+        </div>
+      </div>
+    </div>
+  </a>
+
+  <!-- Lámina 04: Placa virtual -->
+  <a class="sheet d" href="https://jsalsal003.github.io/aulacad/robotica/">
+    <div class="frame">
+      <div class="art" aria-hidden="true">
+        <span class="view">LÁMINA 04 · PLACA Y ACTUADORES</span>
+        <svg viewBox="0 0 360 140" preserveAspectRatio="xMidYMid meet" font-family="Martian Mono, monospace">
+          <!-- programa por bloques -->
+          <g font-size="7.5" font-weight="600" fill="#fff">
+            <rect x="34" y="30" width="80" height="15" rx="7" fill="#e6a800" stroke="#14201a" stroke-width="1.2"/><text x="41" y="40.5">al iniciar</text>
+            <path d="M34 47h80v14H44v34h70v10H34z" fill="#ffab19" stroke="#14201a" stroke-width="1.2"/><text x="41" y="57">por siempre</text>
+            <rect x="44" y="63" width="78" height="13" rx="3" fill="#0fbd8c" stroke="#14201a" stroke-width="1.2"/><text x="49" y="72.5">encender verde</text>
+            <rect x="44" y="78" width="58" height="13" rx="3" fill="#ffab19" stroke="#14201a" stroke-width="1.2"/><text x="49" y="87.5">esperar 5 s</text>
+          </g>
+          <path class="ink" d="M128 72 C 150 60, 160 60, 176 66" fill="none" stroke="#1f5bd0" stroke-width="1.4" stroke-dasharray="3 3"/>
+          <path d="M172 62l6 4.5-7 2z" fill="#1f5bd0"/>
+          <!-- semáforo -->
+          <rect x="184" y="26" width="30" height="78" rx="7" fill="#14201a"/>
+          <circle cx="199" cy="41" r="8.5" fill="#4a1714"/><circle cx="199" cy="65" r="8.5" fill="#4a3608"/>
+          <circle cx="199" cy="89" r="13" fill="#2ee66b" opacity=".35"/><circle cx="199" cy="89" r="8.5" fill="#2ee66b" stroke="#14201a" stroke-width="1"/>
+          <!-- servo con barrera -->
+          <g stroke="#14201a" stroke-width="1.4">
+            <rect x="232" y="88" width="26" height="16" rx="2" fill="#2f6fe0"/>
+            <g transform="rotate(-38 245 92)"><rect x="245" y="88.5" width="78" height="7" rx="3.5" fill="#fbf8ef"/>
+              <path d="M262 88.5h10v7h-10zM286 88.5h10v7h-10zM310 88.5h10v7h-10z" fill="#d7262c" stroke="none"/></g>
+            <circle cx="245" cy="92" r="4" fill="#fbf8ef"/>
+          </g>
+          <!-- cronograma -->
+          <path class="ink" d="M34 128 h40 v-10 h40 v10 h40 v-10 h40 v10 h40 v-10 h40" fill="none" stroke="#1f5bd0" stroke-width="1.6"/>
+          <text x="282" y="118" font-family="Caveat, cursive" font-weight="700" font-size="15" fill="#d7262c" transform="rotate(-6 282 118)">¡en verde!</text>
+        </svg>
+      </div>
+      <div class="body">
+        <h2>Placa virtual <small>robótica</small></h2>
+        <p>Programa por bloques un semáforo, un zumbador y un servo, y después sensores. Sin placa: todo se ve en pantalla.</p>
+        <div class="row">
+          <table class="parts" aria-label="Características">
+            <tr><td>1</td><td>LED, sonido y servo</td></tr>
+            <tr><td>2</td><td>Sensores y «si…»</td></tr>
+            <tr><td>3</td><td>Cronograma</td></tr>
+            <tr><td>4</td><td>Retos corregidos</td></tr>
           </table>
           <span class="go">Abrir <i>→</i></span>
         </div>
@@ -335,7 +393,7 @@
 
   <aside class="note">
     <h3>¡Antes de cerrar!</h3>
-    <p>Guarda tu trabajo en un archivo: <b>«Guardar archivo»</b> en AulaCAD, <b>«Descargar»</b> en el Editor (<kbd>Ctrl</kbd>+<kbd>S</kbd>) o <b>«Descargar imagen»</b> en Vistas 3D, y entrégalo en Classroom.</p>
+    <p>Guarda tu trabajo en un archivo: <b>«Guardar archivo»</b> en AulaCAD, <b>«Descargar»</b> en el Editor (<kbd>Ctrl</kbd>+<kbd>S</kbd>), <b>«Descargar imagen»</b> en Vistas 3D o <b>«⬇ Imagen»</b> en la Placa virtual, y entrégalo en Classroom.</p>
   </aside>
 
   <footer class="block" aria-label="Autoría y licencia">
