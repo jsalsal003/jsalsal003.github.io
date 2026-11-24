@@ -1,0 +1,19 @@
+{
+  "_ayuda": "Plantillas de Plano 2D. Para añadir una: dibújala en Plano 2D, «Guardar archivo», copia el .plano.json a esta carpeta y añádela aquí. Más detalles en LEEME-CATALOGOS.md",
+  "plantillas": [
+    {
+      "archivo": "dormitorio-modelo.plano.json",
+      "nombre": "Dormitorio modelo",
+      "en": "Model bedroom",
+      "icono": "1:20",
+      "descripcion": "320 × 280 cm a 1:20 en A4 apaisado, con ventana de 120 y puerta de 80. Falta amueblarlo y acotarlo."
+    },
+    {
+      "archivo": "pieza-vistas.plano.json",
+      "nombre": "Pieza con sus vistas",
+      "en": "Part with three views",
+      "icono": "1:1",
+      "descripcion": "Soporte en L: alzado, planta y perfil (sistema europeo) a 1:1, bien acotado."
+    }
+  ]
+}

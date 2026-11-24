@@ -1,0 +1,70 @@
+{
+  "biblioteca": "Mobiliario",
+  "en": "Furniture",
+  "categoria": "bano",
+  "nombre": "Baño",
+  "en_categoria": "Bathroom",
+  "unidad": "cm",
+  "bloques": [
+    {
+      "id": "inodoro", "nombre": "Inodoro", "en": "Toilet",
+      "medidas": { "ancho": 38, "fondo": 68, "alto": 78 },
+      "color": "#ffffff",
+      "planta": [
+        { "rect": [0, "fondo-18", "ancho", 18] },
+        { "arco": ["ancho/2", "fondo-30", "ancho/2", 180, 360] },
+        { "linea": [0, "fondo-30", 0, "fondo-18"] }, { "linea": ["ancho", "fondo-30", "ancho", "fondo-18"] },
+        { "arco": ["ancho/2", "fondo-30", "ancho/2-5", 180, 360] }
+      ],
+      "piezas": [
+        { "caja": [0, "fondo-18", 0, "ancho", 18, "alto"] },
+        { "cilindro": ["ancho/2", "fondo-34", 0, "ancho/2-3", 40] },
+        { "caja": [2, "fondo-50", 38, "ancho-4", 32, 3] }
+      ]
+    },
+    {
+      "id": "lavabo", "nombre": "Lavabo", "en": "Washbasin",
+      "medidas": { "ancho": 60, "fondo": 45, "alto": 85 },
+      "color": "#ffffff",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "circulo": ["ancho/2", "fondo/2-2", "min(ancho, fondo)/2-8"] }, { "circulo": ["ancho/2", "fondo-5", 2] } ],
+      "piezas": [
+        { "caja": [0, 0, "alto-15", "ancho", "fondo", 15] },
+        { "cilindro": ["ancho/2", "fondo/2", 0, 8, "alto-15"] },
+        { "cilindro": ["ancho/2", "fondo-5", "alto", 1.5, 18], "color": "#c9ced3" }
+      ]
+    },
+    {
+      "id": "ducha", "nombre": "Plato de ducha", "en": "Shower tray",
+      "medidas": { "ancho": 80, "fondo": 80, "alto": 200 },
+      "color": "#f4f4f4",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "linea": [0, 0, "ancho", "fondo"] }, { "linea": [0, "fondo", "ancho", 0] }, { "circulo": ["ancho/2", "fondo/2", 4] } ],
+      "piezas": [
+        { "caja": [0, 0, 0, "ancho", "fondo", 5] },
+        { "caja": [0, 0, 5, 1, "fondo", "alto-5"], "color": "#cfe3ef", "mate": "cristal" },
+        { "caja": [1, 0, 5, "ancho-1", 1, "alto-5"], "color": "#cfe3ef", "mate": "cristal" }
+      ]
+    },
+    {
+      "id": "banera", "nombre": "Bañera", "en": "Bathtub",
+      "medidas": { "ancho": 170, "fondo": 70, "alto": 55 },
+      "color": "#ffffff",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "rect": [8, 8, "ancho-16", "fondo-16"] }, { "circulo": ["ancho-20", "fondo/2", 3] } ],
+      "piezas": [
+        { "caja": [0, 0, 0, "ancho", 8, "alto"] }, { "caja": [0, "fondo-8", 0, "ancho", 8, "alto"] },
+        { "caja": [0, 8, 0, 8, "fondo-16", "alto"] }, { "caja": ["ancho-8", 8, 0, 8, "fondo-16", "alto"] },
+        { "caja": [8, 8, 0, "ancho-16", "fondo-16", 10] }
+      ]
+    },
+    {
+      "id": "mueble-lavabo", "nombre": "Mueble de lavabo", "en": "Vanity unit",
+      "medidas": { "ancho": 80, "fondo": 46, "alto": 85 },
+      "color": "#d9c6a5",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "rect": [10, 6, "ancho-20", "fondo-14"] } ],
+      "piezas": [
+        { "caja": [0, 0, 0, "ancho", "fondo", "alto-3"] },
+        { "caja": [0, 0, "alto-3", "ancho", "fondo", 3], "color": "#ffffff" },
+        { "cilindro": ["ancho/2", "fondo-5", "alto", 1.5, 18], "color": "#c9ced3" }
+      ]
+    }
+  ]
+}

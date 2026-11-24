@@ -1,0 +1,2004 @@
+{
+ "app": "taller-casa3d",
+ "version": 1,
+ "nombre": "Piso pequeño",
+ "unidad": "cm",
+ "escala": [
+  1,
+  50
+ ],
+ "hoja": {
+  "formato": "A4",
+  "orientacion": "apaisada",
+  "margen": 10,
+  "cajetin": "ancho",
+  "origen": [
+   40,
+   170
+  ],
+  "datos": {
+   "titulo": "Piso pequeño",
+   "nombre": "",
+   "curso": "",
+   "fecha": "",
+   "numero": "1",
+   "centro": ""
+  }
+ },
+ "rejilla": {
+  "paso": 100,
+  "ver": true,
+  "iman": true
+ },
+ "estiloCota": {
+  "texto": 3.5,
+  "flecha": 3,
+  "extremo": "flecha",
+  "sobresale": 2,
+  "hueco": 1,
+  "separacion": 8,
+  "decimales": 0,
+  "unidad": null,
+  "decAng": 0
+ },
+ "capaActual": "0",
+ "entidades": [
+  {
+   "id": "e1",
+   "tipo": "pared",
+   "capa": "paredes",
+   "a": [
+    -100,
+    -100
+   ],
+   "b": [
+    8100,
+    -100
+   ],
+   "grosor": 200,
+   "altura": 2500
+  },
+  {
+   "id": "e2",
+   "tipo": "pared",
+   "capa": "paredes",
+   "a": [
+    8100,
+    -100
+   ],
+   "b": [
+    8100,
+    6100
+   ],
+   "grosor": 200,
+   "altura": 2500
+  },
+  {
+   "id": "e3",
+   "tipo": "pared",
+   "capa": "paredes",
+   "a": [
+    8100,
+    6100
+   ],
+   "b": [
+    -100,
+    6100
+   ],
+   "grosor": 200,
+   "altura": 2500
+  },
+  {
+   "id": "e4",
+   "tipo": "pared",
+   "capa": "paredes",
+   "a": [
+    -100,
+    6100
+   ],
+   "b": [
+    -100,
+    -100
+   ],
+   "grosor": 200,
+   "altura": 2500
+  },
+  {
+   "id": "e5",
+   "tipo": "pared",
+   "capa": "paredes",
+   "a": [
+    4850,
+    -100
+   ],
+   "b": [
+    4850,
+    6100
+   ],
+   "grosor": 100,
+   "altura": 2500
+  },
+  {
+   "id": "e6",
+   "tipo": "pared",
+   "capa": "paredes",
+   "a": [
+    4850,
+    3250
+   ],
+   "b": [
+    8100,
+    3250
+   ],
+   "grosor": 100,
+   "altura": 2500
+  },
+  {
+   "id": "e7",
+   "tipo": "hueco",
+   "capa": "paredes",
+   "pared": "e1",
+   "clase": "puerta",
+   "ref": "arquitectura/puerta",
+   "pos": 1100,
+   "ancho": 900,
+   "alto": 2100,
+   "antepecho": 0,
+   "abre": 1,
+   "bisagra": "ini",
+   "color": "#b07a4a"
+  },
+  {
+   "id": "e8",
+   "tipo": "hueco",
+   "capa": "paredes",
+   "pared": "e5",
+   "clase": "puerta",
+   "ref": "arquitectura/puerta",
+   "pos": 4300,
+   "ancho": 800,
+   "alto": 2100,
+   "antepecho": 0,
+   "abre": -1,
+   "bisagra": "ini",
+   "color": "#b07a4a"
+  },
+  {
+   "id": "e9",
+   "tipo": "hueco",
+   "capa": "paredes",
+   "pared": "e5",
+   "clase": "puerta",
+   "ref": "arquitectura/puerta",
+   "pos": 1100,
+   "ancho": 700,
+   "alto": 2100,
+   "antepecho": 0,
+   "abre": -1,
+   "bisagra": "ini",
+   "color": "#b07a4a"
+  },
+  {
+   "id": "e10",
+   "tipo": "hueco",
+   "capa": "paredes",
+   "pared": "e4",
+   "clase": "ventana",
+   "ref": "arquitectura/ventana",
+   "pos": 2600,
+   "ancho": 1500,
+   "alto": 1200,
+   "antepecho": 900,
+   "abre": 1,
+   "bisagra": "ini",
+   "color": "#e8eef2"
+  },
+  {
+   "id": "e11",
+   "tipo": "hueco",
+   "capa": "paredes",
+   "pared": "e3",
+   "clase": "ventana",
+   "ref": "arquitectura/ventana",
+   "pos": 5300,
+   "ancho": 1600,
+   "alto": 1200,
+   "antepecho": 900,
+   "abre": 1,
+   "bisagra": "ini",
+   "color": "#e8eef2"
+  },
+  {
+   "id": "e12",
+   "tipo": "hueco",
+   "capa": "paredes",
+   "pared": "e3",
+   "clase": "ventana",
+   "ref": "arquitectura/ventana",
+   "pos": 1100,
+   "ancho": 1200,
+   "alto": 1200,
+   "antepecho": 900,
+   "abre": 1,
+   "bisagra": "ini",
+   "color": "#e8eef2"
+  },
+  {
+   "id": "e13",
+   "tipo": "hueco",
+   "capa": "paredes",
+   "pared": "e2",
+   "clase": "ventana",
+   "ref": "arquitectura/ventana",
+   "pos": 1100,
+   "ancho": 600,
+   "alto": 600,
+   "antepecho": 1300,
+   "abre": 1,
+   "bisagra": "ini",
+   "color": "#e8eef2"
+  },
+  {
+   "id": "e14",
+   "tipo": "suelo",
+   "capa": "paredes",
+   "pts": [
+    [
+     0,
+     0
+    ],
+    [
+     4800,
+     0
+    ],
+    [
+     4800,
+     6000
+    ],
+    [
+     0,
+     6000
+    ]
+   ],
+   "nombre": "Salón-cocina",
+   "textura": "parquet",
+   "color": "#c8a27a",
+   "techo": true
+  },
+  {
+   "id": "e15",
+   "tipo": "suelo",
+   "capa": "paredes",
+   "pts": [
+    [
+     4900,
+     3300
+    ],
+    [
+     8000,
+     3300
+    ],
+    [
+     8000,
+     6000
+    ],
+    [
+     4900,
+     6000
+    ]
+   ],
+   "nombre": "Dormitorio",
+   "textura": "parquet",
+   "color": "#b98c62",
+   "techo": true
+  },
+  {
+   "id": "e16",
+   "tipo": "suelo",
+   "capa": "paredes",
+   "pts": [
+    [
+     4900,
+     0
+    ],
+    [
+     8000,
+     0
+    ],
+    [
+     8000,
+     3200
+    ],
+    [
+     4900,
+     3200
+    ]
+   ],
+   "nombre": "Baño",
+   "textura": "baldosa",
+   "color": "#dfe7ea",
+   "techo": true
+  },
+  {
+   "id": "e17",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "salon/sofa",
+   "p": [
+    900,
+    1800
+   ],
+   "giro": 90,
+   "med": {
+    "ancho": 2000,
+    "fondo": 900,
+    "alto": 800
+   },
+   "par": {},
+   "color": "#7a8f6a"
+  },
+  {
+   "id": "e18",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "salon/mesa-centro",
+   "p": [
+    1700,
+    2250
+   ],
+   "giro": 90,
+   "med": {
+    "ancho": 1100,
+    "fondo": 600,
+    "alto": 450
+   },
+   "par": {},
+   "color": "#c49a6c"
+  },
+  {
+   "id": "e19",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "salon/mueble-tv",
+   "p": [
+    4350,
+    3800
+   ],
+   "giro": 270,
+   "med": {
+    "ancho": 1600,
+    "fondo": 450,
+    "alto": 500
+   },
+   "par": {},
+   "color": "#4b4f54"
+  },
+  {
+   "id": "e20",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "salon/mesa-comedor",
+   "p": [
+    1500,
+    4600
+   ],
+   "giro": 0,
+   "med": {
+    "ancho": 1600,
+    "fondo": 900,
+    "alto": 750
+   },
+   "par": {},
+   "color": "#d8b98a"
+  },
+  {
+   "id": "e21",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "dormitorio/silla",
+   "p": [
+    2350,
+    4630
+   ],
+   "giro": 180,
+   "med": {
+    "ancho": 450,
+    "fondo": 480,
+    "alto": 850
+   },
+   "par": {},
+   "color": "#2f6f9f"
+  },
+  {
+   "id": "e22",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "dormitorio/silla",
+   "p": [
+    3100,
+    4630
+   ],
+   "giro": 180,
+   "med": {
+    "ancho": 450,
+    "fondo": 480,
+    "alto": 850
+   },
+   "par": {},
+   "color": "#2f6f9f"
+  },
+  {
+   "id": "e23",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "dormitorio/silla",
+   "p": [
+    1900,
+    5470
+   ],
+   "giro": 0,
+   "med": {
+    "ancho": 450,
+    "fondo": 480,
+    "alto": 850
+   },
+   "par": {},
+   "color": "#2f6f9f"
+  },
+  {
+   "id": "e24",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "dormitorio/silla",
+   "p": [
+    2650,
+    5470
+   ],
+   "giro": 0,
+   "med": {
+    "ancho": 450,
+    "fondo": 480,
+    "alto": 850
+   },
+   "par": {},
+   "color": "#2f6f9f"
+  },
+  {
+   "id": "e25",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "salon/planta",
+   "p": [
+    150,
+    5650
+   ],
+   "giro": 0,
+   "med": {
+    "ancho": 400,
+    "fondo": 400,
+    "alto": 1100
+   },
+   "par": {},
+   "color": "#3f8f4f"
+  },
+  {
+   "id": "e26",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "cocina/frigorifico",
+   "p": [
+    4800,
+    650
+   ],
+   "giro": 180,
+   "med": {
+    "ancho": 600,
+    "fondo": 650,
+    "alto": 1850
+   },
+   "par": {},
+   "color": "#e9edf0"
+  },
+  {
+   "id": "e27",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "cocina/placa",
+   "p": [
+    4200,
+    600
+   ],
+   "giro": 180,
+   "med": {
+    "ancho": 600,
+    "fondo": 600,
+    "alto": 900
+   },
+   "par": {},
+   "color": "#f1ede4"
+  },
+  {
+   "id": "e28",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "cocina/fregadero",
+   "p": [
+    3600,
+    600
+   ],
+   "giro": 180,
+   "med": {
+    "ancho": 800,
+    "fondo": 600,
+    "alto": 900
+   },
+   "par": {},
+   "color": "#f1ede4"
+  },
+  {
+   "id": "e29",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "cocina/mueble-bajo",
+   "p": [
+    2800,
+    600
+   ],
+   "giro": 180,
+   "med": {
+    "ancho": 600,
+    "fondo": 600,
+    "alto": 900
+   },
+   "par": {},
+   "color": "#f1ede4"
+  },
+  {
+   "id": "e30",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "dormitorio/cama-doble",
+   "p": [
+    5700,
+    4000
+   ],
+   "giro": 0,
+   "med": {
+    "ancho": 1500,
+    "fondo": 2000,
+    "alto": 500
+   },
+   "par": {},
+   "color": "#c07d7d"
+  },
+  {
+   "id": "e31",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "dormitorio/mesilla",
+   "p": [
+    5200,
+    5600
+   ],
+   "giro": 0,
+   "med": {
+    "ancho": 450,
+    "fondo": 400,
+    "alto": 550
+   },
+   "par": {},
+   "color": "#a87b52"
+  },
+  {
+   "id": "e32",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "dormitorio/mesilla",
+   "p": [
+    7250,
+    5600
+   ],
+   "giro": 0,
+   "med": {
+    "ancho": 450,
+    "fondo": 400,
+    "alto": 550
+   },
+   "par": {},
+   "color": "#a87b52"
+  },
+  {
+   "id": "e33",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "dormitorio/armario",
+   "p": [
+    7400,
+    5000
+   ],
+   "giro": 270,
+   "med": {
+    "ancho": 1200,
+    "fondo": 600,
+    "alto": 2200
+   },
+   "par": {},
+   "color": "#d9c6a5"
+  },
+  {
+   "id": "e34",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "bano/ducha",
+   "p": [
+    7200,
+    0
+   ],
+   "giro": 0,
+   "med": {
+    "ancho": 800,
+    "fondo": 800,
+    "alto": 2000
+   },
+   "par": {},
+   "color": "#f4f4f4"
+  },
+  {
+   "id": "e35",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "bano/inodoro",
+   "p": [
+    6680,
+    680
+   ],
+   "giro": 180,
+   "med": {
+    "ancho": 380,
+    "fondo": 680,
+    "alto": 780
+   },
+   "par": {},
+   "color": "#ffffff"
+  },
+  {
+   "id": "e36",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "bano/lavabo",
+   "p": [
+    6200,
+    2750
+   ],
+   "giro": 0,
+   "med": {
+    "ancho": 600,
+    "fondo": 450,
+    "alto": 850
+   },
+   "par": {},
+   "color": "#ffffff"
+  }
+ ],
+ "defs": {
+  "salon/sofa": {
+   "factor": 10,
+   "categoria": "salon",
+   "id": "sofa",
+   "nombre": "Sofá",
+   "en": "Sofa",
+   "medidas": {
+    "ancho": 200,
+    "fondo": 90,
+    "alto": 80
+   },
+   "color": "#7a8f6a",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "linea": [
+      18,
+      0,
+      18,
+      "fondo-22",
+      "ancho-18",
+      "fondo-22",
+      "ancho-18",
+      0
+     ]
+    },
+    {
+     "linea": [
+      "ancho/2",
+      0,
+      "ancho/2",
+      "fondo-22"
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      0,
+      "ancho",
+      "fondo",
+      42
+     ]
+    },
+    {
+     "caja": [
+      0,
+      "fondo-22",
+      42,
+      "ancho",
+      22,
+      "alto-42"
+     ]
+    },
+    {
+     "caja": [
+      0,
+      0,
+      42,
+      18,
+      "fondo-22",
+      22
+     ]
+    },
+    {
+     "caja": [
+      "ancho-18",
+      0,
+      42,
+      18,
+      "fondo-22",
+      22
+     ]
+    }
+   ],
+   "ref": "salon/sofa"
+  },
+  "salon/mesa-centro": {
+   "factor": 10,
+   "categoria": "salon",
+   "id": "mesa-centro",
+   "nombre": "Mesa de centro",
+   "en": "Coffee table",
+   "medidas": {
+    "ancho": 110,
+    "fondo": 60,
+    "alto": 45
+   },
+   "color": "#c49a6c",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      "alto-4",
+      "ancho",
+      "fondo",
+      4
+     ]
+    },
+    {
+     "caja": [
+      3,
+      3,
+      0,
+      5,
+      5,
+      "alto-4"
+     ]
+    },
+    {
+     "caja": [
+      "ancho-8",
+      3,
+      0,
+      5,
+      5,
+      "alto-4"
+     ]
+    },
+    {
+     "caja": [
+      3,
+      "fondo-8",
+      0,
+      5,
+      5,
+      "alto-4"
+     ]
+    },
+    {
+     "caja": [
+      "ancho-8",
+      "fondo-8",
+      0,
+      5,
+      5,
+      "alto-4"
+     ]
+    }
+   ],
+   "ref": "salon/mesa-centro"
+  },
+  "salon/mueble-tv": {
+   "factor": 10,
+   "categoria": "salon",
+   "id": "mueble-tv",
+   "nombre": "Mueble de televisión",
+   "en": "TV stand",
+   "medidas": {
+    "ancho": 160,
+    "fondo": 45,
+    "alto": 50
+   },
+   "color": "#4b4f54",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "rect": [
+      "ancho/2-55",
+      "fondo-12",
+      110,
+      6
+     ],
+     "gruesa": true
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      0,
+      "ancho",
+      "fondo",
+      "alto"
+     ]
+    },
+    {
+     "caja": [
+      "ancho/2-55",
+      "fondo-12",
+      "alto",
+      110,
+      4,
+      65
+     ],
+     "color": "#111111"
+    },
+    {
+     "caja": [
+      "ancho/2-15",
+      "fondo-16",
+      "alto",
+      30,
+      12,
+      2
+     ],
+     "color": "#111111"
+    }
+   ],
+   "ref": "salon/mueble-tv"
+  },
+  "salon/mesa-comedor": {
+   "factor": 10,
+   "categoria": "salon",
+   "id": "mesa-comedor",
+   "nombre": "Mesa de comedor",
+   "en": "Dining table",
+   "medidas": {
+    "ancho": 160,
+    "fondo": 90,
+    "alto": 75
+   },
+   "color": "#d8b98a",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      "alto-4",
+      "ancho",
+      "fondo",
+      4
+     ]
+    },
+    {
+     "caja": [
+      5,
+      5,
+      0,
+      6,
+      6,
+      "alto-4"
+     ]
+    },
+    {
+     "caja": [
+      "ancho-11",
+      5,
+      0,
+      6,
+      6,
+      "alto-4"
+     ]
+    },
+    {
+     "caja": [
+      5,
+      "fondo-11",
+      0,
+      6,
+      6,
+      "alto-4"
+     ]
+    },
+    {
+     "caja": [
+      "ancho-11",
+      "fondo-11",
+      0,
+      6,
+      6,
+      "alto-4"
+     ]
+    }
+   ],
+   "ref": "salon/mesa-comedor"
+  },
+  "dormitorio/silla": {
+   "factor": 10,
+   "categoria": "dormitorio",
+   "id": "silla",
+   "nombre": "Silla",
+   "en": "Chair",
+   "medidas": {
+    "ancho": 45,
+    "fondo": 48,
+    "alto": 85
+   },
+   "color": "#2f6f9f",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo-6"
+     ]
+    },
+    {
+     "rect": [
+      0,
+      "fondo-6",
+      "ancho",
+      6
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      42,
+      "ancho",
+      "fondo-4",
+      4
+     ]
+    },
+    {
+     "caja": [
+      0,
+      "fondo-6",
+      46,
+      "ancho",
+      4,
+      "alto-46"
+     ]
+    },
+    {
+     "caja": [
+      2,
+      2,
+      0,
+      3,
+      3,
+      42
+     ],
+     "color": "#3d3d3d"
+    },
+    {
+     "caja": [
+      "ancho-5",
+      2,
+      0,
+      3,
+      3,
+      42
+     ],
+     "color": "#3d3d3d"
+    },
+    {
+     "caja": [
+      2,
+      "fondo-6",
+      0,
+      3,
+      3,
+      42
+     ],
+     "color": "#3d3d3d"
+    },
+    {
+     "caja": [
+      "ancho-5",
+      "fondo-6",
+      0,
+      3,
+      3,
+      42
+     ],
+     "color": "#3d3d3d"
+    }
+   ],
+   "ref": "dormitorio/silla"
+  },
+  "salon/planta": {
+   "factor": 10,
+   "categoria": "salon",
+   "id": "planta",
+   "nombre": "Planta",
+   "en": "Plant",
+   "medidas": {
+    "ancho": 40,
+    "fondo": 40,
+    "alto": 110
+   },
+   "color": "#3f8f4f",
+   "planta": [
+    {
+     "circulo": [
+      "ancho/2",
+      "fondo/2",
+      "ancho/2"
+     ]
+    },
+    {
+     "circulo": [
+      "ancho/2",
+      "fondo/2",
+      "ancho/4"
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "cilindro": [
+      "ancho/2",
+      "fondo/2",
+      0,
+      "ancho/4",
+      35
+     ],
+     "color": "#b5603a"
+    },
+    {
+     "cilindro": [
+      "ancho/2",
+      "fondo/2",
+      35,
+      "ancho/2",
+      "alto-35"
+     ]
+    }
+   ],
+   "ref": "salon/planta"
+  },
+  "cocina/frigorifico": {
+   "factor": 10,
+   "categoria": "cocina",
+   "id": "frigorifico",
+   "nombre": "Frigorífico",
+   "en": "Fridge",
+   "medidas": {
+    "ancho": 60,
+    "fondo": 65,
+    "alto": 185
+   },
+   "color": "#e9edf0",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "linea": [
+      0,
+      5,
+      "ancho",
+      5
+     ]
+    },
+    {
+     "texto": [
+      "ancho/2",
+      "fondo/2",
+      "F"
+     ],
+     "h": 3
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      0,
+      "ancho",
+      "fondo",
+      "alto"
+     ]
+    },
+    {
+     "caja": [
+      0,
+      -0.5,
+      "alto*0.62",
+      "ancho",
+      0.5,
+      0.6
+     ],
+     "color": "#9aa3a9"
+    },
+    {
+     "caja": [
+      "ancho-8",
+      -3,
+      "alto*0.68",
+      2,
+      3,
+      30
+     ],
+     "color": "#9aa3a9"
+    },
+    {
+     "caja": [
+      "ancho-8",
+      -3,
+      "alto*0.35",
+      2,
+      3,
+      30
+     ],
+     "color": "#9aa3a9"
+    }
+   ],
+   "ref": "cocina/frigorifico"
+  },
+  "cocina/placa": {
+   "factor": 10,
+   "categoria": "cocina",
+   "id": "placa",
+   "nombre": "Placa de cocina",
+   "en": "Hob",
+   "medidas": {
+    "ancho": 60,
+    "fondo": 60,
+    "alto": 90
+   },
+   "color": "#f1ede4",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "rect": [
+      5,
+      6,
+      "ancho-10",
+      "fondo-12"
+     ]
+    },
+    {
+     "circulo": [
+      "ancho*0.3",
+      "fondo*0.3",
+      8
+     ]
+    },
+    {
+     "circulo": [
+      "ancho*0.7",
+      "fondo*0.3",
+      8
+     ]
+    },
+    {
+     "circulo": [
+      "ancho*0.3",
+      "fondo*0.7",
+      6
+     ]
+    },
+    {
+     "circulo": [
+      "ancho*0.7",
+      "fondo*0.7",
+      9
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      2,
+      0,
+      "ancho",
+      "fondo-2",
+      "alto-4"
+     ]
+    },
+    {
+     "caja": [
+      0,
+      0,
+      "alto-4",
+      "ancho",
+      "fondo",
+      4
+     ],
+     "color": "#6f6a63"
+    },
+    {
+     "caja": [
+      5,
+      6,
+      "alto",
+      "ancho-10",
+      "fondo-12",
+      0.6
+     ],
+     "color": "#111111"
+    }
+   ],
+   "ref": "cocina/placa"
+  },
+  "cocina/fregadero": {
+   "factor": 10,
+   "categoria": "cocina",
+   "id": "fregadero",
+   "nombre": "Fregadero",
+   "en": "Sink",
+   "medidas": {
+    "ancho": 80,
+    "fondo": 60,
+    "alto": 90
+   },
+   "color": "#f1ede4",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "rect": [
+      8,
+      10,
+      "ancho-16",
+      "fondo-22"
+     ]
+    },
+    {
+     "circulo": [
+      "ancho/2",
+      "fondo-6",
+      2.5
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      2,
+      0,
+      "ancho",
+      "fondo-2",
+      "alto-4"
+     ]
+    },
+    {
+     "caja": [
+      0,
+      0,
+      "alto-4",
+      "ancho",
+      10,
+      4
+     ],
+     "color": "#6f6a63"
+    },
+    {
+     "caja": [
+      0,
+      "fondo-12",
+      "alto-4",
+      "ancho",
+      12,
+      4
+     ],
+     "color": "#6f6a63"
+    },
+    {
+     "caja": [
+      0,
+      10,
+      "alto-4",
+      8,
+      "fondo-22",
+      4
+     ],
+     "color": "#6f6a63"
+    },
+    {
+     "caja": [
+      "ancho-8",
+      10,
+      "alto-4",
+      8,
+      "fondo-22",
+      4
+     ],
+     "color": "#6f6a63"
+    },
+    {
+     "caja": [
+      8,
+      10,
+      "alto-20",
+      "ancho-16",
+      "fondo-22",
+      2
+     ],
+     "color": "#c9ced3"
+    },
+    {
+     "cilindro": [
+      "ancho/2",
+      "fondo-6",
+      "alto",
+      1.5,
+      25
+     ],
+     "color": "#c9ced3"
+    }
+   ],
+   "ref": "cocina/fregadero"
+  },
+  "cocina/mueble-bajo": {
+   "factor": 10,
+   "categoria": "cocina",
+   "id": "mueble-bajo",
+   "nombre": "Mueble bajo con encimera",
+   "en": "Base cabinet",
+   "medidas": {
+    "ancho": 60,
+    "fondo": 60,
+    "alto": 90
+   },
+   "color": "#f1ede4",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "linea": [
+      0,
+      4,
+      "ancho",
+      4
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      4,
+      0,
+      "ancho",
+      "fondo-4",
+      10
+     ],
+     "color": "#3d3d3d"
+    },
+    {
+     "caja": [
+      0,
+      2,
+      10,
+      "ancho",
+      "fondo-2",
+      "alto-14"
+     ]
+    },
+    {
+     "caja": [
+      0,
+      0,
+      "alto-4",
+      "ancho",
+      "fondo",
+      4
+     ],
+     "color": "#6f6a63"
+    }
+   ],
+   "ref": "cocina/mueble-bajo"
+  },
+  "dormitorio/cama-doble": {
+   "factor": 10,
+   "categoria": "dormitorio",
+   "id": "cama-doble",
+   "nombre": "Cama de matrimonio",
+   "en": "Double bed",
+   "medidas": {
+    "ancho": 150,
+    "fondo": 200,
+    "alto": 50
+   },
+   "color": "#c07d7d",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "rect": [
+      8,
+      "fondo-30",
+      "ancho/2-12",
+      20
+     ]
+    },
+    {
+     "rect": [
+      "ancho/2+4",
+      "fondo-30",
+      "ancho/2-12",
+      20
+     ]
+    },
+    {
+     "linea": [
+      0,
+      "fondo*0.68",
+      "ancho",
+      "fondo*0.68"
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      0,
+      "ancho",
+      "fondo",
+      28
+     ],
+     "color": "#6e5137"
+    },
+    {
+     "caja": [
+      2,
+      2,
+      28,
+      "ancho-4",
+      "fondo-7",
+      18
+     ],
+     "color": "#f3f0e8"
+    },
+    {
+     "caja": [
+      8,
+      "fondo-31",
+      46,
+      "ancho/2-12",
+      20,
+      8
+     ],
+     "color": "#ffffff"
+    },
+    {
+     "caja": [
+      "ancho/2+4",
+      "fondo-31",
+      46,
+      "ancho/2-12",
+      20,
+      8
+     ],
+     "color": "#ffffff"
+    },
+    {
+     "caja": [
+      1,
+      1,
+      44,
+      "ancho-2",
+      "fondo*0.68",
+      4
+     ]
+    },
+    {
+     "caja": [
+      0,
+      "fondo-5",
+      0,
+      "ancho",
+      5,
+      "alto+50"
+     ],
+     "color": "#6e5137"
+    }
+   ],
+   "ref": "dormitorio/cama-doble"
+  },
+  "dormitorio/mesilla": {
+   "factor": 10,
+   "categoria": "dormitorio",
+   "id": "mesilla",
+   "nombre": "Mesilla de noche",
+   "en": "Bedside table",
+   "medidas": {
+    "ancho": 45,
+    "fondo": 40,
+    "alto": 55
+   },
+   "color": "#a87b52",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "rect": [
+      4,
+      4,
+      "ancho-8",
+      "fondo-8"
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      0,
+      "ancho",
+      "fondo",
+      "alto"
+     ]
+    },
+    {
+     "caja": [
+      "ancho/2-6",
+      -1.5,
+      "alto-14",
+      12,
+      1.5,
+      2
+     ],
+     "color": "#3d3d3d"
+    }
+   ],
+   "ref": "dormitorio/mesilla"
+  },
+  "dormitorio/armario": {
+   "factor": 10,
+   "categoria": "dormitorio",
+   "id": "armario",
+   "nombre": "Armario",
+   "en": "Wardrobe",
+   "medidas": {
+    "ancho": 120,
+    "fondo": 60,
+    "alto": 220
+   },
+   "color": "#d9c6a5",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "linea": [
+      "ancho/2",
+      0,
+      "ancho/2",
+      4
+     ]
+    },
+    {
+     "linea": [
+      4,
+      "fondo/2",
+      "ancho-4",
+      "fondo/2"
+     ],
+     "trazo": "oculta"
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      0,
+      "ancho",
+      "fondo",
+      "alto"
+     ]
+    },
+    {
+     "caja": [
+      "ancho/2-0.5",
+      -0.5,
+      4,
+      1,
+      0.5,
+      "alto-8"
+     ],
+     "color": "#8c7a5c"
+    },
+    {
+     "cilindro": [
+      "ancho/2-6",
+      -2,
+      100,
+      1,
+      30
+     ],
+     "color": "#3d3d3d"
+    },
+    {
+     "cilindro": [
+      "ancho/2+6",
+      -2,
+      100,
+      1,
+      30
+     ],
+     "color": "#3d3d3d"
+    }
+   ],
+   "ref": "dormitorio/armario"
+  },
+  "bano/ducha": {
+   "factor": 10,
+   "categoria": "bano",
+   "id": "ducha",
+   "nombre": "Plato de ducha",
+   "en": "Shower tray",
+   "medidas": {
+    "ancho": 80,
+    "fondo": 80,
+    "alto": 200
+   },
+   "color": "#f4f4f4",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "linea": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "linea": [
+      0,
+      "fondo",
+      "ancho",
+      0
+     ]
+    },
+    {
+     "circulo": [
+      "ancho/2",
+      "fondo/2",
+      4
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      0,
+      "ancho",
+      "fondo",
+      5
+     ]
+    },
+    {
+     "caja": [
+      0,
+      0,
+      5,
+      1,
+      "fondo",
+      "alto-5"
+     ],
+     "color": "#cfe3ef",
+     "mate": "cristal"
+    },
+    {
+     "caja": [
+      1,
+      0,
+      5,
+      "ancho-1",
+      1,
+      "alto-5"
+     ],
+     "color": "#cfe3ef",
+     "mate": "cristal"
+    }
+   ],
+   "ref": "bano/ducha"
+  },
+  "bano/inodoro": {
+   "factor": 10,
+   "categoria": "bano",
+   "id": "inodoro",
+   "nombre": "Inodoro",
+   "en": "Toilet",
+   "medidas": {
+    "ancho": 38,
+    "fondo": 68,
+    "alto": 78
+   },
+   "color": "#ffffff",
+   "planta": [
+    {
+     "rect": [
+      0,
+      "fondo-18",
+      "ancho",
+      18
+     ]
+    },
+    {
+     "arco": [
+      "ancho/2",
+      "fondo-30",
+      "ancho/2",
+      180,
+      360
+     ]
+    },
+    {
+     "linea": [
+      0,
+      "fondo-30",
+      0,
+      "fondo-18"
+     ]
+    },
+    {
+     "linea": [
+      "ancho",
+      "fondo-30",
+      "ancho",
+      "fondo-18"
+     ]
+    },
+    {
+     "arco": [
+      "ancho/2",
+      "fondo-30",
+      "ancho/2-5",
+      180,
+      360
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      "fondo-18",
+      0,
+      "ancho",
+      18,
+      "alto"
+     ]
+    },
+    {
+     "cilindro": [
+      "ancho/2",
+      "fondo-34",
+      0,
+      "ancho/2-3",
+      40
+     ]
+    },
+    {
+     "caja": [
+      2,
+      "fondo-50",
+      38,
+      "ancho-4",
+      32,
+      3
+     ]
+    }
+   ],
+   "ref": "bano/inodoro"
+  },
+  "bano/lavabo": {
+   "factor": 10,
+   "categoria": "bano",
+   "id": "lavabo",
+   "nombre": "Lavabo",
+   "en": "Washbasin",
+   "medidas": {
+    "ancho": 60,
+    "fondo": 45,
+    "alto": 85
+   },
+   "color": "#ffffff",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "circulo": [
+      "ancho/2",
+      "fondo/2-2",
+      "min(ancho, fondo)/2-8"
+     ]
+    },
+    {
+     "circulo": [
+      "ancho/2",
+      "fondo-5",
+      2
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      "alto-15",
+      "ancho",
+      "fondo",
+      15
+     ]
+    },
+    {
+     "cilindro": [
+      "ancho/2",
+      "fondo/2",
+      0,
+      8,
+      "alto-15"
+     ]
+    },
+    {
+     "cilindro": [
+      "ancho/2",
+      "fondo-5",
+      "alto",
+      1.5,
+      18
+     ],
+     "color": "#c9ced3"
+    }
+   ],
+   "ref": "bano/lavabo"
+  }
+ },
+ "sigId": 37,
+ "casa": {
+  "altura": 2500,
+  "grosor": 150,
+  "colorPared": "#f4efe4",
+  "colorSuelo": "#c8a27a",
+  "texturaSuelo": "parquet",
+  "colorTecho": "#ffffff"
+ }
+}

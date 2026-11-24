@@ -1,0 +1,80 @@
+{
+  "biblioteca": "Mobiliario",
+  "en": "Furniture",
+  "categoria": "aula",
+  "nombre": "Aula",
+  "en_categoria": "Classroom",
+  "unidad": "cm",
+  "bloques": [
+    {
+      "id": "mesa-alumno", "nombre": "Mesa de alumno", "en": "Student desk",
+      "medidas": { "ancho": 70, "fondo": 50, "alto": 76 },
+      "color": "#e8d6b5",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] } ],
+      "piezas": [
+        { "caja": [0, 0, "alto-3", "ancho", "fondo", 3] },
+        { "caja": [2, 2, 0, 3, 3, "alto-3"], "color": "#2f5f8f" }, { "caja": ["ancho-5", 2, 0, 3, 3, "alto-3"], "color": "#2f5f8f" },
+        { "caja": [2, "fondo-5", 0, 3, 3, "alto-3"], "color": "#2f5f8f" }, { "caja": ["ancho-5", "fondo-5", 0, 3, 3, "alto-3"], "color": "#2f5f8f" },
+        { "caja": [5, 5, "alto-15", "ancho-10", "fondo-10", 1], "color": "#2f5f8f" }
+      ]
+    },
+    {
+      "id": "silla-alumno", "nombre": "Silla de alumno", "en": "Student chair",
+      "medidas": { "ancho": 40, "fondo": 42, "alto": 80 },
+      "color": "#2f5f8f",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo-5"] }, { "rect": [0, "fondo-5", "ancho", 5] } ],
+      "piezas": [
+        { "caja": [0, 0, 43, "ancho", "fondo-3", 2], "color": "#e8d6b5" },
+        { "caja": [0, "fondo-5", 55, "ancho", 2, 25], "color": "#e8d6b5" },
+        { "caja": [2, 2, 0, 2.5, 2.5, 43] }, { "caja": ["ancho-4.5", 2, 0, 2.5, 2.5, 43] },
+        { "caja": [2, "fondo-5", 0, 2.5, 2.5, "alto"] }, { "caja": ["ancho-4.5", "fondo-5", 0, 2.5, 2.5, "alto"] }
+      ]
+    },
+    {
+      "id": "mesa-profesor", "nombre": "Mesa del profesor", "en": "Teacher's desk",
+      "medidas": { "ancho": 140, "fondo": 70, "alto": 76 },
+      "color": "#c49a6c",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "rect": ["ancho-45", 0, 45, "fondo"] } ],
+      "piezas": [
+        { "caja": [0, 0, "alto-3", "ancho", "fondo", 3] },
+        { "caja": ["ancho-45", 0, 0, 45, "fondo", "alto-3"] },
+        { "caja": [2, 2, 0, 4, "fondo-4", "alto-3"], "color": "#55605a" }
+      ]
+    },
+    {
+      "id": "pizarra", "nombre": "Pizarra", "en": "Whiteboard",
+      "medidas": { "ancho": 300, "fondo": 6, "alto": 120 },
+      "parametros": { "altura_suelo": 90 },
+      "color": "#ffffff",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"], "gruesa": true } ],
+      "piezas": [
+        { "caja": [0, 0, "altura_suelo", "ancho", "fondo", "alto"], "color": "#9aa3a9" },
+        { "caja": [3, -0.5, "altura_suelo+3", "ancho-6", 0.5, "alto-6"] },
+        { "caja": [0, -8, "altura_suelo-2", "ancho", 8, 2], "color": "#9aa3a9" }
+      ]
+    },
+    {
+      "id": "armario-aula", "nombre": "Armario del aula", "en": "Classroom cupboard",
+      "medidas": { "ancho": 100, "fondo": 45, "alto": 200 },
+      "color": "#d9d2c3",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "linea": ["ancho/2", 0, "ancho/2", 4] } ],
+      "piezas": [
+        { "caja": [0, 0, 0, "ancho", "fondo", "alto"] },
+        { "caja": ["ancho/2-0.5", -0.5, 4, 1, 0.5, "alto-8"], "color": "#8c8578" }
+      ]
+    },
+    {
+      "id": "ordenador", "nombre": "Puesto con ordenador", "en": "Computer desk",
+      "medidas": { "ancho": 120, "fondo": 70, "alto": 76 },
+      "color": "#e8d6b5",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "rect": ["ancho/2-25", "fondo-15", 50, 4], "gruesa": true }, { "rect": ["ancho/2-22", 12, 44, 14] } ],
+      "piezas": [
+        { "caja": [0, 0, "alto-3", "ancho", "fondo", 3] },
+        { "caja": [2, 2, 0, 4, "fondo-4", "alto-3"], "color": "#55605a" }, { "caja": ["ancho-6", 2, 0, 4, "fondo-4", "alto-3"], "color": "#55605a" },
+        { "caja": ["ancho/2-25", "fondo-15", "alto+12", 50, 3, 30], "color": "#1b1d20" },
+        { "caja": ["ancho/2-4", "fondo-13", "alto", 8, 6, 12], "color": "#1b1d20" },
+        { "caja": ["ancho/2-22", 12, "alto", 44, 14, 1.5], "color": "#3d3d3d" }
+      ]
+    }
+  ]
+}

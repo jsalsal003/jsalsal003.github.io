@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Juan Salguero Salguero">
+<meta name="copyright" content="© 2026 Juan Salguero Salguero · CC BY-NC-SA 4.0">
+<title>Vistas 3D · Sistema diédrico</title>
+<meta name="theme-color" content="#f3efe4">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23f3efe4'/%3E%3Cpath d='M4 4h11v11H4zM17 4h11v11H17zM4 17h11v11H4z' fill='none' stroke='%2314201a' stroke-width='1.6'/%3E%3Cpath d='M4 9.5h11M9.5 17v11M17 9.5h11' stroke='%23d7262c' stroke-width='1.6'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&family=Big+Shoulders+Stencil:wght@700;900&family=Caveat:wght@700&family=Martian+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  /* ===================================================================
+     VISTAS 3D — sistema diédrico europeo (UNE 1032 / ISO E)
+     Estética: mesa de dibujo técnico. Papel crema, tinta negra, lápiz rojo para
+     corregir y lápiz azul para la solución.
+     =================================================================== */
+  :root{
+    --desk:#e9e3d3; --paper:#fbf8ef; --paper-2:#f3efe4; --ink:#14201a; --ink-2:#55605a; --line:#cfc6ae;
+    --yellow:#ffd23f; --orange:#ff6a1f; --blue:#1f5bd0; --red:#d7262c; --green:#1f8a4c;
+    --display:"Big Shoulders Stencil","Arial Narrow",sans-serif;
+    --body:"Atkinson Hyperlegible Next","Atkinson Hyperlegible",system-ui,sans-serif;
+    --mono:"Martian Mono",ui-monospace,monospace;
+    --hand:"Caveat",cursive;
+    font-size:clamp(11px, min(100vw / 90, 100vh / 48), 17px);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:var(--body);color:var(--ink);background-color:var(--desk);
+    background-image:radial-gradient(rgba(20,32,26,.13) 1px,transparent 1.2px),radial-gradient(ellipse at 50% -20%,rgba(255,255,255,.6),transparent 60%);
+    background-size:1rem 1rem,auto;display:flex;flex-direction:column;min-height:100vh}
+  button,input{font:inherit}
+
+  /* ---------- barra superior ---------- */
+  .top{display:flex;align-items:center;gap:1.2rem;padding:.6rem 1.4rem;border-bottom:2px solid var(--ink);background:var(--paper);flex-wrap:wrap}
+  .home{font-family:var(--mono);font-size:.62rem;font-weight:600;text-decoration:none;color:var(--ink-2);border:1px solid var(--line);padding:.3rem .55rem;border-radius:.2rem}
+  .home:hover{border-color:var(--ink);color:var(--ink)}
+  .brand{display:flex;align-items:baseline;gap:.7rem}
+  .brand h1{font-family:var(--display);font-weight:900;font-size:2rem;line-height:1;margin:0;letter-spacing:.02em;text-transform:uppercase}
+  .brand h1 span{color:var(--red)}
+  .brand small{font-family:var(--mono);font-size:.58rem;color:var(--ink-2);letter-spacing:.06em}
+  .ex{margin-left:auto;display:flex;align-items:center;gap:.5rem}
+  .ex .num{font-family:var(--display);font-weight:900;font-size:1.5rem;min-width:6.5rem;text-align:center}
+  .ex .num b{color:var(--red)}
+  .levels{display:flex;border:2px solid var(--ink);border-radius:.3rem;overflow:hidden;margin-right:.6rem;box-shadow:.15rem .15rem 0 var(--ink)}
+  .lv{border:0;background:var(--paper);padding:.3rem .7rem;cursor:pointer;font-family:var(--display);font-weight:900;font-size:1.05rem;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-2);display:flex;align-items:baseline;gap:.35rem}
+  .lv + .lv{border-left:2px solid var(--ink)}
+  .lv small{font-family:var(--mono);font-size:.55rem;font-weight:600;letter-spacing:0}
+  .lv.on{background:var(--ink);color:var(--yellow)}
+  .lv:not(.on):hover{background:var(--paper-2);color:var(--ink)}
+  .dots{display:flex;gap:.25rem}
+  .lv.reto{color:var(--red)}
+  .lv.reto.on{background:var(--red);color:#fff}
+  .clock{display:flex;align-items:center;gap:.5rem;margin-right:.6rem}
+  .clock[hidden]{display:none}
+  .tl{font-family:var(--display);font-weight:900;font-size:1.7rem;color:var(--ink);background:var(--yellow);border:2px solid var(--ink);padding:0 .5rem;border-radius:.25rem;min-width:4.6rem;text-align:center}
+  .tl.low{background:var(--red);color:#fff;animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:.6}}
+  body.in-reto .lv:not(.reto),body.in-reto #xray,body.in-reto #sol,body.in-reto #check,body.in-reto #profile{opacity:.35;pointer-events:none}
+  body.in-reto .panel{box-shadow:.4rem .4rem 0 rgba(215,38,44,.35)}
+  .modal{position:fixed;inset:0;z-index:50;background:rgba(20,32,26,.45);display:flex;align-items:center;justify-content:center;padding:1rem}
+  .modal[hidden]{display:none}
+  .dlg{background:var(--paper);border:2px solid var(--ink);box-shadow:.5rem .5rem 0 var(--ink);max-width:34rem;width:100%;padding:1.2rem 1.4rem;animation:up .3s both}
+  .dlg h3{font-family:var(--display);font-weight:900;font-size:2rem;text-transform:uppercase;margin:0 0 .6rem}
+  .dlg ul{margin:0 0 1rem;padding-left:1.1rem;line-height:1.45}
+  .dlg label{display:flex;flex-direction:column;gap:.2rem;font-family:var(--mono);font-size:.62rem;font-weight:600;margin:.5rem 0}
+  .dlg input{font-family:var(--body);font-size:1rem;padding:.4rem .5rem;border:2px solid var(--ink);border-radius:.2rem;background:#fff}
+  .dlg .btns{display:flex;justify-content:flex-end;gap:.5rem;margin-top:1rem}
+  .dlg .err{color:var(--red);font-weight:700;min-height:1em;margin:.3rem 0 0}
+  .dlg .small{text-align:right;margin:.6rem 0 0}
+  .link{border:0;background:none;color:var(--ink-2);text-decoration:underline;cursor:pointer;font-family:var(--mono);font-size:.6rem;padding:0}
+  .dots button{width:1.35rem;height:1.35rem;border:1.5px solid var(--ink);background:var(--paper);border-radius:.2rem;font-family:var(--mono);font-size:.5rem;font-weight:800;cursor:pointer;padding:0;color:var(--ink-2)}
+  .dots button.done{background:var(--green);border-color:var(--green);color:#fff}
+  .dots button.cur{background:var(--yellow);color:var(--ink);transform:translateY(-.12rem);box-shadow:0 .15rem 0 var(--ink)}
+  .arrow{width:2.1rem;height:2.1rem;border:2px solid var(--ink);background:var(--paper);border-radius:.25rem;cursor:pointer;font-weight:800;box-shadow:.15rem .15rem 0 var(--ink)}
+  .arrow:active{transform:translate(.1rem,.1rem);box-shadow:none}
+  .arrow:disabled{opacity:.35;cursor:default}
+
+  /* ---------- zona de trabajo ---------- */
+  main{flex:1;display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:1.4rem;padding:1.2rem 1.4rem 1rem;min-height:0}
+  .panel{background:var(--paper);border:2px solid var(--ink);box-shadow:.4rem .4rem 0 rgba(20,32,26,.18);display:flex;flex-direction:column;min-height:0;position:relative;
+    animation:up .55s cubic-bezier(.2,.9,.25,1.1) both}
+  .panel.sheet{animation-delay:.12s}
+  @keyframes up{from{opacity:0;transform:translateY(1rem)}to{opacity:1;transform:none}}
+  .ph{display:flex;align-items:center;gap:.5rem;padding:.45rem .7rem;border-bottom:1.5px solid var(--ink);flex-wrap:wrap}
+  .dhint{font-family:var(--hand);font-size:1.15rem;color:var(--green);margin-left:.3rem}
+  .ph.bottom{border-bottom:0;border-top:1.5px solid var(--ink)}
+  .ph h2{font-family:var(--mono);font-size:.62rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin:0 auto 0 0}
+
+  /* modelo 3D */
+  .stage{flex:1;position:relative;min-height:0;cursor:grab;touch-action:none;
+    background-image:linear-gradient(rgba(31,91,208,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(31,91,208,.07) 1px,transparent 1px);background-size:1.2rem 1.2rem}
+  .stage:active{cursor:grabbing}
+  .stage canvas{position:absolute;inset:0;width:100%;height:100%}
+  .hint{position:absolute;left:.7rem;bottom:.6rem;font-family:var(--hand);font-size:1.25rem;color:var(--ink-2);pointer-events:none;transform:rotate(-2deg)}
+  .views{display:flex;gap:.35rem;flex-wrap:wrap}
+
+  .chip{border:1.5px solid var(--ink);background:var(--paper);padding:.28rem .6rem;border-radius:.2rem;cursor:pointer;font-family:var(--mono);font-size:.6rem;font-weight:600;display:inline-flex;align-items:center;gap:.35rem;color:var(--ink)}
+  .chip:hover{background:var(--paper-2)}
+  .chip.on{background:var(--ink);color:var(--paper)}
+  .chip.go{background:var(--yellow);box-shadow:.15rem .15rem 0 var(--ink)}
+  .chip.go:active{transform:translate(.1rem,.1rem);box-shadow:none}
+  .chip .k{opacity:.55;font-weight:400}
+  .chip.xr{border-color:var(--blue);color:var(--blue)}
+  .chip.xr.on{background:var(--blue);color:#fff}
+  .xlegend{position:absolute;right:.7rem;bottom:.6rem;font-family:var(--mono);font-size:.56rem;background:rgba(251,248,239,.9);border:1px solid var(--line);padding:.3rem .5rem;display:none;gap:.8rem;pointer-events:none}
+  .xlegend.show{display:flex}
+  .xlegend span{display:inline-flex;align-items:center;gap:.35rem}
+  .xlegend i{display:inline-block;width:1.5rem;border-top:3px solid var(--ink)}
+  .xlegend i.h{border-top:2.5px dashed var(--blue)}
+  .sep{width:1px;align-self:stretch;background:var(--line);margin:0 .15rem}
+  .sample{display:inline-block;width:1.4rem;height:0;border-top:3px solid currentColor}
+  .sample.dash{border-top-style:dashed;border-top-width:2.5px}
+
+  /* lámina */
+  .board{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:.4rem}
+  .board svg{width:100%;height:100%;max-height:100%;touch-action:none;user-select:none}
+  .seg-hit{stroke:transparent;stroke-width:26;cursor:crosshair}
+  .msg{position:absolute;left:50%;top:3.3rem;font-family:var(--hand);font-size:1.9rem;color:var(--green);transform:translateX(-50%) rotate(-3deg);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .3s}
+  .msg.show{opacity:1}
+  .msg.bad{color:var(--red)}
+
+  .foot{display:flex;justify-content:space-between;gap:1rem;padding:0 1.4rem .7rem;font-family:var(--mono);font-size:.55rem;color:var(--ink-2)}
+  .foot a{color:inherit}
+
+  @media (max-width:860px){
+    :root{font-size:14px}
+    main{grid-template-columns:1fr;grid-template-rows:20rem auto}
+    .board{display:block}
+    .board svg{height:auto;max-height:none;aspect-ratio:1400/1000;display:block}
+    .ex{margin-left:0;flex-wrap:wrap}
+    .dots{flex-wrap:wrap;width:100%}
+    .panel{min-width:0}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="https://jsalsal003.github.io/" title="Volver a la portada">← Taller</a>
+  <div class="brand"><h1>Vistas <span>3D</span></h1><small>SISTEMA DIÉDRICO EUROPEO · UNE 1032</small></div>
+  <button class="chip" id="resetAll" title="Borrar todo lo guardado en este equipo (dibujos, piezas hechas, nombre…) para empezar de cero">⟲ Borrar progreso</button>
+  <div class="ex">
+    <div class="levels" role="group" aria-label="Nivel de dificultad">
+      <button class="lv" data-level="L1" title="Piezas de 2×2×2 cubos (16 piezas)">Nivel 1 <small>2×2×2</small></button>
+      <button class="lv" data-level="L2" title="Piezas de 3×3×3 cubos (10 piezas, más difíciles)">Nivel 2 <small>3×3×3</small></button>
+      <button class="lv" data-level="L3" title="Piezas de 2×2×2 con caras inclinadas: hay que dibujar líneas diagonales (5 piezas)">Nivel 3 <small>diagonales</small></button>
+      <button class="lv reto" data-level="R" title="Desafío: 5 piezas nuevas en 30 minutos, sin ayudas. Al terminar se descarga un PDF para Classroom">⏱ Desafío <small>30 min</small></button>
+    </div>
+    <div class="clock" id="clock" hidden>
+      <span class="tl" id="timeLeft" title="Tiempo que queda">30:00</span>
+      <button class="chip go" id="entregar" title="Terminar el desafío y descargar el PDF">Entregar</button>
+    </div>
+    <button class="arrow" id="prev" title="Ejercicio anterior">◀</button>
+    <div class="num">Pieza <b id="exn">01</b></div>
+    <button class="arrow" id="next" title="Ejercicio siguiente">▶</button>
+    <div class="dots" id="dots"></div>
+  </div>
+</header>
+
+<main>
+  <section class="panel">
+    <div class="ph">
+      <h2>Pieza</h2>
+      <div class="views">
+        <button class="chip" data-cam="iso" title="Volver a la perspectiva">Perspectiva</button>
+        <button class="chip" data-cam="front" title="Mirar la pieza de frente">Alzado</button>
+        <button class="chip" data-cam="top" title="Mirar la pieza desde arriba">Planta</button>
+        <button class="chip" data-cam="side" id="camSide" title="Mirar la pieza desde el lado">Perfil izq.</button>
+        <button class="chip xr" id="xray" title="Rayos X: ver la pieza transparente con las aristas ocultas en azul discontinuo (X)">☢ Rayos X</button>
+      </div>
+    </div>
+    <div class="stage" id="stage"><canvas id="cv"></canvas><span class="hint">arrastra para girarla ↻</span><div class="xlegend" id="xlegend"><span><i></i>vista</span><span><i class="h"></i>oculta</span></div></div>
+  </section>
+
+  <section class="panel sheet">
+    <div class="ph">
+      <h2>Lámina de vistas</h2>
+      <button class="chip on" data-tool="solid" title="Arista vista: línea continua (1)"><span class="sample"></span>Línea <span class="k">1</span></button>
+      <button class="chip" data-tool="dashed" title="Arista oculta: línea discontinua (2)"><span class="sample dash"></span>Oculta <span class="k">2</span></button>
+      <button class="chip" data-tool="erase" title="Borrar líneas (3)">⌫ Goma <span class="k">3</span></button>
+      <button class="chip" id="undo" title="Deshacer (Ctrl+Z)">↶ Deshacer</button>
+      <span class="dhint" id="diagHint" style="display:none">⟋ también en diagonal</span>
+    </div>
+    <div class="board"><svg id="sheet" viewBox="0 0 1400 1000" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="ph bottom">
+      <button class="chip" id="profile" title="Cambiar entre perfil izquierdo y derecho">⇄ Perfil izquierdo</button>
+      <button class="chip go" id="check" title="Comprobar si las vistas son correctas">✓ Comprobar</button>
+      <button class="chip" id="sol" title="Ver la solución en azul">Ver solución</button>
+      <span style="margin-left:auto"></span>
+      <button class="chip" id="clear" title="Borrar las tres vistas">Borrar todo</button>
+      <button class="chip" id="png" title="Descargar la lámina como imagen para entregarla">⬇ Descargar imagen</button>
+    </div>
+    <div class="msg" id="msg"></div>
+  </section>
+</main>
+<div class="foot"><span>Dibuja las vistas con líneas continuas (aristas que se ven) y discontinuas (aristas ocultas). Arrastra de punto a punto o pulsa en un tramo.</span><span>© 2026 Juan Salguero Salguero · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es" target="_blank" rel="noopener license">CC BY-NC-SA 4.0</a></span></div>
+
+<!-- ventanas del Desafío (en el código se llama «reto») -->
+<div class="modal" id="mReto" hidden>
+  <div class="dlg">
+    <h3>⏱ ¿Empezar el Desafío?</h3>
+    <ul>
+      <li>Tendrás <b>30 minutos</b> para dibujar las vistas de <b>5 piezas nuevas</b>: 2 de cubos 2×2×2, 1 de 3×3×3 y 2 con caras inclinadas.</li>
+      <li>Durante el desafío <b>no hay</b> Rayos X, ni Ver solución, ni Comprobar.</li>
+      <li>Al terminar (o al acabarse el tiempo) se descarga un <b>PDF</b> con tus 5 láminas y un código QR para el profesor. <b>Súbelo a Classroom.</b></li>
+    </ul>
+    <label>Nombre y apellidos <input id="rNombre" maxlength="60" autocomplete="name"></label>
+    <label>Curso y grupo <input id="rCurso" maxlength="30" placeholder="por ejemplo 2º ESO B"></label>
+    <p class="err" id="rErr"></p>
+    <div class="btns"><button class="chip" data-close>Cancelar</button><button class="chip go" id="rStart">Sí, empezar el desafío</button></div>
+  </div>
+</div>
+<div class="modal" id="mEntregar" hidden>
+  <div class="dlg">
+    <h3>¿Entregar ya?</h3>
+    <p>Después ya no podrás cambiar tus dibujos. Te quedan <b id="eLeft"></b>.</p>
+    <div class="btns"><button class="chip" data-close>Seguir con el desafío</button><button class="chip go" id="eYes">Sí, entregar</button></div>
+  </div>
+</div>
+<div class="modal" id="mFin" hidden>
+  <div class="dlg">
+    <h3 id="fTitle">¡Desafío terminado!</h3>
+    <p>Descarga el PDF y <b>súbelo a Classroom</b>. Tiene una página por pieza y una última con el código QR para el profesor.</p>
+    <p class="err" id="fErr"></p>
+    <div class="btns"><button class="chip" id="fPractica">Volver a practicar</button><button class="chip go" id="fPdf">⬇ Descargar PDF</button></div>
+    <p class="small"><button class="link" id="fNuevo">Empezar otro desafío</button></p>
+  </div>
+</div>
+<div class="modal" id="mBorrar" hidden>
+  <div class="dlg">
+    <h3>¿Borrar todo el progreso?</h3>
+    <div id="bSi">
+      <p>Se borra todo lo que Vistas 3D tiene guardado <b>en este equipo y este navegador</b>, y empieza de cero:</p>
+      <ul>
+        <li>los dibujos de todas las piezas de los 3 niveles y las piezas marcadas como bien hechas,</li>
+        <li>el nombre y el curso del cajetín,</li>
+        <li>el desafío entregado, si lo hay: <b>descarga antes su PDF si todavía no lo has subido a Classroom.</b></li>
+      </ul>
+      <p>No se puede deshacer.</p>
+      <div class="btns"><button class="chip" data-close>Cancelar</button><button class="chip go" id="bYes" style="background:var(--red);color:#fff">Sí, borrar todo</button></div>
+    </div>
+    <div id="bNo">
+      <p>Durante el desafío no se puede borrar el progreso. Entrégalo primero.</p>
+      <div class="btns"><button class="chip go" data-close>Vale</button></div>
+    </div>
+  </div>
+</div>
+
+<script src="nucleo.js"></script>
+<script>
+(function () {
+  'use strict';
+  /* ---------- piezas ----------
+     Cada pieza es una lista de capas, de abajo arriba. Cada capa se ve desde arriba y tiene una fila
+     por cada profundidad, de atrás a delante, separadas por espacios; en cada fila, "1" = cubo (de izquierda a derecha). */
+  var LEVELS = {
+    // Nivel 1: piezas de 2×2×2 (16 piezas)
+    L1: { n: 2, pieces: [
+      ['11 11', '11 00'], ['11 11', '10 10'], ['11 11', '10 00'], ['11 11', '10 01'],
+      ['11 11', '11 10'], ['11 10', '10 00'], ['10 11', '10 10'], ['10 10', '11 00'],
+      ['00 11', '00 10'], ['01 11', '00 01'], ['11 10', '01 10'], ['11 10', '11 10'],
+      ['11 11', '00 11'], ['11 00', '11 10'], ['11 10', '01 00'], ['11 01', '10 01']
+    ] },
+    // Nivel 2: piezas de 3×3×3 (10 piezas, de menos a más difícil)
+    L2: { n: 3, pieces: [
+      ['111 111 111', '111 111 000', '111 000 000'],   // 1 escalera de tres peldaños
+      ['111 111 111', '110 110 000', '100 000 000'],   // 2 escalera en esquina
+      ['111 111 111', '111 100 100', '100 100 100'],   // 3 torre en la esquina y muro
+      ['000 111 000', '010 111 010', '000 010 000'],   // 4 cruz escalonada
+      ['111 111 111', '101 101 101', '101 101 101'],   // 5 canal en U
+      ['101 101 101', '111 111 111', '000 000 000'],   // 6 puente (túnel)
+      ['111 111 111', '111 111 111', '111 101 111'],   // 7 cajeado en la cara de arriba
+      ['100 100 100', '100 100 100', '111 111 111'],   // 8 voladizo
+      ['111 111 111', '111 111 110', '111 110 100'],   // 9 esquina recortada en escalones
+      ['111 111 111', '111 001 101', '100 001 000']    // 10 pieza mixta
+    ] },
+    /* Nivel 3: piezas de 2×2×2 con caras inclinadas (salen líneas diagonales).
+       Cada celda: [x, y, z, tipo]. x: izquierda→derecha, y: delante→atrás, z: abajo→arriba.
+       Tipo "1" = cubo. Una cuña (medio cubo cortado en diagonal) se escribe con el eje de su arista larga (x, y o z)
+       y la esquina que conserva en los otros dos ejes, en orden (x: y,z · y: x,z · z: x,y). Ej.: "x10" = cuña a lo largo de x
+       que conserva la esquina y=1 (atrás), z=0 (abajo): una rampa que sube hacia atrás. */
+    L3: { n: 2, diag: true, pieces: [
+      // 1 rampa: sube de delante hacia atrás
+      [[0, 1, 0, '1'], [1, 1, 0, '1'], [0, 0, 0, 'x10'], [1, 0, 0, 'x10'], [0, 1, 1, 'x10'], [1, 1, 1, 'x10']],
+      // 2 tejado a dos aguas
+      [[0, 0, 0, '1'], [1, 0, 0, '1'], [0, 1, 0, '1'], [1, 1, 0, '1'], [0, 0, 1, 'y10'], [0, 1, 1, 'y10'], [1, 0, 1, 'y00'], [1, 1, 1, 'y00']],
+      // 3 rampa lateral: baja hacia la derecha
+      [[0, 0, 0, '1'], [1, 0, 0, '1'], [0, 1, 0, '1'], [1, 1, 0, '1'], [0, 0, 1, '1'], [0, 1, 1, '1'], [1, 0, 1, 'y00'], [1, 1, 1, 'y00']],
+      // 4 chaflán: arista vertical delantera derecha cortada
+      [[0, 1, 0, '1'], [1, 1, 0, '1'], [0, 0, 0, '1'], [1, 0, 0, 'z01'], [0, 1, 1, '1']],
+      // 5 pieza mixta: rampas en dos direcciones
+      [[0, 1, 0, '1'], [1, 1, 0, '1'], [0, 0, 0, '1'], [1, 0, 0, 'x10'], [0, 1, 1, '1'], [1, 1, 1, 'y00'], [0, 0, 1, 'x10']]
+    ] }
+  };
+  var LV = LEVELS.L1, N = 2, PIEZAS = LV.pieces;
+  function parse(p) { // devuelve occ[x][y][z]: 0 = vacío, 1 = cubo, {ax, a, b} = cuña
+    var o = [];
+    for (var x = 0; x < N; x++) { o.push([]); for (var y = 0; y < N; y++) { o[x].push([]); for (var z = 0; z < N; z++) o[x][y].push(0); } }
+    if (LV.diag) {
+      p.forEach(function (c) { o[c[0]][c[1]][c[2]] = c[3] === '1' ? 1 : { ax: c[3][0], a: +c[3][1], b: +c[3][2] }; });
+      return o;
+    }
+    p.forEach(function (capa, z) {
+      capa.split(' ').forEach(function (f, i) { var y = N - 1 - i; for (var x = 0; x < N; x++) o[x][y][z] = f[x] === '1' ? 1 : 0; });
+    });
+    return o;
+  }
+
+  /* ---------- estado (cada nivel guarda sus propias piezas y dibujos) ---------- */
+  var KEY = 'vistas3d:v1', S;
+  try { S = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { S = {}; }
+  S.profile = S.profile || 'izq'; S.draw = S.draw || {}; S.done = S.done || {}; S.name = S.name || ''; S.group = S.group || '';
+  // versiones anteriores: niveles "2"/"3" (por tamaño) o sin nivel → L1/L2
+  var OLD = { 2: 'L1', 3: 'L2' };
+  [S.draw, S.done].forEach(function (m) {
+    Object.keys(m).forEach(function (k) {
+      var nk = /^\d+$/.test(k) ? 'L1:' + k : /^[23]:/.test(k) ? OLD[k[0]] + k.slice(1) : null;
+      if (nk) { m[nk] = m[k]; delete m[k]; }
+    });
+  });
+  if (OLD[S.level]) S.level = OLD[S.level];
+  if (!LEVELS[S.level]) S.level = 'L1';
+  var ex0 = S.exBy || {}; S.exBy = { L1: ex0.L1 !== undefined ? ex0.L1 : (ex0[2] || S.ex || 0), L2: ex0.L2 !== undefined ? ex0.L2 : (ex0[3] || 0), L3: ex0.L3 || 0 };
+  S.ex = S.exBy[S.level] || 0;
+  function K(i) { return S.level + ':' + (i === undefined ? S.ex : i); }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* nada */ } }
+  var occ, tool = 'solid', showSol = false, checked = null, undoStack = [];
+  function cur() { var d = S.draw[K()]; if (!d) d = S.draw[K()] = { alzado: {}, planta: {}, izq: {}, der: {} }; return d; }
+  function filled(x, y, z) { return x >= 0 && y >= 0 && z >= 0 && x < N && y < N && z < N && occ[x][y][z] === 1; }
+
+  /* ---------- vistas correctas (calculadas) ----------
+     Para cada vista: u (derecha), v (arriba), d (profundidad, 0 = lo más cerca del observador). */
+  var MAP = {
+    alzado: function (u, v, d) { return [u, d, v]; },
+    planta: function (u, v, d) { return [u, v, N - 1 - d]; },
+    izq: function (u, v, d) { return [d, N - 1 - u, v]; },
+    der: function (u, v, d) { return [N - 1 - d, u, v]; }
+  };
+  function solution(view) { return LV.diag ? solutionRay(view) : solutionVox(view); }
+
+  /* Cálculo general por rayos (sirve para cuñas y caras inclinadas):
+     por cada tramo posible (horizontal, vertical o diagonal de una celda) se lanzan rayos a ambos lados,
+     muy cerca, y se comparan las superficies que atraviesan. Si la primera superficie cambia → arista vista;
+     si solo cambia alguna de detrás → arista oculta. */
+  function cellAt(x, y, z) { return x >= 0 && y >= 0 && z >= 0 && x < N && y < N && z < N ? occ[x][y][z] : 0; }
+  function insideW(x, y, z) {
+    var cx = Math.floor(x), cy = Math.floor(y), cz = Math.floor(z), c = cellAt(cx, cy, cz);
+    if (!c) return false;
+    if (c === 1) return true;
+    var l = { x: x - cx, y: y - cy, z: z - cz }, pq = c.ax === 'x' ? ['y', 'z'] : c.ax === 'y' ? ['x', 'z'] : ['x', 'y'];
+    var p = l[pq[0]], q = l[pq[1]];
+    return (c.a ? 1 - p : p) + (c.b ? 1 - q : q) <= 1;
+  }
+  var RAY = {
+    alzado: function (U, V, D) { return [U, D, V]; },
+    planta: function (U, V, D) { return [U, V, N - D]; },
+    izq: function (U, V, D) { return [D, N - U, V]; },
+    der: function (U, V, D) { return [N - D, U, V]; }
+  };
+  function crossings(view, U, V) {
+    var f = RAY[view], out = [], step = 1 / 64, prev = false;
+    function inside(D) { var p = f(U, V, D); return insideW(p[0], p[1], p[2]); }
+    for (var D = -step; D <= N + step; D += step) {
+      var now = inside(D);
+      if (now !== prev) { // afinar el punto de cruce
+        var lo = D - step, hi = D;
+        for (var i = 0; i < 22; i++) { var mid = (lo + hi) / 2; if (inside(mid) === prev) lo = mid; else hi = mid; }
+        out.push((lo + hi) / 2); prev = now;
+      }
+    }
+    return out;
+  }
+  function segUV(key) { // extremos del tramo en unidades de celda (u derecha, v arriba)
+    var p = key.slice(1).split(',').map(Number), t = key[0];
+    if (t === 'h') return [p[0], p[1], p[0] + 1, p[1]];
+    if (t === 'v') return [p[0], p[1], p[0], p[1] + 1];
+    return p[2] === 0 ? [p[0], p[1], p[0] + 1, p[1] + 1] : [p[0] + 1, p[1], p[0], p[1] + 1];
+  }
+  function solutionRay(view) {
+    var out = {}, E = 0.02;
+    allKeys(true).forEach(function (key) {
+      var s = segUV(key), du = s[2] - s[0], dv = s[3] - s[1], L = Math.hypot(du, dv), nu = -dv / L, nv = du / L, vis = 0, hid = 0;
+      [0.2, 0.35, 0.5, 0.65, 0.8].forEach(function (t) {
+        var u = s[0] + du * t, v = s[1] + dv * t;
+        var A1 = crossings(view, u + nu * E, v + nv * E), A3 = crossings(view, u + nu * 3 * E, v + nv * 3 * E);
+        var B1 = crossings(view, u - nu * E, v - nv * E), B3 = crossings(view, u - nu * 3 * E, v - nv * 3 * E);
+        // cada superficie: profundidad llevada a la línea del tramo y pendiente (cómo cambia al alejarse)
+        function surf(X1, X3, sign) {
+          if (X1.length !== X3.length) return null;
+          return X1.map(function (d, i) { var sl = (X3[i] - d) / (2 * E); return { d: d - sl * E, s: sl * sign }; });
+        }
+        var a = surf(A1, A3, 1), b = surf(B1, B3, -1);
+        function same(x, y) { return Math.abs(x.d - y.d) < 0.006 && Math.abs(x.s - y.s) < 0.25; }
+        if (!a || !b) { hid++; return; }
+        var firstDiff = (a.length === 0) !== (b.length === 0) || (a.length && b.length && !same(a[0], b[0]));
+        var anyDiff = a.length !== b.length || a.some(function (x, i) { return !same(x, b[i]); });
+        if (firstDiff) vis++; else if (anyDiff) hid++;
+      });
+      if (vis >= 3) out[key] = 'solid'; else if (vis + hid >= 3) out[key] = 'dashed';
+    });
+    return out;
+  }
+
+  function solutionVox(view) {
+    var m = MAP[view], out = {};
+    function o(u, v, d) { if (u < 0 || v < 0 || d < 0 || u >= N || v >= N || d >= N) return 0; var p = m(u, v, d); return filled(p[0], p[1], p[2]) ? 1 : 0; }
+    function depth(u, v) { if (u < 0 || v < 0 || u >= N || v >= N) return 99; for (var d = 0; d < N; d++) if (o(u, v, d)) return d; return 99; }
+    function edge(a, b, c, e) { var n = a + b + c + e; return n === 1 || n === 3 || (n === 2 && a === e); }
+    for (var b = 0; b <= N; b++) for (var c = 0; c < N; c++) {
+      // tramo vertical en u=b, entre v=c y v=c+1 (separa las celdas (b-1,c) y (b,c))
+      var vis = depth(b - 1, c) !== depth(b, c), hid = false;
+      for (var k = 0; k <= N && !vis; k++) if (edge(o(b - 1, c, k - 1), o(b, c, k - 1), o(b - 1, c, k), o(b, c, k))) hid = true;
+      if (vis) out['v' + b + ',' + c] = 'solid'; else if (hid) out['v' + b + ',' + c] = 'dashed';
+      // tramo horizontal en v=b, entre u=c y u=c+1 (separa las celdas (c,b-1) y (c,b))
+      vis = depth(c, b - 1) !== depth(c, b); hid = false;
+      for (k = 0; k <= N && !vis; k++) if (edge(o(c, b - 1, k - 1), o(c, b, k - 1), o(c, b - 1, k), o(c, b, k))) hid = true;
+      if (vis) out['h' + c + ',' + b] = 'solid'; else if (hid) out['h' + c + ',' + b] = 'dashed';
+    }
+    return out;
+  }
+
+  /* ---------- lámina (SVG) ---------- */
+  var svg = document.getElementById('sheet'), NS = 'http://www.w3.org/2000/svg';
+  var G = 300, CELL = G / N; // cada vista mide siempre lo mismo; las celdas dependen del nivel
+  // posición de cada recuadro: sistema europeo. Perfil izquierdo a la derecha del alzado; perfil derecho a la izquierda.
+  function layout() {
+    var L = { x: 200, y: 120 }, R = { x: 830, y: 120 }, BL = { x: 200, y: 580 }, BR = { x: 830, y: 580 };
+    return S.profile === 'izq'
+      ? { alzado: L, izq: R, planta: BL, block: BR }
+      : { der: L, alzado: R, planta: BR, block: BL };
+  }
+  var NAMES = { alzado: 'ALZADO', planta: 'PLANTA', izq: 'PERFIL IZQUIERDO', der: 'PERFIL DERECHO' };
+  function el(tag, attrs, parent) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+  // tramos: "h i,j" horizontal, "v i,j" vertical, "d i,j,0" diagonal ⟋ de la celda (i,j), "d i,j,1" diagonal ⟍
+  function segPts(key, o) {
+    var s = segUV(key);
+    return [o.x + s[0] * CELL, o.y + G - s[1] * CELL, o.x + s[2] * CELL, o.y + G - s[3] * CELL];
+  }
+  function allKeys(diag) {
+    var k = [];
+    if (diag) for (var i = 0; i < N; i++) for (var j = 0; j < N; j++) { k.push('d' + i + ',' + j + ',0'); k.push('d' + i + ',' + j + ',1'); }
+    for (var b = 0; b <= N; b++) for (var c = 0; c < N; c++) { k.push('v' + b + ',' + c); k.push('h' + c + ',' + b); }
+    return k;
+  }
+  var thumbURL = '';
+
+  function drawSheet() {
+    svg.innerHTML = '';
+    var L = layout(), d = cur();
+    el('rect', { x: 20, y: 20, width: 1360, height: 960, fill: '#fbf8ef', stroke: '#14201a', 'stroke-width': 4 }, svg);
+    el('rect', { x: 34, y: 34, width: 1332, height: 932, fill: 'none', stroke: '#14201a', 'stroke-width': 1.5 }, svg);
+    // líneas de referencia entre vistas
+    var ref = el('g', { stroke: '#b7ad93', 'stroke-width': 1.5, 'stroke-dasharray': '2 8' }, svg);
+    var a = L.alzado;
+    for (var i = 0; i <= N; i++) {
+      el('line', { x1: a.x + i * CELL, y1: a.y + G + 20, x2: a.x + i * CELL, y2: L.planta.y - 20 }, ref);
+      var s = L.izq || L.der, from = L.izq ? a.x + G + 20 : s.x + G + 20, to = L.izq ? s.x - 20 : a.x - 20;
+      el('line', { x1: from, y1: a.y + i * CELL, x2: to, y2: a.y + i * CELL }, ref);
+    }
+    ['alzado', 'planta', S.profile].forEach(function (view) {
+      var o = L[view], g = el('g', { 'data-view': view }, svg);
+      var lab = el('text', { x: o.x, y: o.y - 26, 'font-family': 'Martian Mono, monospace', 'font-size': 20, 'font-weight': 800, 'letter-spacing': 3, fill: '#14201a' }, g);
+      lab.textContent = NAMES[view];
+      // estado de la comprobación
+      if (checked && checked[view]) {
+        var r = checked[view], ok = r.ok;
+        var t = el('text', { x: o.x + G / 2, y: o.y + G + 48, 'text-anchor': 'middle', 'font-family': 'Caveat, cursive', 'font-size': 36, 'font-weight': 700, fill: ok ? '#1f8a4c' : '#d7262c' }, g);
+        t.textContent = ok ? '¡Bien! ✓' : (r.missing ? 'faltan ' + r.missing : '') + (r.missing && r.extra ? ' · ' : '') + (r.extra ? 'sobran ' + r.extra : '');
+      }
+      // plantilla punteada
+      var grid = el('g', { stroke: '#c9bfa5', 'stroke-width': 2, 'stroke-dasharray': '2 9', 'stroke-linecap': 'round' }, g);
+      for (var i = 0; i <= N; i++) {
+        el('line', { x1: o.x + i * CELL, y1: o.y, x2: o.x + i * CELL, y2: o.y + G }, grid);
+        el('line', { x1: o.x, y1: o.y + i * CELL, x2: o.x + G, y2: o.y + i * CELL }, grid);
+      }
+      // solución en azul
+      if (showSol) {
+        var sol = solution(view), sg = el('g', { stroke: '#1f5bd0', 'stroke-width': 13, 'stroke-linecap': 'round', opacity: .28 }, g);
+        Object.keys(sol).forEach(function (k) { var p = segPts(k, o); el('line', { x1: p[0], y1: p[1], x2: p[2], y2: p[3], 'stroke-dasharray': sol[k] === 'dashed' ? '22 18' : null }, sg); });
+      }
+      // puntos de la rejilla: gris claro y por debajo de las líneas, para no confundirse con el dibujo
+      var dots = el('g', { fill: '#b3a990' }, g);
+      for (var x = 0; x <= N; x++) for (var y = 0; y <= N; y++) el('circle', { cx: o.x + x * CELL, cy: o.y + y * CELL, r: 4.5 }, dots);
+      // líneas del alumno
+      var mine = d[view], wrong = checked && checked[view] ? checked[view].wrongKeys : {};
+      Object.keys(mine).forEach(function (k) {
+        var p = segPts(k, o), dashed = mine[k] === 'dashed';
+        var ln = el('line', { x1: p[0], y1: p[1], x2: p[2], y2: p[3], stroke: wrong[k] ? '#d7262c' : '#14201a', 'stroke-width': dashed ? 6 : 8, 'stroke-linecap': 'round' }, g);
+        if (dashed) ln.setAttribute('stroke-dasharray', '18 16');
+      });
+      // zonas para pulsar cada tramo
+      allKeys(LV.diag).forEach(function (k) { var p = segPts(k, o); el('line', { x1: p[0], y1: p[1], x2: p[2], y2: p[3], class: 'seg-hit', 'data-key': k, 'data-view': view }, g); });
+      // vista previa del trazo
+      el('line', { id: 'prev-' + view, stroke: '#ffb000', 'stroke-width': 10, 'stroke-linecap': 'round', opacity: 0 }, g);
+    });
+    // cajetín + miniatura
+    var B = L.block, bg = el('g', {}, svg);
+    if (thumbURL) el('image', { href: thumbURL, x: B.x - 10, y: B.y - 50, width: 300, height: 254 }, bg);
+    var bx = B.x - 40, by = B.y + 210, bw = 420;
+    el('rect', { x: bx, y: by, width: bw, height: 150, fill: 'none', stroke: '#14201a', 'stroke-width': 3 }, bg);
+    [[bx, by + 50, bx + bw, by + 50], [bx, by + 100, bx + bw, by + 100], [bx + 250, by + 50, bx + 250, by + 150]].forEach(function (l) { el('line', { x1: l[0], y1: l[1], x2: l[2], y2: l[3], stroke: '#14201a', 'stroke-width': 1.5 }, bg); });
+    function txt(x, y, s, size, w, fam) { var t = el('text', { x: x, y: y, 'font-family': fam || 'Martian Mono, monospace', 'font-size': size, 'font-weight': w || 400, fill: '#14201a' }, bg); t.textContent = s; return t; }
+    txt(bx + 10, by + 18, 'NOMBRE', 11, 600); txt(bx + 10, by + 68, 'CURSO', 11, 600); txt(bx + 260, by + 68, 'PIEZA', 11, 600); txt(bx + 10, by + 118, 'VISTAS CORRECTAS', 11, 600); txt(bx + 260, by + 118, 'SISTEMA', 11, 600);
+    var nameT = txt(bx + 10, by + 43, S.name || '…', 22, 700, 'Caveat, cursive'); nameT.setAttribute('id', 'tName'); nameT.style.cursor = 'pointer';
+    var groupT = txt(bx + 10, by + 93, S.group || '…', 22, 700, 'Caveat, cursive'); groupT.setAttribute('id', 'tGroup'); groupT.style.cursor = 'pointer';
+    var enReto = S.level === 'R';
+    txt(bx + 260, by + 93, enReto ? 'DESAFÍO · ' + (S.ex + 1) + '/' + PIEZAS.length : (LV.diag ? 'N3' : N + '×' + N) + ' · ' + String(S.ex + 1).padStart(2, '0'), 20, 800);
+    var nOk = checked ? ['alzado', 'planta', S.profile].filter(function (v) { return checked[v] && checked[v].ok; }).length : null;
+    txt(bx + 10, by + 140, enReto ? (retoActivo() ? 'desafío en curso' : 'entregado') : nOk === null ? 'sin comprobar' : nOk + ' / 3', 18, 800).setAttribute('fill', nOk === 3 && !enReto ? '#1f8a4c' : '#14201a');
+    txt(bx + 260, by + 140, 'EUROPEO', 14, 800);
+    nameT.addEventListener('click', function () { ask('name', 'Tu nombre:'); });
+    groupT.addEventListener('click', function () { ask('group', 'Tu curso y grupo (por ejemplo 2º ESO B):'); });
+  }
+  // nombre y curso: se escriben en una casilla que aparece sobre el cajetín
+  function ask(field, label) {
+    var old = document.getElementById('askBox'); if (old) old.remove();
+    var L = layout().block, M = svg.getScreenCTM(), sc = M.a;
+    var p = svg.createSVGPoint(); p.x = L.x - 34; p.y = L.y + 210 + (field === 'name' ? 20 : 70); p = p.matrixTransform(M);
+    var box = document.createElement('input');
+    box.id = 'askBox'; box.placeholder = label; box.value = S[field];
+    Object.assign(box.style, { position: 'fixed', left: p.x + 'px', top: p.y + 'px', width: (270 * sc) + 'px', height: (30 * sc) + 'px', fontFamily: 'Caveat, cursive', fontSize: Math.max(14, 24 * sc) + 'px', border: '2px solid #ffd23f', background: '#fffdf4', padding: '0 .3rem', zIndex: 9 });
+    document.body.appendChild(box); box.focus();
+    function done() { S[field] = box.value.trim(); save(); box.remove(); drawSheet(); }
+    box.addEventListener('keydown', function (e) { if (e.key === 'Enter') done(); if (e.key === 'Escape') box.remove(); });
+    box.addEventListener('blur', done);
+  }
+
+  /* ---------- dibujar en la lámina ---------- */
+  function svgPoint(e) { var p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); }
+  function viewAt(pt) {
+    var L = layout(), best = null;
+    ['alzado', 'planta', S.profile].forEach(function (v) { var o = L[v]; if (pt.x > o.x - 40 && pt.x < o.x + G + 40 && pt.y > o.y - 40 && pt.y < o.y + G + 40) best = v; });
+    return best;
+  }
+  function nodeAt(view, pt) {
+    var o = layout()[view]; var i = Math.round((pt.x - o.x) / CELL), j = Math.round((o.y + G - pt.y) / CELL);
+    return [Math.max(0, Math.min(N, i)), Math.max(0, Math.min(N, j))];
+  }
+  function snapshot() { undoStack.push(JSON.stringify(cur())); if (undoStack.length > 60) undoStack.shift(); }
+  function apply(view, keys) {
+    var m = cur()[view], changed = false;
+    keys.forEach(function (k) {
+      if (tool === 'erase') { if (m[k]) { delete m[k]; changed = true; } }
+      else if (m[k] !== tool) { m[k] = tool; changed = true; }
+    });
+    return changed;
+  }
+  function keysBetween(a, b) {
+    var out = [], di = b[0] - a[0], dj = b[1] - a[1];
+    if (dj === 0) for (var i = Math.min(a[0], b[0]); i < Math.max(a[0], b[0]); i++) out.push('h' + i + ',' + a[1]);
+    else if (di === 0) for (var j = Math.min(a[1], b[1]); j < Math.max(a[1], b[1]); j++) out.push('v' + a[0] + ',' + j);
+    else if (Math.abs(di) === Math.abs(dj)) { // diagonal: una por cada celda que cruza
+      var sx = Math.sign(di), sy = Math.sign(dj);
+      for (var k = 0; k < Math.abs(di); k++) {
+        var px = a[0] + k * sx, py = a[1] + k * sy;
+        out.push('d' + Math.min(px, px + sx) + ',' + Math.min(py, py + sy) + ',' + (sx === sy ? 0 : 1));
+      }
+    }
+    return out;
+  }
+  // a dónde llega el trazo: horizontal, vertical o (en el nivel con diagonales) a 45°
+  function snapEnd(view, a, pt) {
+    var o = layout()[view], fx = (pt.x - o.x) / CELL - a[0], fy = (o.y + G - pt.y) / CELL - a[1];
+    var ax = Math.abs(fx), ay = Math.abs(fy);
+    if (LV.diag && Math.min(ax, ay) > 0.45 * Math.max(ax, ay)) {
+      var k = Math.round((ax + ay) / 2), sx = Math.sign(fx) || 1, sy = Math.sign(fy) || 1;
+      while (k > 0 && (a[0] + k * sx < 0 || a[0] + k * sx > N || a[1] + k * sy < 0 || a[1] + k * sy > N)) k--;
+      return [a[0] + k * sx, a[1] + k * sy];
+    }
+    var e = nodeAt(view, pt);
+    return ax >= ay ? [e[0], a[1]] : [a[0], e[1]];
+  }
+  var stroke = null;
+  svg.addEventListener('pointerdown', function (e) {
+    if (S.level === 'R' && !retoActivo()) return; // reto entregado: ya no se puede cambiar
+    var pt = svgPoint(e), view = viewAt(pt); if (!view) return;
+    e.preventDefault(); svg.setPointerCapture(e.pointerId);
+    stroke = { view: view, start: nodeAt(view, pt), x: pt.x, y: pt.y, key: e.target.getAttribute && e.target.getAttribute('data-view') === view ? e.target.getAttribute('data-key') : null, moved: false };
+  });
+  svg.addEventListener('pointermove', function (e) {
+    if (!stroke) return;
+    var pt = svgPoint(e); if (Math.hypot(pt.x - stroke.x, pt.y - stroke.y) > 25) stroke.moved = true;
+    var a = stroke.start, end = snapEnd(stroke.view, a, pt);
+    stroke.end = end;
+    var o = layout()[stroke.view], prev = document.getElementById('prev-' + stroke.view);
+    if (prev && stroke.moved) {
+      prev.setAttribute('x1', o.x + a[0] * CELL); prev.setAttribute('y1', o.y + G - a[1] * CELL);
+      prev.setAttribute('x2', o.x + end[0] * CELL); prev.setAttribute('y2', o.y + G - end[1] * CELL);
+      prev.setAttribute('opacity', .55); prev.setAttribute('stroke', tool === 'erase' ? '#d7262c' : '#ffb000');
+    }
+  });
+  svg.addEventListener('pointerup', function () {
+    if (!stroke) return;
+    var s = stroke; stroke = null;
+    var keys = s.moved && s.end ? keysBetween(s.start, s.end) : (s.key ? [s.key] : []);
+    snapshot();
+    if (apply(s.view, keys)) { checked = null; save(); } else undoStack.pop();
+    drawSheet();
+  });
+
+  /* ---------- botones ---------- */
+  function setTool(t) { tool = t; document.querySelectorAll('[data-tool]').forEach(function (b) { b.classList.toggle('on', b.dataset.tool === t); }); }
+  document.querySelectorAll('[data-tool]').forEach(function (b) { b.onclick = function () { setTool(b.dataset.tool); }; });
+  var msgEl = document.getElementById('msg');
+  function say(t, bad) { msgEl.textContent = t; msgEl.className = 'msg show' + (bad ? ' bad' : ''); clearTimeout(say.t); say.t = setTimeout(function () { msgEl.className = 'msg'; }, 2600); }
+  function bloqueado() { return document.body.classList.contains('in-reto'); }
+  document.getElementById('check').onclick = function () {
+    if (bloqueado()) return;
+    checked = {};
+    var all = true;
+    ['alzado', 'planta', S.profile].forEach(function (v) {
+      var sol = solution(v), mine = cur()[v], missing = 0, extra = 0, wrongKeys = {};
+      Object.keys(sol).forEach(function (k) { if (mine[k] !== sol[k]) { missing++; if (mine[k]) wrongKeys[k] = 1; } });
+      Object.keys(mine).forEach(function (k) { if (!sol[k]) { extra++; wrongKeys[k] = 1; } });
+      // una línea con el tipo equivocado cuenta como 1 fallo, no 2
+      Object.keys(mine).forEach(function (k) { if (sol[k] && mine[k] !== sol[k]) extra--; });
+      extra = Math.max(0, extra);
+      checked[v] = { ok: !missing && !extra, missing: missing, extra: extra, wrongKeys: wrongKeys };
+      if (!checked[v].ok) all = false;
+    });
+    if (all) { S.done[K()] = 1; save(); buildDots(); say('¡Perfecto! ✓'); } else say('Revisa lo marcado en rojo', true);
+    drawSheet();
+  };
+  document.getElementById('sol').onclick = function () { if (bloqueado()) return; showSol = !showSol; this.classList.toggle('on', showSol); drawSheet(); };
+  document.getElementById('undo').onclick = undo;
+  function undo() { if (!undoStack.length || (S.level === 'R' && !retoActivo())) return; S.draw[K()] = JSON.parse(undoStack.pop()); checked = null; save(); drawSheet(); }
+  var clearBtn = document.getElementById('clear'), clearT = null;
+  clearBtn.onclick = function () {
+    if (S.level === 'R' && !retoActivo()) return;
+    if (!clearBtn.classList.contains('on')) { clearBtn.classList.add('on'); clearBtn.textContent = '¿Seguro? Pulsa otra vez'; clearT = setTimeout(resetClear, 4000); return; }
+    resetClear(); snapshot(); S.draw[K()] = { alzado: {}, planta: {}, izq: {}, der: {} }; checked = null; save(); drawSheet();
+  };
+  function resetClear() { clearTimeout(clearT); clearBtn.classList.remove('on'); clearBtn.textContent = 'Borrar todo'; }
+  document.getElementById('profile').onclick = function () {
+    if (bloqueado()) return;
+    S.profile = S.profile === 'izq' ? 'der' : 'izq'; checked = null; save(); updateProfile(); isoFor(); makeThumb(); camTo('iso'); drawSheet();
+  };
+  function updateProfile() {
+    document.getElementById('profile').textContent = '⇄ Perfil ' + (S.profile === 'izq' ? 'izquierdo' : 'derecho');
+    document.getElementById('camSide').textContent = S.profile === 'izq' ? 'Perfil izq.' : 'Perfil der.';
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.target.tagName === 'INPUT') return;
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); return; }
+    if (e.key === '1') setTool('solid'); else if (e.key === '2') setTool('dashed'); else if (e.key === '3') setTool('erase');
+    else if (e.key === 'ArrowRight') go(S.ex + 1); else if (e.key === 'ArrowLeft') go(S.ex - 1);
+  });
+
+  /* ---------- descargar la lámina como imagen ---------- */
+  // la lámina actual como imagen PNG (data URL); la usan «Descargar imagen» y el PDF del Reto
+  function sheetPNG(type) {
+    return new Promise(function (ok, ko) {
+      var clone = svg.cloneNode(true);
+      clone.querySelectorAll('.seg-hit,[id^="prev-"]').forEach(function (n) { n.remove(); });
+      clone.setAttribute('width', 1400); clone.setAttribute('height', 1000);
+      var img = new Image();
+      img.onload = function () {
+        var c = document.createElement('canvas'); c.width = 1400; c.height = 1000;
+        var x = c.getContext('2d'); x.fillStyle = '#fbf8ef'; x.fillRect(0, 0, 1400, 1000); x.drawImage(img, 0, 0, 1400, 1000);
+        ok(c.toDataURL(type || 'image/png', .9));
+      };
+      img.onerror = function () { ko(new Error('no se pudo dibujar la lámina')); };
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(clone));
+    });
+  }
+  document.getElementById('png').onclick = function () {
+    sheetPNG().then(function (u) {
+      var a = document.createElement('a');
+      var who = (S.name || 'alumno').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '_');
+      a.href = u; a.download = 'vistas_' + (S.level === 'R' ? 'desafio' : LV.diag ? 'diagonales' : N + 'x' + N) + '_pieza' + String(S.ex + 1).padStart(2, '0') + '_' + who + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+    });
+  };
+
+  /* ---------- pieza en 3D (lienzo 2D con proyección ortográfica) ---------- */
+  var cv = document.getElementById('cv'), ctx = cv.getContext('2d'), stage = document.getElementById('stage');
+  // perspectiva inicial: se ve el lado del perfil que se dibuja (izquierdo o derecho)
+  var ISO = { yaw: 0.62, pitch: 0.55 }, cam = { yaw: ISO.yaw, pitch: ISO.pitch }, camAnim = null;
+  function isoFor() { ISO.yaw = S.profile === 'izq' ? 0.62 : -0.62; return ISO; }
+  var COL = { top: '#ffd23f', bottom: '#c9bfa5', front: '#ff6a1f', back: '#c94e12', left: '#2f6fe0', right: '#1d4aa8' };
+  function project(p, c) {
+    var x = p[0] - N / 2, y = p[1] - N / 2, z = p[2] - N / 2;
+    var cy = Math.cos(c.yaw), sy = Math.sin(c.yaw), cp = Math.cos(c.pitch), sp = Math.sin(c.pitch);
+    var x1 = x * cy - y * sy, y1 = x * sy + y * cy;
+    // cámara delante (y negativas) y elevada: profundidad hacia dentro de la pantalla, "up" hacia arriba
+    var depth = y1 * cp - z * sp, up = y1 * sp + z * cp;
+    return [x1, -up, depth];
+  }
+  COL.slope = '#3fae78';
+  function edgeKey(a, b) {
+    var ka = a.map(function (v) { return Math.round(v * 1000); }).join(','), kb = b.map(function (v) { return Math.round(v * 1000); }).join(',');
+    return ka < kb ? ka + '|' + kb : kb + '|' + ka;
+  }
+  var AX = { x: 0, y: 1, z: 2 }, PQ = [[1, 2], [0, 2], [0, 1]];
+  function colorOf(n) {
+    if ((n[0] !== 0) + (n[1] !== 0) + (n[2] !== 0) > 1) return 'slope'; // cara inclinada
+    if (n[2] > .9) return 'top'; if (n[2] < -.9) return 'bottom'; if (n[1] < -.9) return 'front'; if (n[1] > .9) return 'back';
+    if (n[0] < -.9) return 'left'; if (n[0] > .9) return 'right'; return 'slope';
+  }
+  // forma que tiene una celda sobre una de sus caras (eje k, lado s): 'sq' (cuadrado), {a,b} (triángulo) o null
+  function shapeOn(c, k, s) {
+    if (!c) return null; if (c === 1) return 'sq';
+    var ak = AX[c.ax], pq = PQ[ak];
+    if (k === ak) return { a: c.a, b: c.b };
+    if (k === pq[0]) return s === c.a ? 'sq' : null;
+    return s === c.b ? 'sq' : null;
+  }
+  // forma sobre un plano de celda, en coordenadas 2D (p, q) de 0 a 1
+  function shape2D(sh) { return sh === 'sq' ? [[0, 0], [1, 0], [1, 1], [0, 1]] : [[sh.a, sh.b], [1 - sh.a, sh.b], [sh.a, 1 - sh.b]]; }
+  function area2(P) { var s = 0; for (var i = 0; i < P.length; i++) { var a = P[i], b = P[(i + 1) % P.length]; s += a[0] * b[1] - b[0] * a[1]; } return s / 2; }
+  // recorta un polígono convexo con un semiplano (lado izquierdo de a→b si keepLeft)
+  function clipHalf(P, a, b, keepLeft) {
+    var out = [], side = function (p) { var v = (b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0]); return keepLeft ? v : -v; };
+    for (var i = 0; i < P.length; i++) {
+      var c = P[i], d = P[(i + 1) % P.length], sc = side(c), sd = side(d);
+      if (sc >= -1e-9) out.push(c);
+      if ((sc > 1e-9 && sd < -1e-9) || (sc < -1e-9 && sd > 1e-9)) { var t = sc / (sc - sd); out.push([c[0] + (d[0] - c[0]) * t, c[1] + (d[1] - c[1]) * t]); }
+    }
+    return out;
+  }
+  // A − B (los dos convexos): trozos convexos de A que quedan fuera de B
+  function subtractConvex(A, B) {
+    if (area2(B) < 0) B = B.slice().reverse();
+    var pieces = [], rest = A;
+    for (var i = 0; i < B.length && rest.length >= 3; i++) {
+      var a = B[i], b = B[(i + 1) % B.length], out = clipHalf(rest, a, b, false);
+      if (out.length >= 3 && Math.abs(area2(out)) > 1e-6) pieces.push(out);
+      rest = clipHalf(rest, a, b, true);
+    }
+    return pieces;
+  }
+  // caras de cada celda (cubo o cuña); se quitan las que quedan tapadas por la celda vecina
+  function faces() {
+    var F = [];
+    for (var x = 0; x < N; x++) for (var y = 0; y < N; y++) for (var z = 0; z < N; z++) {
+      var c = cellAt(x, y, z); if (!c) continue;
+      var base = [x, y, z], polys = [];
+      function P3(k, kv, pq, p, q) { var v = [0, 0, 0]; v[k] = kv; v[pq[0]] = p; v[pq[1]] = q; return [base[0] + v[0], base[1] + v[1], base[2] + v[2]]; }
+      if (c === 1) {
+        for (var k = 0; k < 3; k++) for (var s = 0; s < 2; s++) {
+          var pq = PQ[k], n = [0, 0, 0]; n[k] = s ? 1 : -1;
+          polys.push({ n: n, k: k, s: s, shape: 'sq', pts: [P3(k, s, pq, 0, 0), P3(k, s, pq, 1, 0), P3(k, s, pq, 1, 1), P3(k, s, pq, 0, 1)] });
+        }
+      } else {
+        var ak = AX[c.ax], pq2 = PQ[ak], a = c.a, b = c.b;
+        var C = [a, b], C1 = [1 - a, b], C2 = [a, 1 - b];
+        [0, 1].forEach(function (s) { var n = [0, 0, 0]; n[ak] = s ? 1 : -1; polys.push({ n: n, k: ak, s: s, shape: { a: a, b: b }, pts: [P3(ak, s, pq2, C[0], C[1]), P3(ak, s, pq2, C1[0], C1[1]), P3(ak, s, pq2, C2[0], C2[1])] }); });
+        var nP = [0, 0, 0]; nP[pq2[0]] = a ? 1 : -1;
+        polys.push({ n: nP, k: pq2[0], s: a, shape: 'sq', pts: [P3(ak, 0, pq2, C[0], C[1]), P3(ak, 0, pq2, C2[0], C2[1]), P3(ak, 1, pq2, C2[0], C2[1]), P3(ak, 1, pq2, C[0], C[1])] });
+        var nQ = [0, 0, 0]; nQ[pq2[1]] = b ? 1 : -1;
+        polys.push({ n: nQ, k: pq2[1], s: b, shape: 'sq', pts: [P3(ak, 0, pq2, C[0], C[1]), P3(ak, 0, pq2, C1[0], C1[1]), P3(ak, 1, pq2, C1[0], C1[1]), P3(ak, 1, pq2, C[0], C[1])] });
+        var nS = [0, 0, 0]; nS[pq2[0]] = a ? -1 : 1; nS[pq2[1]] = b ? -1 : 1;
+        polys.push({ n: nS, k: -1, pts: [P3(ak, 0, pq2, C1[0], C1[1]), P3(ak, 1, pq2, C1[0], C1[1]), P3(ak, 1, pq2, C2[0], C2[1]), P3(ak, 0, pq2, C2[0], C2[1])] });
+      }
+      polys.forEach(function (f) {
+        var parts = [f.pts];
+        if (f.k >= 0) { // ¿la tapa (del todo o en parte) la celda de al lado?
+          var nb = base.slice(); nb[f.k] += f.s ? 1 : -1;
+          var other = shapeOn(cellAt(nb[0], nb[1], nb[2]), f.k, 1 - f.s);
+          if (other === 'sq' || (other && f.shape !== 'sq' && other.a === f.shape.a && other.b === f.shape.b)) return;
+          if (other) { // tapada a medias: se queda solo la parte que da al exterior
+            var pq = PQ[f.k], mine2 = shape2D(f.shape), rest = subtractConvex(mine2, shape2D(other));
+            if (!rest.length) return;
+            parts = rest.map(function (poly) { return poly.map(function (v) { return P3(f.k, f.s, pq, v[0], v[1]); }); });
+          }
+        }
+        parts.forEach(function (pts) {
+          var cx = 0, cy = 0, cz = 0; pts.forEach(function (p) { cx += p[0]; cy += p[1]; cz += p[2]; });
+          F.push({ k: colorOf(f.n), n: f.n, pts: pts, c: [cx / pts.length, cy / pts.length, cz / pts.length], cc: [x + .5, y + .5, z + .5] });
+        });
+      });
+    }
+    // Aristas: si un borde lo comparten dos caras en el mismo plano (dos cubos pegados), es solo una "junta"
+    // y se dibuja fina y clara; si no, es una arista de verdad de la pieza y se dibuja gruesa.
+    var pk = function (p) { return p.map(function (v) { return Math.round(v * 1000); }).join(','); };
+    var ek = function (a, b) { var ka = pk(a), kb = pk(b); return ka < kb ? ka + '|' + kb : kb + '|' + ka; };
+    var edges = {};
+    F.forEach(function (f) { f.pts.forEach(function (p, i) { var k = ek(p, f.pts[(i + 1) % f.pts.length]); (edges[k] = edges[k] || []).push(f); }); });
+    F.forEach(function (f) {
+      f.seam = f.pts.map(function (p, i) {
+        var list = edges[ek(p, f.pts[(i + 1) % f.pts.length])];
+        return list.length === 2 && list[0].n.join() === list[1].n.join();
+      });
+    });
+    return F;
+  }
+  var FACES = [];
+  function render(c, target, w, h, labels) {
+    var g = target.getContext('2d');
+    g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, target.width, target.height);
+    var scale = Math.min(w, h) / (N * 2.25), ox = w / 2, oy = h / 2 + scale * .1;
+    var list = FACES.map(function (f) {
+      var nd = project([f.n[0] + N / 2, f.n[1] + N / 2, f.n[2] + N / 2], c)[2] - project([N / 2, N / 2, N / 2], c)[2];
+      // orden de pintado: por la profundidad del centro del CUBO (en una rejilla de cubos iguales siempre es correcto)
+      return { f: f, nd: nd, d: project(f.cc, c)[2], df: project(f.c, c)[2] };
+    }).filter(function (o) { return o.nd < 1e-6; }).sort(function (a, b) { return (b.d - a.d) || (b.df - a.df); });
+    // sombra en el suelo
+    g.fillStyle = 'rgba(20,32,26,.10)'; g.beginPath();
+    [[0, 0, 0], [N, 0, 0], [N, N, 0], [0, N, 0]].forEach(function (p, i) { var q = project(p, c); g[i ? 'lineTo' : 'moveTo'](ox + q[0] * scale, oy + q[1] * scale); }); g.closePath(); g.fill();
+    list.forEach(function (o) {
+      var pts = o.f.pts.map(function (p) { var q = project(p, c); return [ox + q[0] * scale, oy + q[1] * scale]; });
+      g.beginPath();
+      pts.forEach(function (q, i) { g[i ? 'lineTo' : 'moveTo'](q[0], q[1]); });
+      g.closePath(); g.fillStyle = COL[o.f.k]; g.fill();
+      g.lineCap = 'round';
+      // primero las juntas (finas y claras), después las aristas reales (gruesas) para que queden encima
+      [true, false].forEach(function (seam) {
+        g.lineWidth = seam ? Math.max(1, scale / 160) : Math.max(1.5, scale / 45);
+        g.strokeStyle = seam ? 'rgba(20,32,26,.22)' : '#14201a';
+        g.beginPath();
+        pts.forEach(function (q, i) { if (o.f.seam[i] === seam) { var r = pts[(i + 1) % pts.length]; g.moveTo(q[0], q[1]); g.lineTo(r[0], r[1]); } });
+        g.stroke();
+      });
+    });
+    if (labels && xray) xrayEdges(g, c, ox, oy, scale, list);
+    if (labels) arrows(g, c, ox, oy, scale);
+  }
+
+  /* ---------- rayos X: pieza transparente, aristas vistas (negro) y ocultas (azul discontinuo) ---------- */
+  var xray = false;
+  function xrayEdges(g, c, ox, oy, scale, front) {
+    // velo claro sobre la pieza ya pintada, para que parezca transparente
+    // se pinta la silueta opaca en una capa aparte y se pega semitransparente: el velo es igual en toda la pieza
+    var off = xrayEdges.off || (xrayEdges.off = document.createElement('canvas'));
+    off.width = g.canvas.width; off.height = g.canvas.height;
+    var og = off.getContext('2d'); og.fillStyle = '#fbf8ef';
+    front.forEach(function (o) {
+      og.beginPath();
+      o.f.pts.forEach(function (p, i) { var q = project(p, c); og[i ? 'lineTo' : 'moveTo'](ox + q[0] * scale, oy + q[1] * scale); });
+      og.closePath(); og.fill();
+    });
+    g.save(); g.globalAlpha = .62; g.drawImage(off, 0, 0); g.restore();
+    // caras en pantalla con su plano de profundidad (para saber qué tapa a qué)
+    var P = FACES.map(function (f) {
+      var s = f.pts.map(function (p) { var q = project(p, c); return [q[0], q[1], q[2]]; });
+      var a = s[0], b = s[1], d = s[2];
+      var ux = b[0] - a[0], uy = b[1] - a[1], uz = b[2] - a[2], vx = d[0] - a[0], vy = d[1] - a[1], vz = d[2] - a[2];
+      var det = ux * vy - uy * vx;
+      if (Math.abs(det) < 1e-9) return null; // cara de canto: no tapa nada
+      var A = (uz * vy - vz * uy) / det, B = (ux * vz - vx * uz) / det;
+      return { f: f, s: s, A: A, B: B, C: a[2] - A * a[0] - B * a[1] };
+    }).filter(Boolean);
+    function inPoly(x, y, s) {
+      var ins = false;
+      for (var i = 0, j = s.length - 1; i < s.length; j = i++) {
+        if ((s[i][1] > y) !== (s[j][1] > y) && x < (s[j][0] - s[i][0]) * (y - s[i][1]) / (s[j][1] - s[i][1]) + s[i][0]) ins = !ins;
+      }
+      return ins;
+    }
+    // aristas reales (sin repetir) y las caras que las comparten
+    var E = {};
+    FACES.forEach(function (f) {
+      f.pts.forEach(function (p, i) {
+        if (f.seam[i]) return;
+        var q = f.pts[(i + 1) % f.pts.length], k = edgeKey(p, q);
+        (E[k] = E[k] || { a: p, b: q, faces: [] }).faces.push(f);
+      });
+    });
+    var K = 24, wVis = Math.max(1.6, scale / 40), wHid = Math.max(1.4, scale / 55), segs = [];
+    Object.keys(E).forEach(function (k) {
+      var e = E[k], hidden = [];
+      for (var i = 0; i < K; i++) {
+        var t = (i + .5) / K, p3 = [e.a[0] + (e.b[0] - e.a[0]) * t, e.a[1] + (e.b[1] - e.a[1]) * t, e.a[2] + (e.b[2] - e.a[2]) * t];
+        var q = project(p3, c), h = false;
+        for (var j = 0; j < P.length && !h; j++) {
+          var F = P[j]; if (e.faces.indexOf(F.f) >= 0) continue;
+          if (F.A * q[0] + F.B * q[1] + F.C < q[2] - 1e-3 && inPoly(q[0], q[1], F.s)) h = true;
+        }
+        hidden.push(h);
+      }
+      // dibujar por tramos seguidos del mismo tipo
+      var A = project(e.a, c), B = project(e.b, c);
+      function at(t) { return [ox + (A[0] + (B[0] - A[0]) * t) * scale, oy + (A[1] + (B[1] - A[1]) * t) * scale]; }
+      var start = 0;
+      for (var i2 = 1; i2 <= K; i2++) {
+        if (i2 < K && hidden[i2] === hidden[start]) continue;
+        segs.push({ p0: at(start / K), p1: at(i2 / K), hid: hidden[start] });
+        start = i2;
+      }
+    });
+    // primero las ocultas y encima las vistas (si coinciden, manda la vista, como en dibujo técnico)
+    [true, false].forEach(function (hid) {
+      g.save();
+      g.lineCap = hid ? 'butt' : 'round'; g.lineWidth = hid ? wHid : wVis;
+      g.strokeStyle = hid ? '#1f5bd0' : '#14201a';
+      if (hid) g.setLineDash([scale * .11, scale * .08]);
+      g.beginPath();
+      segs.forEach(function (s) { if (s.hid === hid) { g.moveTo(s.p0[0], s.p0[1]); g.lineTo(s.p1[0], s.p1[1]); } });
+      g.stroke(); g.restore();
+    });
+  }
+  // flechas que indican desde dónde se mira cada vista
+  function arrows(g, c, ox, oy, s) {
+    var side = S.profile === 'izq' ? { from: [-1.1, N / 2, N / 2], to: [-.25, N / 2, N / 2], t: 'P' } : { from: [N + 1.1, N / 2, N / 2], to: [N + .25, N / 2, N / 2], t: 'P' };
+    [{ from: [N / 2, -1.1, N / 2], to: [N / 2, -.25, N / 2], t: 'A' }, { from: [N / 2, N / 2, N + 1.2], to: [N / 2, N / 2, N + .35], t: 'PL' }, side].forEach(function (a) {
+      var p = project(a.from, c), q = project(a.to, c);
+      var x1 = ox + p[0] * s, y1 = oy + p[1] * s, x2 = ox + q[0] * s, y2 = oy + q[1] * s, L = Math.hypot(x2 - x1, y2 - y1);
+      if (L < s * .25) return; // casi de frente: no se dibuja
+      g.strokeStyle = '#d7262c'; g.fillStyle = '#d7262c'; g.lineWidth = Math.max(2, s / 40);
+      g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke();
+      var ang = Math.atan2(y2 - y1, x2 - x1), hs = s * .16;
+      g.beginPath(); g.moveTo(x2, y2); g.lineTo(x2 - hs * Math.cos(ang - .45), y2 - hs * Math.sin(ang - .45)); g.lineTo(x2 - hs * Math.cos(ang + .45), y2 - hs * Math.sin(ang + .45)); g.closePath(); g.fill();
+      g.font = '800 ' + Math.round(s * .2) + 'px "Martian Mono", monospace'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillText(a.t, x1 - Math.cos(ang) * s * .22, y1 - Math.sin(ang) * s * .22);
+    });
+  }
+  function resizeCanvas() {
+    var r = stage.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    cv.width = Math.max(1, r.width * dpr); cv.height = Math.max(1, r.height * dpr);
+    redraw();
+  }
+  function redraw() { var dpr = window.devicePixelRatio || 1; render(cam, cv, cv.width, cv.height, true); }
+  new ResizeObserver(resizeCanvas).observe(stage);
+  // girar arrastrando
+  var drag = null;
+  stage.addEventListener('pointerdown', function (e) { drag = { x: e.clientX, y: e.clientY, yaw: cam.yaw, pitch: cam.pitch }; stage.setPointerCapture(e.pointerId); camAnim = null; });
+  stage.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    cam.yaw = drag.yaw + (e.clientX - drag.x) * .01; // arrastrar a la derecha gira la pieza hacia la derecha
+    cam.pitch = Math.max(-0.2, Math.min(Math.PI / 2, drag.pitch + (e.clientY - drag.y) * .01));
+    redraw();
+  });
+  stage.addEventListener('pointerup', function () { drag = null; });
+  // botones de cámara: perspectiva, alzado, planta, perfil
+  function camTo(t) {
+    var target = t === 'iso' ? ISO : t === 'front' ? { yaw: 0, pitch: 0 } : t === 'top' ? { yaw: 0, pitch: Math.PI / 2 } : { yaw: S.profile === 'izq' ? Math.PI / 2 : -Math.PI / 2, pitch: 0 };
+    var from = { yaw: cam.yaw, pitch: cam.pitch }, t0 = performance.now();
+    var dy = Math.atan2(Math.sin(target.yaw - from.yaw), Math.cos(target.yaw - from.yaw));
+    camAnim = function (now) {
+      var k = Math.min(1, (now - t0) / 450), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      cam.yaw = from.yaw + dy * e; cam.pitch = from.pitch + (target.pitch - from.pitch) * e; redraw();
+      if (k < 1 && camAnim) requestAnimationFrame(camAnim); else camAnim = null;
+    };
+    requestAnimationFrame(camAnim);
+  }
+  document.querySelectorAll('[data-cam]').forEach(function (b) { b.onclick = function () { camTo(b.dataset.cam); }; });
+  function toggleXray() {
+    if (!xray && document.body.classList.contains('in-reto')) return; // en el reto no hay rayos X
+    xray = !xray;
+    document.getElementById('xray').classList.toggle('on', xray);
+    document.getElementById('xlegend').classList.toggle('show', xray);
+    redraw();
+  }
+  document.getElementById('xray').onclick = toggleXray;
+  document.addEventListener('keydown', function (e) { if (e.target.tagName !== 'INPUT' && !e.ctrlKey && !e.metaKey && e.key.toLowerCase() === 'x') toggleXray(); });
+
+  function makeThumb() {
+    var c = document.createElement('canvas'); c.width = 520; c.height = 440;
+    render(ISO, c, 520, 440, false);
+    thumbURL = c.toDataURL('image/png');
+  }
+
+  /* ---------- cambiar de pieza ---------- */
+  var dotsEl = document.getElementById('dots');
+  function buildDots() {
+    dotsEl.innerHTML = '';
+    PIEZAS.forEach(function (_, i) {
+      var b = document.createElement('button'); b.textContent = i + 1; b.title = 'Pieza ' + (i + 1) + (S.done[K(i)] ? ' (hecha)' : '');
+      if (S.done[K(i)]) b.classList.add('done'); if (i === S.ex) b.classList.add('cur');
+      b.onclick = function () { go(i); }; dotsEl.appendChild(b);
+    });
+  }
+  function go(i) {
+    if (i < 0 || i >= PIEZAS.length) return;
+    S.ex = i; S.exBy[S.level] = i; save();
+    if (S.level === 'R') { // Reto: cada pieza sale de la batería y puede ser de 2×2×2 o 3×3×3
+      var bp = VistasNucleo.BATERIA[PIEZAS[i]];
+      N = VistasNucleo.tam(bp); CELL = G / N; LV = { n: N, diag: VistasNucleo.diag(bp), pieces: PIEZAS };
+      occ = VistasNucleo.ocupacion(bp);
+      document.getElementById('diagHint').style.display = LV.diag ? '' : 'none';
+    } else occ = parse(PIEZAS[i]);
+    FACES = faces(); checked = null; undoStack = []; showSol = false;
+    document.getElementById('sol').classList.remove('on');
+    document.getElementById('exn').textContent = String(i + 1).padStart(2, '0');
+    document.getElementById('prev').disabled = i === 0; document.getElementById('next').disabled = i === PIEZAS.length - 1;
+    buildDots(); isoFor(); makeThumb(); cam.yaw = ISO.yaw; cam.pitch = ISO.pitch; redraw(); drawSheet();
+  }
+  document.getElementById('prev').onclick = function () { go(S.ex - 1); };
+  document.getElementById('next').onclick = function () { go(S.ex + 1); };
+
+  /* ---------- nivel de dificultad (2×2×2 o 3×3×3) ---------- */
+  function setLevel(id) {
+    if (id === 'R' && !(S.reto && S.reto.piezas)) id = 'L1';
+    S.level = id;
+    if (id === 'R') { PIEZAS = S.reto.piezas; LV = { n: 2, pieces: PIEZAS }; }
+    else { LV = LEVELS[id]; N = LV.n; PIEZAS = LV.pieces; CELL = G / N; }
+    S.ex = Math.min(S.exBy[id] || 0, PIEZAS.length - 1);
+    document.querySelectorAll('.lv').forEach(function (b) { b.classList.toggle('on', b.dataset.level === id); b.setAttribute('aria-pressed', b.dataset.level === id); });
+    var ask = document.getElementById('askBox'); if (ask) ask.remove();
+    document.getElementById('diagHint').style.display = LV.diag ? '' : 'none';
+    retoUI();
+    go(S.ex);
+  }
+  document.querySelectorAll('.lv').forEach(function (b) {
+    b.onclick = function () {
+      if (b.dataset.level === 'R') { retoButton(); return; }
+      if (b.dataset.level !== S.level) setLevel(b.dataset.level);
+    };
+  });
+
+  /* ===================================================================
+     RETO: 5 piezas de la batería en 30 minutos, sin ayudas. Al final, PDF con las láminas y un QR para el profesor.
+     =================================================================== */
+  var R = VistasNucleo, MS = R.MINUTOS * 60 * 1000;
+  function retoActivo() { return !!(S.reto && S.reto.activo); }
+  function show(id, on) { document.getElementById(id).hidden = !on; }
+  document.querySelectorAll('.modal [data-close]').forEach(function (b) { b.onclick = function () { b.closest('.modal').hidden = true; }; });
+  function retoUI() {
+    // en las piezas del Reto no hay ayudas, tampoco después de entregar (así no se pasan las soluciones)
+    var en = S.level === 'R';
+    document.body.classList.toggle('in-reto', en);
+    show('clock', en && retoActivo());
+    if (en && xray) toggleXray(); // apagar (encenderlos está bloqueado en el reto)
+    if (en && showSol) { showSol = false; document.getElementById('sol').classList.remove('on'); }
+    tick();
+  }
+  function fmt(ms) { var s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+  function tick() {
+    if (!retoActivo()) return;
+    var left = S.reto.inicio + MS - Date.now();
+    var tl = document.getElementById('timeLeft'); tl.textContent = fmt(left); tl.classList.toggle('low', left < 5 * 60 * 1000);
+    if (left <= 0) finishReto(true);
+  }
+  setInterval(tick, 1000);
+  function retoButton() {
+    if (retoActivo()) { if (S.level !== 'R') setLevel('R'); return; }
+    if (S.reto && S.reto.codigo) { openFin(false); return; } // ya hay un reto terminado: volver a descargar o empezar otro
+    openStart();
+  }
+  function openStart() {
+    document.getElementById('rNombre').value = S.name || ''; document.getElementById('rCurso').value = S.group || '';
+    document.getElementById('rErr').textContent = ''; show('mFin', false); show('mReto', true);
+    setTimeout(function () { document.getElementById('rNombre').focus(); }, 50);
+  }
+  document.getElementById('rStart').onclick = function () {
+    var nom = document.getElementById('rNombre').value.trim(), cur = document.getElementById('rCurso').value.trim();
+    if (nom.length < 3) { document.getElementById('rErr').textContent = 'Escribe tu nombre y apellidos: saldrán en el PDF.'; return; }
+    S.name = nom; S.group = cur;
+    Object.keys(S.draw).forEach(function (k) { if (k.indexOf('R:') === 0) delete S.draw[k]; });
+    S.reto = { piezas: R.elegir(), inicio: Date.now(), perfil: S.profile, activo: true };
+    S.exBy.R = 0; save(); show('mReto', false);
+    setLevel('R');
+  };
+  document.getElementById('entregar').onclick = function () { document.getElementById('eLeft').textContent = fmt(S.reto.inicio + MS - Date.now()); show('mEntregar', true); };
+  document.getElementById('eYes').onclick = function () { show('mEntregar', false); finishReto(false); };
+  function retoDatos() {
+    return { inicio: S.reto.inicio, duracion: (S.reto.fin || Date.now()) - S.reto.inicio, perfil: S.reto.perfil, piezas: S.reto.piezas,
+      dibujos: S.reto.piezas.map(function (_, i) { return S.draw['R:' + i] || {}; }), nombre: S.name, curso: S.group };
+  }
+  function finishReto(auto) {
+    if (!retoActivo()) return;
+    S.reto.activo = false; S.reto.fin = Math.min(Date.now(), S.reto.inicio + MS);
+    S.reto.codigo = R.codificar(retoDatos()); save();
+    retoUI(); drawSheet(); openFin(auto);
+  }
+  function openFin(auto) {
+    document.getElementById('fTitle').textContent = auto ? '¡Se acabó el tiempo!' : '¡Desafío terminado!';
+    document.getElementById('fErr').textContent = ''; show('mFin', true);
+  }
+  document.getElementById('fPractica').onclick = function () { show('mFin', false); setLevel('L1'); };
+  document.getElementById('fNuevo').onclick = function () { openStart(); };
+  // Borrar el progreso (equipos compartidos entre grupos): se quita todo lo guardado y se recarga
+  document.getElementById('resetAll').onclick = function () {
+    show('bSi', !retoActivo()); show('bNo', retoActivo()); show('mBorrar', true);
+  };
+  document.getElementById('bYes').onclick = function () {
+    try { localStorage.removeItem(KEY); } catch (e) { /* nada */ }
+    location.reload();
+  };
+  document.getElementById('fPdf').onclick = function () {
+    var btn = this; btn.disabled = true; btn.textContent = 'Preparando…';
+    makePDF().then(function () { btn.disabled = false; btn.textContent = '⬇ Descargar PDF'; },
+      function (e) { btn.disabled = false; btn.textContent = '⬇ Descargar PDF'; document.getElementById('fErr').textContent = 'No se pudo crear el PDF (' + e.message + '). Comprueba la conexión a internet y vuelve a intentarlo.'; });
+  };
+
+  /* ---------- PDF: una página por pieza y otra con el QR ---------- */
+  function loadScript(src) {
+    return new Promise(function (ok, ko) {
+      if (document.querySelector('script[src="' + src + '"]')) { ok(); return; }
+      var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = function () { ko(new Error('sin conexión')); }; document.head.appendChild(s);
+    });
+  }
+  var PROFE_URL = 'https://jsalsal003.github.io/vistas3d/profe.html';
+  function makePDF() {
+    var prevLevel = S.level, prevEx = S.ex, imgs = [];
+    return Promise.all([loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'), loadScript('https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js')])
+      .then(function () {
+        if (S.level !== 'R') setLevel('R');
+        var chain = Promise.resolve();
+        S.reto.piezas.forEach(function (_, i) { chain = chain.then(function () { go(i); return sheetPNG('image/jpeg'); }).then(function (u) { imgs.push(u); }); });
+        return chain;
+      })
+      .then(function () {
+        var jsPDF = window.jspdf.jsPDF, doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        var d = new Date(S.reto.inicio), fecha = d.toLocaleDateString('es-ES') + ' ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        var usado = fmt(S.reto.fin - S.reto.inicio);
+        imgs.forEach(function (u, i) {
+          if (i) doc.addPage();
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text('Desafío de Vistas 3D  ·  Pieza ' + (i + 1) + ' de ' + imgs.length, 14, 14);
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+          doc.text(S.name + (S.group ? '  ·  ' + S.group : '') + '  ·  ' + fecha + '  ·  tiempo: ' + usado + '  ·  perfil ' + (S.reto.perfil === 'izq' ? 'izquierdo' : 'derecho'), 14, 20);
+          doc.addImage(u, 'JPEG', 23.5, 24, 250, 178.6, undefined, 'FAST');
+        });
+        // página del QR
+        doc.addPage();
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.text('Código para el profesor', 148.5, 22, { align: 'center' });
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
+        doc.text(S.name + (S.group ? '  ·  ' + S.group : '') + '  ·  ' + fecha + '  ·  tiempo: ' + usado, 148.5, 30, { align: 'center' });
+        var qr = qrcode(0, 'M'); qr.addData(PROFE_URL + '#r=' + S.reto.codigo); qr.make();
+        var n = qr.getModuleCount(), size = 130, cell = size / n, x0 = 148.5 - size / 2, y0 = 40;
+        doc.setFillColor(20, 32, 26);
+        for (var r = 0; r < n; r++) for (var c = 0; c < n; c++) if (qr.isDark(r, c)) doc.rect(x0 + c * cell, y0 + r * cell, cell + .05, cell + .05, 'F');
+        doc.setFontSize(9); doc.setTextColor(90);
+        doc.text('El profesor lo escanea con el corrector de Vistas 3D (con contraseña) y obtiene la nota y la corrección.', 148.5, y0 + size + 10, { align: 'center' });
+        doc.text('© 2026 Juan Salguero Salguero · CC BY-NC-SA 4.0', 148.5, 200, { align: 'center' });
+        var who = (S.name || 'alumno').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '_');
+        doc.save('desafio_vistas_' + who + '.pdf');
+      })
+      .finally(function () { if (prevLevel !== S.level) setLevel(prevLevel); go(Math.min(prevEx, PIEZAS.length - 1)); });
+  }
+
+  updateProfile();
+  setLevel(S.level);
+  if (retoActivo() && S.reto.inicio + MS <= Date.now()) finishReto(true); // se acabó el tiempo mientras estaba cerrado
+  if (document.fonts) document.fonts.ready.then(function () { makeThumb(); redraw(); drawSheet(); });
+  window.Vistas = { solution: solution, solutionRay: solutionRay, solutionVox: solutionVox, go: go, setLevel: setLevel, levels: LEVELS, faces: function () { return FACES; }, edgeKey: edgeKey, get state() { return S; } }; // para pruebas
+})();
+</script>
+</body>
+</html>

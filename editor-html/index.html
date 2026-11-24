@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Juan Salguero Salguero">
+<meta name="copyright" content="© 2026 Juan Salguero Salguero · CC BY-NC-SA 4.0">
+<title>Editor HTML · CyR 3º ESO</title>
+<meta name="theme-color" content="#fbf8ef">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231e2230'/%3E%3Cpath d='M11 10l-6 6 6 6M21 10l6 6-6 6' fill='none' stroke='%237cc4ff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M18 8l-4 16' stroke='%23ffd23f' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&family=Big+Shoulders+Stencil:wght@700;900&family=Caveat:wght@700&family=Martian+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  /* ===================================================================
+     EDITOR HTML — con la estética del Taller Virtual (mesa de dibujo:
+     papel crema, tinta negra, botones .chip y paneles con borde de tinta).
+     El código sigue en fondo oscuro, como en la lámina de la portada.
+     =================================================================== */
+  :root{
+    --desk:#e9e3d3; --paper:#fbf8ef; --paper-2:#f3efe4; --ink:#14201a; --ink-2:#55605a; --line:#cfc6ae;
+    --yellow:#ffd23f; --orange:#ff6a1f; --blue:#1f5bd0; --red:#d7262c; --green:#1f8a4c;
+    --display:"Big Shoulders Stencil","Arial Narrow",sans-serif;
+    --body:"Atkinson Hyperlegible Next","Atkinson Hyperlegible",system-ui,sans-serif;
+    --mono:"Martian Mono",ui-monospace,monospace;
+    --hand:"Caveat",cursive;
+    --text:var(--ink); --muted:var(--ink-2); --ok:var(--green); --warn:#b45309; --warn-bg:#fff1d6; --danger:var(--red);
+    --code-bg:#1e2230; --code-text:#e6e9ef; --gutter:#161a25; --gutter-text:#6b7390; --mark:rgba(255,183,77,.22);
+    --tag:#7cc4ff; --attr:#ffcb6b; --str:#a5e075; --com:#7f8aa3; --punct:#9aa7c7;
+    --fs:15px;
+    font-size:clamp(11px, min(100vw / 90, 100vh / 48), 17px);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{font-family:var(--body);color:var(--ink);display:flex;flex-direction:column;background-color:var(--desk);
+    background-image:radial-gradient(rgba(20,32,26,.13) 1px,transparent 1.2px),radial-gradient(ellipse at 50% -20%,rgba(255,255,255,.6),transparent 60%);
+    background-size:1rem 1rem,auto}
+
+  /* ---------- barra superior ---------- */
+  header{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;padding:.5rem 1rem;background:var(--paper);border-bottom:2px solid var(--ink)}
+  .home{font-family:var(--mono);font-size:.62rem;font-weight:600;text-decoration:none;color:var(--ink-2);border:1px solid var(--line);padding:.3rem .55rem;border-radius:.2rem;white-space:nowrap}
+  .home:hover{border-color:var(--ink);color:var(--ink)}
+  .brand{display:flex;align-items:baseline;gap:.6rem;margin-right:.4rem;white-space:nowrap}
+  header h1{font-family:var(--display);font-weight:900;font-size:1.9rem;line-height:1;margin:0;letter-spacing:.02em;text-transform:uppercase}
+  header h1 span{color:var(--green)}
+  .brand small{font-family:var(--mono);font-size:.55rem;color:var(--ink-2);letter-spacing:.06em}
+  .grow{flex:1}
+  label.file{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.6rem;font-weight:600;color:var(--ink-2);text-transform:uppercase;letter-spacing:.08em}
+  input[type=text]{font-family:var(--mono);font-size:.75rem;padding:.3rem .5rem;border:1.5px solid var(--ink);border-radius:.15rem;width:11rem;color:var(--ink);background:#fff;text-transform:none;letter-spacing:0}
+  input[type=text]:focus{outline:2px solid var(--yellow);outline-offset:1px}
+  button{font-family:var(--mono);font-size:.62rem;font-weight:600;padding:.32rem .65rem;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:.2rem;cursor:pointer;white-space:nowrap;line-height:1.3}
+  button:hover{background:var(--paper-2)}
+  button.primary{background:var(--yellow);box-shadow:.15rem .15rem 0 var(--ink)}
+  button.primary:hover{background:var(--yellow);transform:translate(-.05rem,-.05rem);box-shadow:.2rem .2rem 0 var(--ink)}
+  button.primary:active{transform:translate(.1rem,.1rem);box-shadow:none}
+  button.sure{background:var(--red);color:#fff;border-color:var(--red)}
+  .check{display:flex;align-items:center;gap:.35rem;font-family:var(--mono);font-size:.6rem;font-weight:600;color:var(--ink-2);user-select:none}
+  .check input{accent-color:var(--ink)}
+
+  /* ---------- paneles ---------- */
+  main{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;padding:1rem 1.2rem .7rem;min-height:0}
+  .pane{display:flex;flex-direction:column;min-height:0;min-width:0;border:2px solid var(--ink);overflow:hidden;background:var(--paper);box-shadow:.4rem .4rem 0 rgba(20,32,26,.18);
+    animation:up .5s cubic-bezier(.2,.9,.25,1.1) both}
+  .pane + .pane{animation-delay:.1s}
+  @keyframes up{from{opacity:0;transform:translateY(.8rem)}to{opacity:1;transform:none}}
+  .pane-title{display:flex;justify-content:space-between;align-items:center;gap:.5rem;padding:.4rem .7rem;font-family:var(--mono);font-size:.6rem;color:var(--ink-2);border-bottom:1.5px solid var(--ink);background:var(--paper)}
+  .pane-title b{color:var(--ink);font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+  .pane-title .right{display:flex;align-items:center;gap:.5rem;min-width:0}
+  .pane-title button{font-size:.56rem;padding:.2rem .5rem}
+  .tab{max-width:15rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#fff;border:1.5px solid var(--ink);border-bottom:none;padding:.15rem .6rem;font-family:var(--body);font-size:.72rem;color:var(--ink)}
+  .code{flex:1;display:flex;min-height:0;background:var(--code-bg)}
+  .gutter{flex:none;padding:12px 8px 60px 10px;background:var(--gutter);color:var(--gutter-text);text-align:right;overflow:hidden;user-select:none;white-space:pre;min-width:3.2em}
+  .gutter .bad{color:#ffb74d;font-weight:700}
+  .editor{position:relative;flex:1;min-width:0}
+  .gutter,#hl,#src{font-family:"Cascadia Code","Fira Code",Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;font-size:var(--fs);line-height:1.5;tab-size:2;font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+  #hl,#src{position:absolute;inset:0;margin:0;padding:12px;border:0;white-space:pre;overflow:auto;word-wrap:normal}
+  #hl{pointer-events:none;color:var(--code-text);scrollbar-width:none}
+  #hl::-webkit-scrollbar{display:none}
+  #hl .err{background:var(--mark);border-radius:3px}
+  #src{background:transparent;color:transparent;caret-color:#fff;resize:none;outline:none;z-index:1}
+  #src::selection{background:rgba(124,196,255,.35);color:transparent}
+  .t{color:var(--tag)} .a{color:var(--attr)} .s{color:var(--str)} .c{color:var(--com);font-style:italic} .p{color:var(--punct)}
+  iframe{flex:1;width:100%;border:0;background:#fff}
+
+  /* ---------- pie ---------- */
+  footer{display:flex;gap:1rem;align-items:center;justify-content:space-between;padding:0 1.2rem .55rem;font-family:var(--mono);font-size:.56rem;color:var(--ink-2);min-height:1.9rem}
+  footer .hint b{color:var(--ink)}
+  #status{font-weight:600}
+  #status.ok{color:var(--green)}
+  .credit{white-space:nowrap;color:var(--ink-2)}
+  .credit a{color:inherit}
+  @media (max-width:1200px){ footer .hint{display:none} }
+  #check{border:1.5px solid transparent;background:none;padding:.2rem .6rem;font-family:var(--mono);font-size:.58rem;font-weight:700;cursor:default;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}
+  #check.ok{color:var(--green)}
+  #check.bad{color:var(--warn);background:var(--warn-bg);border-color:var(--warn);cursor:pointer}
+  #check.bad:hover{text-decoration:underline}
+  #toast{position:fixed;left:50%;bottom:3rem;transform:translateX(-50%) translateY(1rem);background:var(--ink);color:var(--paper);padding:.55rem 1rem;border-radius:.2rem;font-size:.85rem;opacity:0;transition:.25s;pointer-events:none;z-index:50;max-width:90vw;text-align:center;box-shadow:.25rem .25rem 0 var(--yellow)}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  @media (max-width:1100px){ .brand small{display:none} }
+  @media (max-width:980px){ .lbl{display:none} }
+  @media (max-width:820px){
+    main{grid-template-columns:1fr;grid-template-rows:1fr 1fr}
+    footer .hint{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+<header>
+  <a class="home" href="https://jsalsal003.github.io/" title="Volver a la portada">← Taller</a>
+  <div class="brand"><h1>Editor <span>HTML</span></h1><small>PÁGINAS WEB · WEB PAGES</small></div>
+  <label class="file">Archivo <input type="text" id="fname" value="index.html" spellcheck="false" aria-label="Nombre del archivo"></label>
+  <button class="primary" id="btnSave" title="Descarga tu página (Ctrl+S)">⬇ Descargar</button>
+  <button id="btnOpen" title="Abre un archivo .html que ya tengas">📂 <span class="lbl">Abrir</span></button>
+  <button id="btnNew" title="Empieza una página nueva">＋ <span class="lbl">Nuevo</span></button>
+  <span class="grow"></span>
+  <button id="btnMinus" title="Letra más pequeña">A−</button>
+  <button id="btnPlus" title="Letra más grande">A+</button>
+  <label class="check"><input type="checkbox" id="auto" checked> Actualizar solo</label>
+  <button id="btnRun" title="Ver el resultado (Ctrl+Enter)">▶ <span class="lbl">Ver resultado</span></button>
+  <button id="btnFull" title="Pantalla completa">⛶</button>
+  <input type="file" id="fileIn" accept=".html,.htm,.txt,text/html" hidden>
+</header>
+
+<main>
+  <section class="pane">
+    <div class="pane-title"><b>Tu código</b><span id="pos">Línea 1, col 1</span></div>
+    <div class="code">
+      <div class="gutter" id="gutter">1</div>
+      <div class="editor">
+        <pre id="hl" aria-hidden="true"></pre>
+        <textarea id="src" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Código HTML"></textarea>
+      </div>
+    </div>
+  </section>
+  <section class="pane">
+    <div class="pane-title"><b>Resultado</b><span class="right"><span class="tab" id="tabTitle" title="Así se verá el título en la pestaña del navegador">(sin título)</span><button id="btnTab" title="Abre tu página en una pestaña nueva, como la verá cualquiera (ahí sí funcionan alert, prompt…)">↗ Pestaña nueva</button></span></div>
+    <iframe id="view" sandbox="allow-scripts allow-modals allow-popups allow-forms" title="Resultado"></iframe>
+  </section>
+</main>
+
+<footer>
+  <span id="status">Listo</span>
+  <button id="check" type="button" title="Comprobación de etiquetas"></button>
+  <span class="hint">Tu trabajo se guarda en este navegador, pero al terminar <b>descárgalo siempre</b> y entrégalo en Classroom.</span>
+  <span class="credit">© 2026 Juan Salguero Salguero · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es" target="_blank" rel="noopener license" title="Puedes usarlo, copiarlo y adaptarlo citando al autor, sin fines comerciales y compartiendo igual">CC BY-NC-SA 4.0</a></span>
+</footer>
+<div id="toast"></div>
+
+<script>
+(function(){
+  var KEY = 'editorHTML_cyr3_codigo', KEY_NAME = 'editorHTML_cyr3_nombre', KEY_FS = 'editorHTML_cyr3_letra';
+  var PLANTILLA = [
+    '<!DOCTYPE html>',
+    '<html lang="es">',
+    '<head>',
+    '  <meta charset="utf-8">',
+    '  <title>Mi primera página</title>',
+    '</head>',
+    '<body>',
+    '  <!-- Escribe aquí el contenido de tu página -->',
+    '  <h1>¡Hola!</h1>',
+    '  <p>Esta es mi primera página web.</p>',
+    '</body>',
+    '</html>',
+    ''
+  ].join('\n');
+
+  var src = document.getElementById('src'), hl = document.getElementById('hl'),
+      gutter = document.getElementById('gutter'), view = document.getElementById('view'),
+      fname = document.getElementById('fname'), auto = document.getElementById('auto'),
+      statusEl = document.getElementById('status'), pos = document.getElementById('pos'),
+      tabTitle = document.getElementById('tabTitle'), fileIn = document.getElementById('fileIn'),
+      checkEl = document.getElementById('check'), toastEl = document.getElementById('toast');
+
+  function store(k, v){ try{ localStorage.setItem(k, v); return true; }catch(e){ return false; } }
+  function load(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+  function toast(msg){ toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(function(){ toastEl.classList.remove('show'); }, 3000); }
+
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  /* ---------- Comprobación de etiquetas (abiertas sin cerrar, cierres que sobran…) ---------- */
+  var VOID = /^(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/;
+  var problem = null; // { msg, line, from, to }
+  function lineAt(code, idx){ var n = 1; for (var i = 0; i < idx; i++) if (code.charCodeAt(i) === 10) n++; return n; }
+  function checkHTML(code){
+    var re = /<!--|<!doctype[^>]*>|<(\/?)([a-zA-Z][\w-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/gi, m, stack = [];
+    var low = code.toLowerCase();
+    while ((m = re.exec(code))){
+      if (m[0] === '<!--'){
+        var end = code.indexOf('-->', m.index + 4);
+        if (end < 0) return { msg: 'Comentario sin cerrar: falta -->', from: m.index, to: m.index + 4 };
+        re.lastIndex = end + 3; continue;
+      }
+      if (m[0].charAt(1) === '!') continue;
+      var close = m[1] === '/', name = m[2].toLowerCase(), from = m.index, to = m.index + m[0].length;
+      if (/\/\s*$/.test(m[3]) && !close) continue;          // <etiqueta ... />
+      if (VOID.test(name)){
+        if (close) return { msg: '</' + name + '> no hace falta: <' + name + '> no se cierra', from: from, to: to };
+        continue;
+      }
+      if (!close){
+        if (name === 'script' || name === 'style'){         // su contenido no es HTML
+          var e2 = low.indexOf('</' + name, to);
+          if (e2 < 0) return { msg: 'Falta cerrar <' + name + '> con </' + name + '>', from: from, to: to };
+          re.lastIndex = e2;
+        }
+        stack.push({ name: name, from: from, to: to });
+        continue;
+      }
+      var top = stack[stack.length - 1];
+      if (top && top.name === name){ stack.pop(); continue; }
+      var found = -1;
+      for (var i = stack.length - 1; i >= 0; i--) if (stack[i].name === name){ found = i; break; }
+      if (found >= 0) return { msg: 'Falta cerrar <' + top.name + '> antes de </' + name + '>', from: top.from, to: top.to };
+      return { msg: 'Sobra </' + name + '>: no hay ningún <' + name + '> abierto', from: from, to: to };
+    }
+    // un "<" suelto al final de una etiqueta sin terminar (p. ej. <p sin >)
+    var bad = /<[a-zA-Z][^<>]*$/.exec(code);
+    if (bad) return { msg: 'Etiqueta sin terminar: falta el símbolo >', from: bad.index, to: bad.index + Math.min(bad[0].length, 30) };
+    if (stack.length){ var t = stack[stack.length - 1]; return { msg: 'Falta cerrar <' + t.name + '> con </' + t.name + '>', from: t.from, to: t.to }; }
+    return null;
+  }
+  function showCheck(){
+    problem = checkHTML(src.value);
+    if (problem){
+      problem.line = lineAt(src.value, problem.from);
+      checkEl.className = 'bad';
+      checkEl.textContent = '⚠ Línea ' + problem.line + ': ' + problem.msg;
+      checkEl.title = 'Pulsa para ir a esa línea';
+    } else {
+      checkEl.className = 'ok';
+      checkEl.textContent = '✓ Etiquetas bien cerradas';
+      checkEl.title = '';
+    }
+  }
+  checkEl.onclick = function(){
+    if (!problem) return;
+    src.focus(); src.setSelectionRange(problem.from, problem.to);
+    var lh = parseFloat(getComputedStyle(src).lineHeight) || 22;
+    src.scrollTop = Math.max(0, (problem.line - 4) * lh);
+    updatePos(); syncScroll();
+  };
+
+  // Resaltado sencillo: comentarios, etiquetas, atributos y valores
+  function highlight(code){
+    var out = '', i = 0, n = code.length;
+    while (i < n){
+      if (code.startsWith('<!--', i)){
+        var end = code.indexOf('-->', i + 4); end = end < 0 ? n : end + 3;
+        out += '<span class="c">' + esc(code.slice(i, end)) + '</span>'; i = end; continue;
+      }
+      var m = /^<\/?[a-zA-Z!][\w:-]*/.exec(code.slice(i, i + 60));
+      if (code[i] === '<' && m){
+        out += '<span class="p">' + esc(m[0].charAt(1) === '/' ? '</' : '<') + '</span><span class="t">' +
+               esc(m[0].replace(/^<\/?/, '')) + '</span>';
+        i += m[0].length;
+        while (i < n && code[i] !== '>' && code[i] !== '<'){
+          var ch = code[i];
+          if (ch === '"' || ch === "'"){
+            var q = code.indexOf(ch, i + 1); q = q < 0 ? n : q + 1;
+            out += '<span class="s">' + esc(code.slice(i, q)) + '</span>'; i = q;
+          } else if (/[\w:-]/.test(ch)){
+            var j = i; while (j < n && /[\w:.-]/.test(code[j])) j++;
+            out += '<span class="a">' + esc(code.slice(i, j)) + '</span>'; i = j;
+          } else if (ch === '/' || ch === '='){
+            out += '<span class="p">' + ch + '</span>'; i++;
+          } else { out += esc(ch); i++; }
+        }
+        if (code[i] === '>'){ out += '<span class="p">&gt;</span>'; i++; }
+        continue;
+      }
+      var k = code.indexOf('<', i + 1); if (k < 0) k = n;
+      out += esc(code.slice(i, k)); i = k;
+    }
+    return out + '\n';
+  }
+
+  function render(){
+    var code = src.value;
+    showCheck();
+    if (problem){ // marca la etiqueta con problema
+      hl.innerHTML = highlight(code.slice(0, problem.from)).replace(/\n$/, '') +
+        '<span class="err">' + highlight(code.slice(problem.from, problem.to)).replace(/\n$/, '') + '</span>' +
+        highlight(code.slice(problem.to));
+    } else hl.innerHTML = highlight(code);
+    var lines = code.split('\n').length, g = '';
+    for (var i = 1; i <= lines; i++) g += (problem && i === problem.line ? '<span class="bad">' + i + '</span>' : i) + '\n';
+    gutter.innerHTML = g;
+    syncScroll();
+  }
+  function syncScroll(){
+    hl.scrollTop = src.scrollTop; hl.scrollLeft = src.scrollLeft;
+    gutter.scrollTop = src.scrollTop;
+  }
+  function updatePreview(){
+    view.srcdoc = src.value;
+    var t = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(src.value);
+    var title = t ? t[1].trim() : '';
+    tabTitle.textContent = title || '(sin título)';
+  }
+  function updatePos(){
+    var before = src.value.slice(0, src.selectionStart).split('\n');
+    pos.textContent = 'Línea ' + before.length + ', col ' + (before[before.length - 1].length + 1);
+  }
+  function setStatus(msg, ok){
+    statusEl.textContent = msg; statusEl.className = ok ? 'ok' : '';
+  }
+
+  var tSave = null, tView = null;
+  function changed(){
+    render(); updatePos();
+    clearTimeout(tSave);
+    tSave = setTimeout(function(){
+      setStatus(store(KEY, src.value) ? 'Guardado en este navegador ✓' : 'Este navegador no guarda: descarga tu archivo al terminar', true);
+      tellEmbed();
+    }, 500);
+    if (auto.checked){ clearTimeout(tView); tView = setTimeout(updatePreview, 400); }
+  }
+
+  function insertText(txt){
+    src.focus();
+    if (!document.execCommand || !document.execCommand('insertText', false, txt)){
+      src.setRangeText(txt, src.selectionStart, src.selectionEnd, 'end');
+      changed();
+    }
+  }
+  // Cambia todo el texto sin perder la posibilidad de deshacer (Ctrl+Z)
+  function replaceAll(txt){
+    src.focus(); src.select();
+    if (!document.execCommand || !document.execCommand('insertText', false, txt)){ src.value = txt; changed(); }
+    src.setSelectionRange(0, 0); src.scrollTop = 0; syncScroll();
+  }
+
+  src.addEventListener('input', changed);
+  // Al pegar código copiado de Classroom o de una web: espacios duros y comillas tipográficas -> normales
+  src.addEventListener('paste', function(e){
+    var t = (e.clipboardData || window.clipboardData).getData('text/plain');
+    if (!t) return;
+    var limpio = t.replace(/ /g, ' ').replace(/[“”«»]/g, '"').replace(/[‘’]/g, "'");
+    if (limpio !== t){ e.preventDefault(); insertText(limpio); }
+  });
+  src.addEventListener('scroll', syncScroll);
+  src.addEventListener('click', updatePos);
+  src.addEventListener('keyup', updatePos);
+  src.addEventListener('keydown', function(e){
+    if (e.key === 'Tab'){
+      e.preventDefault();
+      if (e.shiftKey){
+        var s = src.value.lastIndexOf('\n', src.selectionStart - 1) + 1;
+        if (src.value.slice(s, s + 2) === '  '){
+          var a = src.selectionStart, b = src.selectionEnd;
+          src.setSelectionRange(s, s + 2); insertText('');
+          src.setSelectionRange(Math.max(s, a - 2), Math.max(s, b - 2));
+        }
+      } else insertText('  ');
+    } else if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey){
+      e.preventDefault();
+      var ls = src.value.lastIndexOf('\n', src.selectionStart - 1) + 1;
+      var indent = /^[ \t]*/.exec(src.value.slice(ls, src.selectionStart))[0];
+      insertText('\n' + indent);
+    }
+  });
+
+  document.addEventListener('keydown', function(e){
+    var mod = e.ctrlKey || e.metaKey;
+    if (mod && (e.key === 's' || e.key === 'S')){ e.preventDefault(); download(); }
+    if (mod && e.key === 'Enter'){ e.preventDefault(); updatePreview(); }
+  });
+
+  function cleanName(){
+    // Sin tildes, sin ñ y sin espacios (así el nombre funciona en cualquier ordenador)
+    var n = (fname.value || '').trim().normalize('NFD').replace(/[̀-ͯ]/g, '')
+              .replace(/\s+/g, '_').replace(/[^A-Za-z0-9_.-]/g, '') || 'index';
+    if (!/\.html?$/i.test(n)) n += '.html';
+    fname.value = n; store(KEY_NAME, n);
+    return n;
+  }
+  function download(){
+    var name = cleanName();
+    var blob = new Blob([src.value], {type: 'text/html;charset=utf-8'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+    setStatus('Descargado: ' + name + ' (míralo en la carpeta Descargas)', true);
+  }
+
+  // Tu página en una pestaña nueva: ahí funciona todo (alert, prompt, enlaces…), también dentro de Google Sites.
+  function openResult(){
+    var w = null;
+    try {
+      w = window.open('', '_blank');
+      if (w){ w.document.open(); w.document.write(src.value); w.document.close(); return; }
+    } catch (e) { /* plan B */ }
+    var url = URL.createObjectURL(new Blob([src.value], {type: 'text/html;charset=utf-8'}));
+    try { if (w && !w.closed){ w.location.href = url; return; } } catch (e) { /* nada */ }
+    if (!window.open(url, '_blank')) toast('El navegador ha bloqueado la pestaña nueva');
+  }
+
+  document.getElementById('btnSave').onclick = download;
+  document.getElementById('btnRun').onclick = updatePreview;
+  document.getElementById('btnTab').onclick = openResult;
+  document.getElementById('btnOpen').onclick = function(){ fileIn.click(); };
+  fileIn.onchange = function(){
+    var f = fileIn.files[0]; if (!f) return;
+    var r = new FileReader();
+    r.onload = function(){
+      replaceAll(r.result); fname.value = f.name; cleanName();
+      changed(); updatePreview(); setStatus('Abierto: ' + f.name, true);
+    };
+    r.readAsText(f, 'utf-8'); fileIn.value = '';
+  };
+  // "Nuevo" pide un segundo clic para confirmar (dentro de Google Sites no funcionan las ventanas confirm()).
+  var btnNew = document.getElementById('btnNew'), newTimer = null;
+  function resetNew(){ btnNew.classList.remove('sure'); btnNew.innerHTML = '＋ <span class="lbl">Nuevo</span>'; }
+  btnNew.onclick = function(){
+    if (src.value.trim() && src.value !== PLANTILLA && !btnNew.classList.contains('sure')){
+      btnNew.classList.add('sure'); btnNew.textContent = '¿Borrar todo? Pulsa otra vez';
+      toast('Se borrará lo que hay en el editor. Si lo necesitas, descárgalo antes.');
+      clearTimeout(newTimer); newTimer = setTimeout(resetNew, 5000);
+      return;
+    }
+    clearTimeout(newTimer); resetNew();
+    replaceAll(PLANTILLA); fname.value = 'index.html'; cleanName();
+    changed(); updatePreview();
+    setStatus('Página nueva. Si te has equivocado, Ctrl+Z la recupera.', true);
+  };
+  fname.addEventListener('change', cleanName);
+  auto.addEventListener('change', function(){ if (auto.checked) updatePreview(); });
+
+  var fs = parseInt(load(KEY_FS), 10) || 15;
+  function setFs(v){ fs = Math.min(26, Math.max(11, v)); document.documentElement.style.setProperty('--fs', fs + 'px'); store(KEY_FS, fs); render(); }
+  document.getElementById('btnPlus').onclick = function(){ setFs(fs + 1); };
+  document.getElementById('btnMinus').onclick = function(){ setFs(fs - 1); };
+
+  /* ---------- Pantalla completa ----------
+     Dentro de Google Sites no se permite: entonces se abre el editor en una pestaña nueva con el mismo código,
+     y lo que se escriba allí vuelve al Sites (cada sitio guarda por separado). */
+  var CAN_FULL = !!(document.fullscreenEnabled && document.documentElement.requestFullscreen);
+  var FROM_EMBED = location.hash === '#desde-sites' && !!window.opener, linked = false;
+  var btnFull = document.getElementById('btnFull');
+  function updateFull(){
+    var on = !!document.fullscreenElement;
+    btnFull.textContent = on ? '✕ Salir' : '⛶';
+    btnFull.title = on ? 'Salir de pantalla completa (Esc)' : CAN_FULL ? 'Pantalla completa' : 'Abrir a pantalla completa (en una pestaña nueva)';
+  }
+  btnFull.onclick = function(){
+    if (document.fullscreenElement){ document.exitFullscreen(); return; }
+    if (CAN_FULL){ document.documentElement.requestFullscreen().catch(function(){ toast('El navegador no deja poner la pantalla completa'); }); return; }
+    var w = window.open(location.href.split('#')[0] + '#desde-sites', '_blank');
+    toast(w ? 'Abierto en una pestaña nueva: lo que escribas allí aparecerá también aquí' : 'El navegador ha bloqueado la pestaña nueva');
+  };
+  document.addEventListener('fullscreenchange', updateFull);
+  updateFull();
+  function tellEmbed(){
+    if (!FROM_EMBED || !linked) return;
+    try { window.opener.postMessage({ editorhtml: 'saved', code: src.value, name: fname.value }, location.origin); } catch (e) { /* el Sites se ha cerrado */ }
+  }
+  var pendingFromTab = null;
+  window.addEventListener('message', function(e){
+    if (e.origin !== location.origin || !e.data || typeof e.data.editorhtml !== 'string') return;
+    var m = e.data;
+    if (m.editorhtml === 'need' && e.source){
+      e.source.postMessage({ editorhtml: 'code', code: src.value, name: fname.value }, location.origin);
+    } else if (m.editorhtml === 'code' && FROM_EMBED){
+      linked = true;
+      replaceAll(m.code); fname.value = m.name || 'index.html'; cleanName(); changed(); updatePreview();
+    } else if (m.editorhtml === 'saved'){
+      store(KEY, m.code); store(KEY_NAME, m.name || 'index.html');
+      pendingFromTab = m;
+    }
+  });
+  // Al volver al Sites se carga lo escrito en la pestaña de pantalla completa
+  document.documentElement.addEventListener('pointerenter', function(){
+    if (!pendingFromTab) return;
+    var m = pendingFromTab; pendingFromTab = null;
+    if (m.code !== src.value){ replaceAll(m.code); fname.value = m.name || fname.value; changed(); updatePreview(); toast('Cargado lo que escribiste en la pestaña de pantalla completa'); }
+  });
+
+  src.value = load(KEY) || PLANTILLA;
+  fname.value = load(KEY_NAME) || 'index.html';
+  setFs(fs); render(); updatePreview(); updatePos();
+  if (FROM_EMBED){
+    try { window.opener.postMessage({ editorhtml: 'need' }, location.origin); } catch (e) { /* nada */ }
+    history.replaceState(null, '', location.pathname + location.search);
+    setTimeout(function(){ toast('Pulsa ⛶ (arriba a la derecha) o F11 para la pantalla completa'); }, 800);
+  }
+})();
+</script>
+</body>
+</html>

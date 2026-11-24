@@ -1,0 +1,82 @@
+{
+  "biblioteca": "Mobiliario",
+  "en": "Furniture",
+  "categoria": "cocina",
+  "nombre": "Cocina",
+  "en_categoria": "Kitchen",
+  "unidad": "cm",
+  "bloques": [
+    {
+      "id": "mueble-bajo", "nombre": "Mueble bajo con encimera", "en": "Base cabinet",
+      "medidas": { "ancho": 60, "fondo": 60, "alto": 90 },
+      "color": "#f1ede4",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "linea": [0, 4, "ancho", 4] } ],
+      "piezas": [
+        { "caja": [0, 4, 0, "ancho", "fondo-4", 10], "color": "#3d3d3d" },
+        { "caja": [0, 2, 10, "ancho", "fondo-2", "alto-14"] },
+        { "caja": [0, 0, "alto-4", "ancho", "fondo", 4], "color": "#6f6a63" }
+      ]
+    },
+    {
+      "id": "mueble-alto", "nombre": "Mueble alto (colgado)", "en": "Wall cabinet",
+      "medidas": { "ancho": 60, "fondo": 35, "alto": 70 },
+      "parametros": { "altura_suelo": 150 },
+      "color": "#f1ede4",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"], "trazo": "oculta" } ],
+      "piezas": [ { "caja": [0, 0, "altura_suelo", "ancho", "fondo", "alto"] } ]
+    },
+    {
+      "id": "fregadero", "nombre": "Fregadero", "en": "Sink",
+      "medidas": { "ancho": 80, "fondo": 60, "alto": 90 },
+      "color": "#f1ede4",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "rect": [8, 10, "ancho-16", "fondo-22"] }, { "circulo": ["ancho/2", "fondo-6", 2.5] } ],
+      "piezas": [
+        { "caja": [0, 2, 0, "ancho", "fondo-2", "alto-4"] },
+        { "caja": [0, 0, "alto-4", "ancho", 10, 4], "color": "#6f6a63" },
+        { "caja": [0, "fondo-12", "alto-4", "ancho", 12, 4], "color": "#6f6a63" },
+        { "caja": [0, 10, "alto-4", 8, "fondo-22", 4], "color": "#6f6a63" },
+        { "caja": ["ancho-8", 10, "alto-4", 8, "fondo-22", 4], "color": "#6f6a63" },
+        { "caja": [8, 10, "alto-20", "ancho-16", "fondo-22", 2], "color": "#c9ced3" },
+        { "cilindro": ["ancho/2", "fondo-6", "alto", 1.5, 25], "color": "#c9ced3" }
+      ]
+    },
+    {
+      "id": "placa", "nombre": "Placa de cocina", "en": "Hob",
+      "medidas": { "ancho": 60, "fondo": 60, "alto": 90 },
+      "color": "#f1ede4",
+      "planta": [
+        { "rect": [0, 0, "ancho", "fondo"] }, { "rect": [5, 6, "ancho-10", "fondo-12"] },
+        { "circulo": ["ancho*0.3", "fondo*0.3", 8] }, { "circulo": ["ancho*0.7", "fondo*0.3", 8] },
+        { "circulo": ["ancho*0.3", "fondo*0.7", 6] }, { "circulo": ["ancho*0.7", "fondo*0.7", 9] }
+      ],
+      "piezas": [
+        { "caja": [0, 2, 0, "ancho", "fondo-2", "alto-4"] },
+        { "caja": [0, 0, "alto-4", "ancho", "fondo", 4], "color": "#6f6a63" },
+        { "caja": [5, 6, "alto", "ancho-10", "fondo-12", 0.6], "color": "#111111" }
+      ]
+    },
+    {
+      "id": "frigorifico", "nombre": "Frigorífico", "en": "Fridge",
+      "medidas": { "ancho": 60, "fondo": 65, "alto": 185 },
+      "color": "#e9edf0",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "linea": [0, 5, "ancho", 5] }, { "texto": ["ancho/2", "fondo/2", "F"], "h": 3 } ],
+      "piezas": [
+        { "caja": [0, 0, 0, "ancho", "fondo", "alto"] },
+        { "caja": [0, -0.5, "alto*0.62", "ancho", 0.5, 0.6], "color": "#9aa3a9" },
+        { "caja": ["ancho-8", -3, "alto*0.68", 2, 3, 30], "color": "#9aa3a9" },
+        { "caja": ["ancho-8", -3, "alto*0.35", 2, 3, 30], "color": "#9aa3a9" }
+      ]
+    },
+    {
+      "id": "mesa-cocina", "nombre": "Mesa de cocina", "en": "Kitchen table",
+      "medidas": { "ancho": 100, "fondo": 70, "alto": 75 },
+      "color": "#ffffff",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] } ],
+      "piezas": [
+        { "caja": [0, 0, "alto-3", "ancho", "fondo", 3] },
+        { "caja": [4, 4, 0, 4, 4, "alto-3"], "color": "#9aa3a9" }, { "caja": ["ancho-8", 4, 0, 4, 4, "alto-3"], "color": "#9aa3a9" },
+        { "caja": [4, "fondo-8", 0, 4, 4, "alto-3"], "color": "#9aa3a9" }, { "caja": ["ancho-8", "fondo-8", 0, 4, 4, "alto-3"], "color": "#9aa3a9" }
+      ]
+    }
+  ]
+}

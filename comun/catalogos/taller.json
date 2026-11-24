@@ -1,0 +1,92 @@
+{
+  "biblioteca": "Mobiliario",
+  "en": "Furniture",
+  "categoria": "taller",
+  "nombre": "Taller",
+  "en_categoria": "Workshop",
+  "unidad": "cm",
+  "bloques": [
+    {
+      "id": "banco-trabajo", "nombre": "Banco de trabajo", "en": "Workbench",
+      "medidas": { "ancho": 150, "fondo": 75, "alto": 90 },
+      "color": "#c49a6c",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"], "gruesa": true }, { "rect": [10, -8, 18, 14] } ],
+      "piezas": [
+        { "caja": [0, 0, "alto-5", "ancho", "fondo", 5] },
+        { "caja": [4, 4, 0, 6, 6, "alto-5"], "color": "#55605a" }, { "caja": ["ancho-10", 4, 0, 6, 6, "alto-5"], "color": "#55605a" },
+        { "caja": [4, "fondo-10", 0, 6, 6, "alto-5"], "color": "#55605a" }, { "caja": ["ancho-10", "fondo-10", 0, 6, 6, "alto-5"], "color": "#55605a" },
+        { "caja": [4, 4, 15, "ancho-8", "fondo-8", 2], "color": "#a87b52" },
+        { "caja": [10, -8, "alto", 18, 14, 10], "color": "#2f5f8f" }
+      ]
+    },
+    {
+      "id": "mesa-grupo", "nombre": "Mesa de trabajo en grupo", "en": "Group workbench",
+      "medidas": { "ancho": 160, "fondo": 80, "alto": 80 },
+      "color": "#e8d6b5",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] } ],
+      "piezas": [
+        { "caja": [0, 0, "alto-4", "ancho", "fondo", 4] },
+        { "caja": [4, 4, 0, 5, 5, "alto-4"], "color": "#55605a" }, { "caja": ["ancho-9", 4, 0, 5, 5, "alto-4"], "color": "#55605a" },
+        { "caja": [4, "fondo-9", 0, 5, 5, "alto-4"], "color": "#55605a" }, { "caja": ["ancho-9", "fondo-9", 0, 5, 5, "alto-4"], "color": "#55605a" }
+      ]
+    },
+    {
+      "id": "taladro-columna", "nombre": "Taladro de columna", "en": "Pillar drill",
+      "medidas": { "ancho": 45, "fondo": 60, "alto": 170 },
+      "color": "#3f7f5f",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "circulo": ["ancho/2", "fondo-15", 6] }, { "rect": [6, 4, "ancho-12", 28] } ],
+      "piezas": [
+        { "caja": [0, "fondo-40", 0, "ancho", 40, 8] },
+        { "cilindro": ["ancho/2", "fondo-15", 8, 5, "alto-40"], "color": "#9aa3a9" },
+        { "caja": [6, 4, 70, "ancho-12", 28, 4], "color": "#55605a" },
+        { "caja": [5, 0, "alto-45", "ancho-10", "fondo-5", 30] },
+        { "cilindro": ["ancho/2", 12, "alto-60", 1.5, 15], "color": "#c9ced3" }
+      ]
+    },
+    {
+      "id": "estanteria-metalica", "nombre": "Estantería metálica", "en": "Metal shelving",
+      "medidas": { "ancho": 100, "fondo": 40, "alto": 200 },
+      "parametros": { "baldas": 5 },
+      "color": "#9aa3a9",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "linea": [0, 0, "ancho", "fondo"] } ],
+      "piezas": [
+        { "caja": [0, 0, 0, 3, 3, "alto"] }, { "caja": ["ancho-3", 0, 0, 3, 3, "alto"] },
+        { "caja": [0, "fondo-3", 0, 3, 3, "alto"] }, { "caja": ["ancho-3", "fondo-3", 0, 3, 3, "alto"] },
+        { "repetir": { "n": "baldas", "var": "i", "elementos": [ { "caja": [0, 0, "10+i*(alto-12)/(baldas-1)", "ancho", "fondo", 1.5], "color": "#c9ced3" } ] } }
+      ]
+    },
+    {
+      "id": "armario-herramientas", "nombre": "Armario de herramientas", "en": "Tool cabinet",
+      "medidas": { "ancho": 100, "fondo": 50, "alto": 200 },
+      "color": "#c0392b",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "linea": ["ancho/2", 0, "ancho/2", 4] } ],
+      "piezas": [
+        { "caja": [0, 0, 0, "ancho", "fondo", "alto"] },
+        { "caja": ["ancho/2-0.5", -0.5, 4, 1, 0.5, "alto-8"], "color": "#7a2219" }
+      ]
+    },
+    {
+      "id": "impresora-3d", "nombre": "Impresora 3D", "en": "3D printer",
+      "medidas": { "ancho": 50, "fondo": 50, "alto": 60 },
+      "color": "#2b2d30",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "rect": [8, 8, "ancho-16", "fondo-16"] } ],
+      "piezas": [
+        { "caja": [0, 0, 0, "ancho", "fondo", 8] },
+        { "caja": [0, "fondo-4", 8, 4, 4, "alto-8"] }, { "caja": ["ancho-4", "fondo-4", 8, 4, 4, "alto-8"] },
+        { "caja": [0, "fondo-4", "alto-4", "ancho", 4, 4] },
+        { "caja": [8, 8, 8, "ancho-16", "fondo-16", 1], "color": "#ff6a1f" }
+      ]
+    },
+    {
+      "id": "taburete", "nombre": "Taburete", "en": "Stool",
+      "medidas": { "ancho": 35, "fondo": 35, "alto": 65 },
+      "color": "#2f5f8f",
+      "planta": [ { "circulo": ["ancho/2", "fondo/2", "ancho/2"] } ],
+      "piezas": [
+        { "cilindro": ["ancho/2", "fondo/2", "alto-4", "ancho/2", 4] },
+        { "cilindro": ["ancho/2", "fondo/2", 0, 3, "alto-4"], "color": "#55605a" },
+        { "cilindro": ["ancho/2", "fondo/2", 0, "ancho/2-3", 2], "color": "#55605a" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Juan Salguero Salguero">
+<meta name="copyright" content="© 2026 Juan Salguero Salguero · CC BY-NC-SA 4.0">
+<title>Casa 3D · Diseño de interiores</title>
+<meta name="description" content="Casa 3D: dibuja la planta de una vivienda o de un aula, amuéblala y recórrela en 3D. Abre los planos de Plano 2D.">
+<meta name="theme-color" content="#fbf8ef">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23fbf8ef'/%3E%3Cpath d='M5 15L16 6l11 9v12H5z' fill='%23ff6a1f' stroke='%2314201a' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M13 27v-7h6v7' fill='%23fbf8ef' stroke='%2314201a' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&family=Big+Shoulders+Stencil:wght@700;900&family=Caveat:wght@700&family=Martian+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../comun/taller.css">
+<style>
+  /* Casa 3D: el acento es el naranja del tejado */
+  :root{--acento:var(--orange)}
+  .carril{width:5.4rem}
+  .carril .herrs{grid-template-columns:repeat(2,1fr)}
+  .vistas{flex:1;display:flex;gap:.6rem;min-width:0}
+  .vistas > .panel{flex:1;min-width:0}
+  body.solo-planta .p3d,body.solo-3d .pplanta{display:none}
+  .p3d .escena{position:relative;flex:1;min-height:0;background:#dfe8ec}
+  .p3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block;outline:none;touch-action:none}
+  .p3d .pista{position:absolute;left:.6rem;bottom:.5rem;font-family:var(--hand);font-size:1.15rem;color:var(--ink-2);pointer-events:none;background:rgba(251,248,239,.75);padding:0 .35rem;transform:rotate(-1.5deg)}
+  .pplanta .ordenes input{width:8rem}
+  .ph .chip{font-size:.55rem;padding:.22rem .45rem}
+  .modo{display:flex;border:1.5px solid var(--ink);border-radius:.2rem;overflow:hidden}
+  .modo button{border:0;background:var(--paper);padding:.2rem .5rem;cursor:pointer;font-family:var(--mono);font-size:.55rem;font-weight:700;white-space:nowrap}
+  .modo button + button{border-left:1.5px solid var(--ink)}
+  .modo button.on{background:var(--ink);color:var(--yellow)}
+  .lateral{width:16.5rem}
+  .herr.hueco svg{width:1.35rem;height:1.35rem}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="https://jsalsal003.github.io/" title="Volver a la portada">← Taller</a>
+  <div class="brand"><h1>Casa <span>3D</span></h1><small>VIVIENDAS E INTERIORES · INTERIOR DESIGN</small></div>
+  <input class="nombre" id="nombre" spellcheck="false" title="Nombre del proyecto (será el nombre del archivo)">
+  <span class="guardado" id="guardado"></span>
+  <span class="esp"></span>
+  <div class="grupo">
+    <div class="modo" role="group" aria-label="Vistas">
+      <button data-v="planta" title="Solo la planta">Planta</button>
+      <button data-v="las2" class="on" title="Planta y 3D a la vez">Las dos</button>
+      <button data-v="3d" title="Solo la vista 3D">3D</button>
+    </div>
+    <button class="chip" id="bNuevo" title="Proyecto nuevo o un ejemplo">▤ <span class="lbl">Nuevo · ejemplos</span></button>
+    <button class="chip" id="bAbrir" title="Abrir un archivo de Casa 3D o de Plano 2D (Ctrl+O)">↥ <span class="lbl">Abrir archivo</span></button>
+    <button class="chip" id="bGuardar" title="Guardar en un archivo .casa3d.json (Ctrl+S)">↧ <span class="lbl">Guardar archivo</span></button>
+    <div class="menu">
+      <button class="chip go" id="bCaptura" title="Imágenes para entregar">📷 Capturas ▾</button>
+      <div class="lista" id="mCaptura" hidden>
+        <button data-x="3d">Vista 3D en PNG<small>Lo que se ve ahora en la vista 3D</small></button>
+        <button data-x="planta">Planta en PNG<small>La planta con sus cotas y muebles</small></button>
+      </div>
+    </div>
+    <button class="chip" id="bAyuda" title="¿Cómo se usa? (F1)">? <span class="lbl">¿Cómo se usa?</span></button>
+    <button class="chip" id="bPantalla" title="Pantalla completa">⛶</button>
+  </div>
+</header>
+
+<main class="trabajo">
+  <nav class="panel carril" id="carril" aria-label="Herramientas"></nav>
+  <div class="vistas">
+    <section class="panel p2 lienzo pplanta">
+      <div class="ph"><h2>Planta · Floor plan</h2><button class="chip" id="bHabitaciones" title="Crear los suelos de las habitaciones cerradas por paredes">▦ Detectar habitaciones</button></div>
+      <div class="ed2d" id="lienzo">
+        <div class="zoom">
+          <button id="zMas" title="Acercar">+</button>
+          <button id="zMenos" title="Alejar">−</button>
+          <button id="zAjustar" title="Ver todo (0)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+        </div>
+      </div>
+      <div class="ordenes"><span class="msg" id="msg"></span><input id="cmd" placeholder="320,0 · @50,0 · 250" autocomplete="off" spellcheck="false" title="Medidas por teclado"></div>
+    </section>
+    <section class="panel p3 p3d">
+      <div class="ph">
+        <h2>Vista 3D · 3D view</h2>
+        <div class="modo" role="group" aria-label="Cámara">
+          <button data-c="orbita" class="on" title="Girar alrededor de la casa">Órbita</button>
+          <button data-c="visitante" title="Recorrer la casa con las flechas del teclado">👣 Visitante</button>
+        </div>
+        <button class="chip" id="bTecho" title="Ver los techos">Techo</button>
+        <button class="chip" id="bSombras" title="Sombras (más lento en ordenadores modestos)">Sombras</button>
+        <button class="chip" id="bEncuadrar" title="Ver la casa entera">⟲</button>
+      </div>
+      <div class="escena"><canvas id="c3d" tabindex="0" aria-label="Vista 3D de la casa"></canvas><span class="pista" id="pista">arrastra para girar · rueda para acercar</span></div>
+    </section>
+  </div>
+  <aside class="panel lateral">
+    <div class="pestanas" id="pestanas">
+      <button data-p="pCat" class="on">Catálogo<small>Catalogue</small></button>
+      <button data-p="pProp">Objeto<small>Properties</small></button>
+      <button data-p="pCasa">Casa<small>House</small></button>
+    </div>
+    <div class="cuerpo" id="pCat"></div>
+    <div class="cuerpo" id="pProp" hidden></div>
+    <div class="cuerpo" id="pCasa" hidden></div>
+  </aside>
+</main>
+
+<footer class="estado">
+  <span class="xy" id="xy">x — · y —</span>
+  <button class="t" id="tRejilla" title="Ver la rejilla (F7)">REJILLA</button>
+  <button class="t" id="tIman" title="Imán a la rejilla (F9)">IMÁN</button>
+  <button class="t" id="tObjetos" title="Imán a extremos, puntos medios e intersecciones (F3)">OBJETOS</button>
+  <button class="t" id="tOrto" title="Solo horizontal y vertical (F8)">ORTO</button>
+  <label title="Paso de la rejilla">Paso <input id="paso" inputmode="decimal"> <span id="pasoU"></span></label>
+  <label>Unidades <select id="unidad"><option value="mm">mm</option><option value="cm">cm</option><option value="m">m</option></select></label>
+  <span class="firma">© 2026 Juan Salguero Salguero · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></span>
+</footer>
+
+<div class="modal" id="mNuevo" hidden>
+  <div class="dlg">
+    <header><h3>Nuevo proyecto <small>New project · examples</small></h3><button class="chip x" data-cerrar>✕</button></header>
+    <div class="cuerpo">
+      <p class="nota" id="nuevoAviso"></p>
+      <div class="tarjetas" id="ejemplos"><p class="nota">Cargando…</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="mAyuda" hidden>
+  <div class="dlg">
+    <header><h3>¿Cómo se usa? <small>How to use it</small></h3><button class="chip x" data-cerrar>✕</button></header>
+    <div class="cuerpo">
+      <ol class="pasos">
+        <li><span><b>Las paredes.</b> Con <b>Habitación</b> (B) pones una habitación rectangular con su tamaño interior; con <b>Pared</b> (W) las dibujas tramo a tramo (C cierra). También puedes <b>abrir un plano de Plano 2D</b>.</span></li>
+        <li><span><b>Puertas y ventanas.</b> Elige una en la izquierda (o en el Catálogo › Arquitectura) y haz clic <b>encima de una pared</b>. En <b>Objeto</b> cambias su ancho y la distancia a las esquinas.</span></li>
+        <li><span><b>Suelos.</b> <b>Detectar habitaciones</b> pone el suelo de cada habitación cerrada. Elige su color y su textura en <b>Objeto</b>.</span></li>
+        <li><span><b>Amuebla.</b> En el <b>Catálogo</b> elige un mueble y haz clic en la planta (R lo gira). Arrástralo para moverlo y cambia sus medidas, su giro y su color en <b>Objeto</b>.</span></li>
+        <li><span><b>Mira y entrega.</b> Gira la vista 3D arrastrando, o pulsa <b>👣 Visitante</b> y pasea con las flechas. <b>📷 Capturas</b> guarda la planta y la vista 3D en PNG para Classroom; <b>Guardar archivo</b> guarda el proyecto.</span></li>
+      </ol>
+      <div class="sub">Atajos · Shortcuts</div>
+      <div class="atajos" id="atajos"></div>
+      <p class="nota">Rendimiento: las sombras van desactivadas; actívalas solo para la captura final si el ordenador va lento.</p>
+    </div>
+  </div>
+</div>
+
+<div id="aviso" role="status" aria-live="polite"></div>
+
+<script src="../comun/three.min.js"></script>
+<script src="../comun/nucleo.js"></script>
+<script src="../comun/dibujo.js"></script>
+<script src="../comun/editor2d.js"></script>
+<script src="../comun/panel.js"></script>
+<script src="vista3d.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

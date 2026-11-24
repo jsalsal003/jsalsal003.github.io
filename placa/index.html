@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Juan Salguero Salguero">
+<meta name="copyright" content="© 2026 Juan Salguero Salguero · CC BY-NC-SA 4.0">
+<title>Placa virtual · Robótica</title>
+<meta name="description" content="Simulador de placa para Computación y Robótica: LED, zumbador, servo, LED RGB, motor, pantalla y sensores programados por bloques, sin placa real.">
+<meta name="theme-color" content="#24414b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231d6b47'/%3E%3Crect x='11' y='3' width='10' height='26' rx='3' fill='%2314201a'/%3E%3Ccircle cx='16' cy='9' r='3.2' fill='%23ff4b3e'/%3E%3Ccircle cx='16' cy='16' r='3.2' fill='%23ffb000'/%3E%3Ccircle cx='16' cy='23' r='3.2' fill='%232ee66b'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&family=Big+Shoulders+Stencil:wght@700;900&family=Caveat:wght@700&family=Martian+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  /* ===================================================================
+     PLACA VIRTUAL — simulador de actuadores y sensores (CyR 2.º ESO)
+     Estética: banco de electrónica. Alfombrilla antiestática azul pizarra,
+     módulos de circuito verdes con serigrafía blanca (como las placas de un kit)
+     y las mismas láminas de papel, tinta y lápices del resto del taller.
+     Todo se mide en rem, que depende del ancho y del alto de la ventana:
+     en un Chromebook (1366×650 útiles) cabe entero sin desplazarse.
+     =================================================================== */
+  :root{
+    --mat:#24414b; --dot:rgba(214,233,240,.10);
+    --paper:#fbf8ef; --paper-2:#f1ecdd; --ink:#14201a; --ink-2:#55605a; --line:#cfc6ae;
+    --yellow:#ffd23f; --orange:#ff6a1f; --blue:#1f5bd0; --red:#d7262c; --green:#1f8a4c;
+    --pcb:#1d6b47;
+    --c-ev:#e6a800; --c-ct:#ffab19; --c-led:#0fbd8c; --c-bz:#9966ff; --c-sv:#4c97ff; --c-in:#5cb1d6;
+    --c-rgb:#e8508f; --c-mo:#6b7a8f; --c-disp:#d0532f;
+    --display:"Big Shoulders Stencil","Arial Narrow",sans-serif;
+    --body:"Atkinson Hyperlegible Next","Atkinson Hyperlegible",system-ui,sans-serif;
+    --mono:"Martian Mono",ui-monospace,monospace;
+    --hand:"Caveat",cursive;
+    font-size:clamp(11px, min(100vw / 92, 100vh / 47), 19px);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:var(--body);color:var(--ink);background-color:var(--mat);
+    background-image:radial-gradient(var(--dot) 1px,transparent 1.4px),radial-gradient(ellipse at 25% -10%,rgba(255,255,255,.12),transparent 60%),radial-gradient(ellipse at 100% 110%,rgba(0,0,0,.35),transparent 60%);
+    background-size:1rem 1rem,auto,auto;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+  button,select,input{font:inherit}
+  button{cursor:pointer}
+  [hidden]{display:none !important}
+
+  /* ---------- barra superior ---------- */
+  .top{display:flex;align-items:center;gap:.8rem;padding:.5rem 1.1rem;border-bottom:2px solid var(--ink);background:var(--paper);flex-wrap:wrap;position:relative;z-index:3}
+  .home{font-family:var(--mono);font-size:.62rem;font-weight:600;text-decoration:none;color:var(--ink-2);border:1px solid var(--line);padding:.3rem .55rem;border-radius:.2rem}
+  .home:hover{border-color:var(--ink);color:var(--ink)}
+  .brand{display:flex;align-items:baseline;gap:.6rem}
+  .brand h1{font-family:var(--display);font-weight:900;font-size:2rem;line-height:1;margin:0;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
+  .brand h1 span{color:var(--pcb)}
+  .brand small{font-family:var(--mono);font-size:.54rem;color:var(--ink-2);letter-spacing:.06em;white-space:nowrap}
+  .levels{display:flex;border:2px solid var(--ink);border-radius:.3rem;overflow:hidden;box-shadow:.15rem .15rem 0 var(--ink);margin-left:auto}
+  .lv{border:0;background:var(--paper);padding:.3rem .6rem;cursor:pointer;font-family:var(--display);font-weight:900;font-size:1rem;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-2);display:flex;align-items:baseline;gap:.3rem;white-space:nowrap}
+  .lv + .lv{border-left:2px solid var(--ink)}
+  .lv small{font-family:var(--mono);font-size:.5rem;font-weight:600;letter-spacing:0}
+  .lv.on{background:var(--ink);color:var(--yellow)}
+  .lv:not(.on):hover{background:var(--paper-2);color:var(--ink)}
+  .lv.exam{color:var(--red)}
+  .lv.exam.on{background:var(--red);color:#fff}
+
+  .chip{border:1.5px solid var(--ink);background:var(--paper);padding:.28rem .6rem;border-radius:.2rem;cursor:pointer;font-family:var(--mono);font-size:.6rem;font-weight:600;display:inline-flex;align-items:center;gap:.35rem;color:var(--ink);white-space:nowrap}
+  .chip:hover{background:var(--paper-2)}
+  .chip:disabled{opacity:.4;cursor:default}
+  .chip.on{background:var(--ink);color:var(--paper)}
+  .chip.go{background:var(--yellow);box-shadow:.15rem .15rem 0 var(--ink)}
+  .chip.go:active,.chip.run:active{transform:translate(.1rem,.1rem);box-shadow:none}
+  .chip.run{background:var(--green);color:#fff;border-color:var(--ink);box-shadow:.15rem .15rem 0 var(--ink);font-size:.66rem;font-weight:800}
+  body.running .chip.run:not(.stepping){animation:pulse 1.2s ease-in-out infinite}
+  @keyframes pulse{50%{background:#26a85c}}
+  .count{background:var(--ink);color:var(--yellow);border-radius:.2rem;padding:.05rem .35rem;font-weight:800}
+
+  /* barra del desafío (en el código se llama «examen») */
+  .exbar{display:flex;align-items:center;gap:.5rem;margin-left:auto}
+  .exn{font-family:var(--display);font-weight:900;font-size:1.3rem;text-transform:uppercase;white-space:nowrap}
+  .exn b{color:var(--red)}
+  .tl{font-family:var(--display);font-weight:900;font-size:1.6rem;color:var(--ink);background:var(--yellow);border:2px solid var(--ink);padding:0 .5rem;border-radius:.25rem;min-width:4.4rem;text-align:center}
+  .tl.low{background:var(--red);color:#fff;animation:blink 1s steps(2) infinite}
+  .tl.fin{background:var(--paper-2);font-size:1rem;padding:.2rem .5rem}
+  @keyframes blink{50%{opacity:.6}}
+  .arrow{width:1.9rem;height:1.9rem;border:2px solid var(--ink);background:var(--paper);border-radius:.25rem;cursor:pointer;font-weight:800;box-shadow:.12rem .12rem 0 var(--ink)}
+  .arrow:active{transform:translate(.1rem,.1rem);box-shadow:none}
+  .arrow:disabled{opacity:.35;cursor:default}
+  .dots{display:flex;gap:.25rem}
+  .dots button{width:1.4rem;height:1.4rem;border:1.5px solid var(--ink);background:var(--paper);border-radius:.2rem;font-family:var(--mono);font-size:.55rem;font-weight:800;cursor:pointer;padding:0;color:var(--ink-2)}
+  .dots button.done{background:var(--green);border-color:var(--green);color:#fff}
+  .dots button.cur{background:var(--yellow);color:var(--ink);transform:translateY(-.12rem);box-shadow:0 .15rem 0 var(--ink)}
+  body.in-exam .top{box-shadow:inset 0 -.3rem 0 var(--red)}
+  body.in-exam .panel{box-shadow:.35rem .35rem 0 rgba(215,38,44,.45)}
+  body.in-exam .reto{background:#ffe3dc}
+
+  /* ---------- zona de trabajo ---------- */
+  main{flex:1;min-height:0;display:grid;gap:.9rem;padding:.8rem 1.1rem .45rem;
+    grid-template-columns:minmax(0,4.3fr) minmax(0,4.5fr) minmax(0,3.6fr);
+    grid-template-rows:minmax(0,1fr) 9.6rem;
+    grid-template-areas:"board prog pal" "scope scope pal"}
+  /* niveles 2 a 4: la placa tiene más módulos y ocupa toda la columna */
+  body.tall main{grid-template-columns:minmax(0,3.9fr) minmax(0,4.5fr) minmax(0,3.6fr);grid-template-rows:minmax(0,1fr) 10.4rem;grid-template-areas:"board prog pal" "board scope scope"}
+  .panel{background:var(--paper);border:2px solid var(--ink);box-shadow:.35rem .35rem 0 rgba(0,0,0,.35);display:flex;flex-direction:column;min-height:0;min-width:0;position:relative;
+    animation:up .55s cubic-bezier(.2,.9,.25,1.1) both}
+  .p-board{grid-area:board}
+  .p-prog{grid-area:prog;animation-delay:.08s}
+  .p-pal{grid-area:pal;animation-delay:.16s}
+  .p-scope{grid-area:scope;animation-delay:.24s}
+  @keyframes up{from{opacity:0;transform:translateY(1rem)}to{opacity:1;transform:none}}
+  .ph{display:flex;align-items:center;gap:.4rem;padding:.32rem .6rem;border-bottom:1.5px solid var(--ink);flex-wrap:wrap;min-height:2.3rem}
+  .ph.bottom{border-bottom:0;border-top:1.5px solid var(--ink)}
+  .ph h2{font-family:var(--mono);font-size:.6rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin:0 auto 0 0;white-space:nowrap}
+  .dhint{font-family:var(--hand);font-size:1.1rem;color:var(--green);line-height:1}
+  .grow{flex:1}
+
+  /* placa: módulos */
+  .boardwrap{flex:1;min-height:0;position:relative;padding:.4rem;
+    background-image:linear-gradient(rgba(31,91,208,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(31,91,208,.06) 1px,transparent 1px);background-size:1.2rem 1.2rem}
+  #mods{display:grid;justify-content:center;align-content:center;width:100%;height:100%}
+  .mod{min-width:0;min-height:0;animation:modin .45s cubic-bezier(.2,.9,.25,1.15) both}
+  .mod:nth-child(2){animation-delay:.04s}.mod:nth-child(3){animation-delay:.08s}.mod:nth-child(4){animation-delay:.12s}
+  .mod:nth-child(5){animation-delay:.16s}.mod:nth-child(6){animation-delay:.2s}.mod:nth-child(7){animation-delay:.24s}
+  @keyframes modin{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+  .mod svg{width:100%;height:100%;display:block;user-select:none;-webkit-user-select:none}
+  .silk{font-family:var(--mono);font-size:8px;font-weight:700;fill:#eef5e8;letter-spacing:.06em}
+  .silk.sm{font-size:7px;font-weight:600}
+  .silk.val{font-size:10.5px;font-weight:800;fill:#ffd23f;letter-spacing:0}
+  .lcd{font-family:var(--mono);font-size:8px;fill:#7dffb0}
+  .lcd.big{font-size:17px;font-weight:800}
+  .degt{font-family:var(--mono);font-size:15px;font-weight:800;fill:#ffd23f}
+  .lamp{transition:fill .06s}
+  .glow{transition:opacity .06s}
+  #arm,#potK{transition:transform .45s cubic-bezier(.4,1.3,.5,1)}
+  #potK{transition-duration:.08s}
+  #waves{opacity:0}
+  .bzon #waves{opacity:1;animation:wv .32s ease-in-out infinite alternate}
+  @keyframes wv{from{opacity:.35}to{opacity:1}}
+  .fly{animation:fly 1.3s ease-out forwards;transform-box:fill-box;transform-origin:center}
+  .fly.l{animation-name:fly2}
+  @keyframes fly{0%{opacity:0;transform:translate(0,6px) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translate(22px,-56px) rotate(16deg) scale(1.2)}}
+  @keyframes fly2{0%{opacity:0;transform:translate(0,6px) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translate(-24px,-54px) rotate(-14deg) scale(1.2)}}
+  #sonar{opacity:0}
+  body.running #sonar{opacity:.9;animation:son .7s linear infinite}
+  @keyframes son{to{stroke-dashoffset:-16}}
+  #fan{transform-origin:100px 70px}
+  #fan.s1{animation:spin 1.1s linear infinite}
+  #fan.s2{animation:spin .22s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .ctl{cursor:pointer}
+  .drag{cursor:ew-resize}
+  .knob{cursor:grab}
+
+  /* programa */
+  .reto{display:flex;gap:.6rem;align-items:center;padding:.38rem .6rem;border-bottom:1.5px dashed var(--ink);background:#fff3c4}
+  .reto .no{flex:none;font-family:var(--display);font-weight:900;font-size:1.35rem;width:2.3rem;height:2.3rem;display:flex;align-items:center;justify-content:center;background:var(--ink);color:var(--yellow);border-radius:.2rem}
+  .reto .no.bug{background:var(--red);color:#fff}
+  .reto .tx{flex:1;min-width:0}
+  .reto b{font-family:var(--display);font-weight:900;font-size:1.12rem;text-transform:uppercase;letter-spacing:.02em;display:block;line-height:1}
+  .reto p{margin:.15rem 0 0;font-size:.7rem;line-height:1.25;color:#3c4640}
+  .reto .acts{display:flex;flex-direction:column;gap:.25rem;align-items:stretch}
+  .reto .x{border:0;background:none;color:var(--ink-2);font-size:.9rem;align-self:flex-start;padding:0 .1rem;cursor:pointer}
+  .reto .done{font-family:var(--hand);color:var(--green);font-size:1.05rem;line-height:1;white-space:nowrap}
+
+  .progwrap{flex:1;min-height:0;overflow:auto;padding:.6rem .7rem 1.2rem;position:relative;
+    background-image:radial-gradient(rgba(20,32,26,.12) 1px,transparent 1.3px);background-size:.9rem .9rem}
+  body.locked .progwrap{background-color:#efeadc}
+  .blk{--c:var(--c-ct);display:inline-flex;align-items:center;gap:.28rem;background:var(--c);color:#fff;font-weight:700;font-size:.78rem;line-height:1;
+    padding:.2rem .6rem;min-height:1.56rem;border-radius:.3rem;box-shadow:inset 0 -.16rem rgba(0,0,0,.2);position:relative;white-space:nowrap;text-shadow:0 1px 0 rgba(0,0,0,.2)}
+  .blk::before{content:"";position:absolute;left:.8rem;top:0;width:1rem;height:.2rem;background:rgba(0,0,0,.16);border-radius:0 0 .2rem .2rem}
+  .c-led{--c:var(--c-led)} .c-wait,.c-if{--c:var(--c-ct)} .c-tone{--c:var(--c-bz)} .c-servo{--c:var(--c-sv)}
+  .c-rgb{--c:var(--c-rgb)} .c-motor{--c:var(--c-mo)} .c-disp{--c:var(--c-disp)}
+  .hat{--c:var(--c-ev);border-radius:1.1rem 1.1rem .3rem .3rem;padding-top:.6rem;min-width:9.5rem}
+  .hat::before{display:none}
+  .cblk,.cnt{--c:var(--c-ct);display:flex;flex-direction:column;align-items:flex-start;margin-top:2px}
+  .fhead,.ch{border-bottom-left-radius:0}
+  .fhead{min-width:9.5rem;cursor:pointer}
+  .fhead small{font-weight:400;opacity:.8;font-size:.66rem}
+  .mouth{border-left:1rem solid var(--c);display:flex;flex-direction:column;align-items:flex-start;padding:.12rem 0 .12rem .22rem;min-width:9rem;min-height:1.5rem}
+  .mouth>.nd{margin:1px 0}
+  .mouth.caret{background:linear-gradient(90deg,rgba(255,210,63,.32),rgba(255,210,63,0) 85%)}
+  .ffoot,.cfoot{min-height:0;height:.8rem;width:7rem;padding:0;border-radius:0 .3rem .3rem .3rem}
+  .ffoot::before,.cfoot::before{display:none}
+  .elseh{border-radius:0 .3rem .3rem 0;cursor:pointer}
+  .endzone{min-height:1.05rem;min-width:8rem;display:flex;align-items:center;gap:.35rem;font-family:var(--hand);font-size:.98rem;color:var(--ink-2);padding:.05rem .35rem;border-radius:.2rem;cursor:pointer;line-height:1;white-space:nowrap}
+  .endzone:hover{background:rgba(255,210,63,.4)}
+  .endzone i{display:inline-block;width:1.8rem;height:.26rem;border-radius:.2rem;background:var(--orange);animation:caret 1s steps(2) infinite}
+  @keyframes caret{50%{opacity:.25}}
+  .blk select{appearance:none;-webkit-appearance:none;border:0;border-radius:1rem;background-color:#fff;color:#2b2f33;font-weight:700;font-size:.74rem;
+    padding:.12rem 1.15rem .12rem .5rem;cursor:pointer;text-shadow:none;
+    background-image:linear-gradient(45deg,transparent 50%,#555 50%),linear-gradient(135deg,#555 50%,transparent 50%);
+    background-position:calc(100% - .62rem) 55%,calc(100% - .42rem) 55%;background-size:.2rem .2rem;background-repeat:no-repeat}
+  .blk select:focus{outline:2px solid var(--ink)}
+  .sens{background:var(--c-in);border-radius:1rem;padding:.06rem .1rem;display:inline-flex;gap:.25rem;align-items:center;box-shadow:inset 0 -.12rem rgba(0,0,0,.15)}
+  .blk .sens select{background-color:transparent;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.2);
+    background-image:linear-gradient(45deg,transparent 50%,#fff 50%),linear-gradient(135deg,#fff 50%,transparent 50%)}
+  .blk .sens select option{color:#2b2f33}
+  .dot{display:inline-block;width:.72rem;height:.72rem;border-radius:50%;border:2px solid rgba(0,0,0,.35);flex:none}
+  .dot.off{background:transparent !important;border-color:rgba(255,255,255,.85)}
+  .grab{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+  body.locked .grab{cursor:default}
+  .blk.cur{outline:.22rem solid var(--orange);outline-offset:.06rem;z-index:1}
+  .blk.timing::after{content:"";position:absolute;left:.35rem;right:.35rem;bottom:.1rem;height:.16rem;border-radius:.1rem;background:rgba(255,255,255,.9);transform-origin:left;animation:tbar var(--d) linear both}
+  @keyframes tbar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  .pop{animation:pop .4s cubic-bezier(.3,1.6,.5,1)}
+  @keyframes pop{from{transform:scale(.55);opacity:0}to{transform:none;opacity:1}}
+  .ghosted{opacity:.28}
+  .ghost{position:fixed;z-index:60;pointer-events:none;opacity:.93;transform:rotate(-2deg);filter:drop-shadow(.2rem .3rem 0 rgba(0,0,0,.25));margin:0}
+  .dropline{position:fixed;z-index:59;height:.28rem;background:var(--orange);border-radius:.2rem;pointer-events:none;box-shadow:0 0 0 2px var(--paper)}
+
+  .msg{position:absolute;left:.9rem;right:.9rem;bottom:3.1rem;background:var(--paper);border:2px solid var(--green);color:var(--green);font-family:var(--hand);font-size:1.3rem;line-height:1.1;
+    padding:.4rem .75rem;transform:rotate(-.8deg) translateY(.4rem);box-shadow:.25rem .25rem 0 rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:5;cursor:pointer}
+  .msg.show{opacity:1;pointer-events:auto;transform:rotate(-.8deg)}
+  .msg.bad{border-color:var(--red);color:var(--red)}
+  .stamp{position:absolute;left:50%;top:42%;z-index:6;pointer-events:none;font-family:var(--display);font-weight:900;font-size:2.6rem;text-transform:uppercase;color:var(--green);
+    border:.3rem solid var(--green);padding:.1rem .8rem;border-radius:.4rem;background:rgba(251,248,239,.85);opacity:0;transform:translate(-50%,-50%) rotate(-10deg)}
+  .stamp.show{animation:stamp 2.2s cubic-bezier(.3,1.6,.5,1) both}
+  @keyframes stamp{0%{opacity:0;transform:translate(-50%,-50%) scale(2) rotate(-25deg)}15%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-10deg)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1) rotate(-10deg)}}
+
+  /* paleta */
+  .cats{display:flex;flex-wrap:wrap;gap:.25rem;padding:.35rem .6rem;border-bottom:1.5px dashed var(--line)}
+  .cats button{--c:var(--c-ct);border:1.5px solid var(--ink);background:var(--paper);border-radius:1rem;padding:.06rem .45rem .06rem .3rem;font-family:var(--mono);font-size:.5rem;font-weight:700;display:inline-flex;align-items:center;gap:.25rem;color:var(--ink)}
+  .cats button:hover{background:var(--paper-2)}
+  .cats i{width:.6rem;height:.6rem;border-radius:50%;background:var(--c)}
+  .pal{flex:1;min-height:0;overflow:auto;padding:.1rem .65rem .5rem;display:flex;flex-direction:column;gap:.28rem;scroll-behavior:smooth}
+  .psec{display:flex;flex-direction:column;gap:.28rem}
+  .pal h3{font-family:var(--mono);font-size:.56rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);margin:.4rem 0 0;display:flex;align-items:center;gap:.4rem}
+  .pal h3 i{width:.7rem;height:.7rem;border-radius:.15rem;background:var(--c)}
+  .pal h3 span{color:var(--ink-2);font-weight:600;letter-spacing:.04em;margin-left:auto}
+  .prow{display:flex;gap:.3rem;flex-wrap:wrap;align-items:center}
+  .prow .lb{font-family:var(--mono);font-size:.52rem;color:var(--ink-2);width:3.9rem;flex:none}
+  .pb{--c:var(--c-ct);border:0;border-radius:.3rem;padding:.33rem .55rem;font-weight:700;font-size:.76rem;color:#fff;background:var(--c);box-shadow:inset 0 -.16rem rgba(0,0,0,.2);
+    display:inline-flex;align-items:center;gap:.3rem;text-shadow:0 1px 0 rgba(0,0,0,.2);transition:transform .12s,filter .12s;white-space:nowrap;line-height:1.1}
+  .pb:hover{transform:translateY(-.1rem);filter:brightness(1.07)}
+  .pb:active{transform:translateY(.06rem)}
+  .pb.flash{animation:flash .35s}
+  @keyframes flash{40%{filter:brightness(1.4);transform:scale(1.08)}}
+  .pb.note{min-width:2.55rem;justify-content:center}
+  .pb.dig{min-width:1.85rem;justify-content:center;padding:.33rem .4rem}
+  .durs{display:flex;align-items:center;gap:.25rem;font-family:var(--mono);font-size:.55rem;color:var(--ink-2)}
+  .durs button{border:1.5px solid var(--ink);background:var(--paper);border-radius:.2rem;padding:.12rem .4rem;font-family:var(--mono);font-size:.56rem;font-weight:700;color:var(--ink)}
+  .durs button.on{background:var(--c-bz);color:#fff;border-color:var(--c-bz)}
+  .pif{cursor:pointer;padding:.28rem .5rem;font-size:.74rem}
+  .pif select{appearance:none;-webkit-appearance:none;border:0;border-radius:1rem;background:#fff;color:#2b2f33;font-weight:700;font-size:.7rem;padding:.1rem .45rem;cursor:pointer;text-shadow:none}
+  .pif .sens select{background:transparent;color:#fff}
+  .pif .sens select option{color:#2b2f33}
+  .tog{display:flex;align-items:center;gap:.35rem;font-family:var(--mono);font-size:.55rem;color:var(--ink-2);margin-top:.1rem;cursor:pointer}
+  .phint{font-family:var(--hand);font-size:1.02rem;color:var(--ink-2);padding:.3rem .65rem .4rem;border-top:1.5px dashed var(--line);line-height:1.15}
+  body.tall .phint{display:none}
+
+  /* cronograma */
+  .scopewrap{flex:1;min-height:0;position:relative;background:#0d1714}
+  #scope{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .scope-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--hand);font-size:1.35rem;color:#8fd1a8;pointer-events:none;text-align:center;padding:0 1rem}
+  .clockv{font-family:var(--mono);font-size:.6rem;font-weight:700;color:var(--ink)}
+  .lg{display:inline-flex;align-items:center;gap:.3rem;font-family:var(--mono);font-size:.55rem;color:var(--ink-2)}
+  .lg i{display:inline-block;width:1.4rem;border-top:3px solid var(--ink)}
+  .lg i.d{border-top:2px dashed var(--ink)}
+
+  .foot{display:flex;justify-content:space-between;gap:1rem;padding:0 1.2rem .45rem;font-family:var(--mono);font-size:.5rem;color:#b9cdd3}
+  .foot a{color:inherit}
+
+  /* ventanas */
+  .modal{position:fixed;inset:0;z-index:50;background:rgba(10,22,26,.55);display:flex;align-items:center;justify-content:center;padding:1rem}
+  .dlg{background:var(--paper);border:2px solid var(--ink);box-shadow:.5rem .5rem 0 var(--ink);max-width:36rem;width:100%;max-height:calc(100vh - 2rem);overflow:auto;padding:1.1rem 1.3rem;animation:up .3s both}
+  .dlg.wide{max-width:52rem}
+  .dlg.red{box-shadow:.5rem .5rem 0 var(--red)}
+  .dlg h3{font-family:var(--display);font-weight:900;font-size:2rem;text-transform:uppercase;margin:0 0 .4rem;line-height:1}
+  .dlg h4{font-family:var(--mono);font-size:.62rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin:.9rem 0 .45rem;display:flex;align-items:center;gap:.5rem}
+  .dlg h4::after{content:"";flex:1;border-top:1.5px dashed var(--line)}
+  .dlg p.sub{margin:0 0 .6rem;color:var(--ink-2);font-size:.85rem}
+  .dlg ul{margin:0 0 .6rem;padding-left:1.1rem;line-height:1.45;font-size:.88rem}
+  .dlg kbd{font-family:var(--mono);font-size:.7em;border:1px solid var(--ink);border-bottom-width:2px;border-radius:.2rem;padding:0 .3rem;background:#fff}
+  .dlg label.f{display:flex;flex-direction:column;gap:.2rem;font-family:var(--mono);font-size:.62rem;font-weight:600;margin:.5rem 0}
+  .dlg input[type=text]{font-family:var(--body);font-size:1rem;padding:.4rem .5rem;border:2px solid var(--ink);border-radius:.2rem;background:#fff}
+  .dlg .lvs{display:flex;gap:.4rem;flex-wrap:wrap;margin:.2rem 0 .4rem}
+  .dlg .lvs label{display:inline-flex;align-items:center;gap:.3rem;border:1.5px solid var(--ink);border-radius:.2rem;padding:.25rem .5rem;font-family:var(--mono);font-size:.6rem;font-weight:700;background:#fff;cursor:pointer}
+  .dlg .err{color:var(--red);font-weight:700;min-height:1em;margin:.3rem 0 0}
+  .dlg .btns{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.8rem;flex-wrap:wrap}
+  .dlg .small{text-align:right;margin:.6rem 0 0}
+  .link{border:0;background:none;color:var(--ink-2);text-decoration:underline;cursor:pointer;font-family:var(--mono);font-size:.6rem;padding:0}
+  .rgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}
+  .rc{display:flex;gap:.6rem;align-items:flex-start;text-align:left;background:#fff;border:2px solid var(--ink);padding:.45rem .6rem;box-shadow:.18rem .18rem 0 var(--ink);color:var(--ink);transition:transform .12s}
+  .rc:hover{transform:translate(-.08rem,-.08rem);box-shadow:.26rem .26rem 0 var(--ink)}
+  .rc .no{flex:none;font-family:var(--display);font-weight:900;font-size:1.25rem;width:2.1rem;height:2.1rem;display:flex;align-items:center;justify-content:center;background:var(--ink);color:var(--yellow);border-radius:.2rem}
+  .rc .no.bug{background:var(--red);color:#fff}
+  .rc .tx{flex:1;min-width:0}
+  .rc b{display:block;font-family:var(--display);font-weight:900;font-size:1.12rem;text-transform:uppercase;line-height:1}
+  .rc .tx span{display:block;font-size:.72rem;color:var(--ink-2);line-height:1.25;margin-top:.15rem}
+  .rc .st{font-family:var(--hand);font-size:1.05rem;color:var(--green);white-space:nowrap}
+  .rc.ok{background:#eaf6ee;border-color:var(--green)}
+  .rc.ok .no{background:var(--green);color:#fff}
+  .rc.help .st{color:#b06000}
+  .rc.cur{outline:3px solid var(--orange);outline-offset:2px}
+  pre.ino{font-family:var(--mono);font-size:.66rem;line-height:1.55;background:#1e2230;color:#e6e9ef;padding:.8rem 1rem;border-radius:.3rem;max-height:58vh;overflow:auto;margin:0;border:2px solid var(--ink)}
+  pre.ino .cm{color:#7f8aa3;font-style:italic} pre.ino .kw{color:#c792ea} pre.ino .ct{color:#ffcb6b} pre.ino .nm{color:#f78c6c} pre.ino .fn{color:#82aaff} pre.ino .pp{color:#89ddff}
+
+  /* ---------- pantallas estrechas ---------- */
+  @media (max-width:900px){
+    :root{font-size:14px}
+    body{height:auto;overflow:auto}
+    main,body.tall main{grid-template-columns:minmax(0,1fr);grid-template-rows:24rem 28rem auto 11rem;grid-template-areas:"board" "prog" "pal" "scope"}
+    body.tall main{grid-template-rows:34rem 28rem auto 12rem}
+    .levels,.exbar{margin-left:0}
+    .rgrid{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body class="L1">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="9"/></filter>
+  <filter id="glow2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="6" fill="rgba(255,255,255,.035)"/></pattern>
+  <pattern id="stripes" width="24" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="#e8262c"/><rect x="12" width="12" height="12" fill="#fbf8ef"/></pattern>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <linearGradient id="carBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8a4a"/><stop offset="1" stop-color="#e5531a"/></linearGradient>
+</defs></svg>
+
+<header class="top">
+  <a class="home" href="https://jsalsal003.github.io/" title="Volver a la portada">← Taller</a>
+  <div class="brand"><h1>Placa <span>virtual</span></h1><small>ROBÓTICA · CyR 2.º ESO</small></div>
+  <div class="levels" id="levels" role="group" aria-label="Nivel">
+    <button class="lv" data-level="L1" title="LED, zumbador y servo">Nivel 1 <small>actuadores</small></button>
+    <button class="lv" data-level="L2" title="Pulsador, luz, potenciómetro y ultrasonidos con «si… entonces»">Nivel 2 <small>entradas</small></button>
+    <button class="lv" data-level="L3" title="LED RGB, motor y pantalla de números">Nivel 3 <small>más salidas</small></button>
+    <button class="lv" data-level="L4" title="Repetir, esperar hasta que y sensor de temperatura">Nivel 4 <small>bucles</small></button>
+    <button class="lv exam" id="examBtn" title="Desafío: 5 ejercicios de los 4 niveles en 45 minutos, sin ayudas ni sonido. Al terminar se descarga un PDF para Classroom">⏱ Desafío</button>
+  </div>
+  <div class="exbar" id="exBar" hidden>
+    <span class="tl" id="timeLeft" title="Tiempo que queda">45:00</span>
+    <button class="arrow" id="exPrev" title="Ejercicio anterior">◀</button>
+    <span class="exn">Ejercicio <b id="exN">1</b>/<span id="exT">5</span></span>
+    <button class="arrow" id="exNext" title="Ejercicio siguiente">▶</button>
+    <div class="dots" id="exDots"></div>
+    <button class="chip go" id="entregar" title="Terminar el desafío y descargar el PDF">Entregar</button>
+    <button class="chip" id="exSalir" title="Volver a practicar">Salir del desafío</button>
+  </div>
+  <button class="chip go" id="retosBtn" title="Elegir un reto">☰ Retos <span class="count" id="retosCount">0/7</span></button>
+  <button class="chip" id="mute" title="Activar o quitar el sonido del zumbador">♪ Sonido: sí</button>
+  <button class="chip" id="resetAll" title="Borrar todo lo guardado en este equipo (programas, retos hechos, nombre…) para empezar de cero">⟲ Borrar progreso</button>
+  <button class="chip" id="helpBtn" title="Cómo se usa">?</button>
+</header>
+
+<main>
+  <section class="panel p-board">
+    <div class="ph"><h2>Placa</h2><span class="dhint" id="boardHint">así se ve tu montaje</span></div>
+    <div class="boardwrap"><div id="mods"></div></div>
+  </section>
+
+  <section class="panel p-prog">
+    <div class="ph">
+      <h2>Programa</h2>
+      <button class="chip run" id="run" title="Ejecutar el programa (Ctrl+Intro)">▶ Ejecutar</button>
+      <button class="chip" id="stop" title="Parar (Esc)">■ Parar</button>
+      <button class="chip" id="step" title="Ejecutar bloque a bloque: cada clic, un bloque">⏭ Paso</button>
+      <button class="chip" id="fast" title="Ir más rápido">×1</button>
+    </div>
+    <div class="reto" id="retoCard" hidden></div>
+    <div class="progwrap" id="prog"></div>
+    <div class="ph bottom">
+      <button class="chip" id="undo" title="Deshacer (Ctrl+Z)">↶ Deshacer</button>
+      <button class="chip" id="clear" title="Borrar todo el programa (se puede deshacer)">⌫ Borrar</button>
+      <span class="grow"></span>
+      <button class="chip" id="inoBtn" title="Ver el programa escrito en Arduino">&lt;/&gt; Arduino</button>
+      <button class="chip" id="png" title="Descargar el programa y el cronograma como imagen para Classroom">⬇ Imagen</button>
+    </div>
+    <div class="msg" id="msg"></div>
+    <div class="stamp" id="stamp">¡Conseguido!</div>
+  </section>
+
+  <section class="panel p-pal">
+    <div class="ph"><h2>Bloques</h2><span class="dhint">clic para añadir</span></div>
+    <div class="cats" id="cats"></div>
+    <div class="pal" id="pal">
+      <div class="psec" data-mod="sem" data-cat="LED" style="--c:var(--c-led)">
+        <h3><i></i>LED <span>D2 · D3 · D4</span></h3>
+        <div class="prow"><span class="lb">encender</span>
+          <button class="pb c-led" data-add='{"t":"led","v":1,"c":"rojo"}'><span class="dot" style="background:#ff4b3e"></span>rojo</button>
+          <button class="pb c-led" data-add='{"t":"led","v":1,"c":"ámbar"}'><span class="dot" style="background:#ffb000"></span>ámbar</button>
+          <button class="pb c-led" data-add='{"t":"led","v":1,"c":"verde"}'><span class="dot" style="background:#2ee66b"></span>verde</button>
+        </div>
+        <div class="prow"><span class="lb">apagar</span>
+          <button class="pb c-led" data-add='{"t":"led","v":0,"c":"rojo"}'><span class="dot off"></span>rojo</button>
+          <button class="pb c-led" data-add='{"t":"led","v":0,"c":"ámbar"}'><span class="dot off"></span>ámbar</button>
+          <button class="pb c-led" data-add='{"t":"led","v":0,"c":"verde"}'><span class="dot off"></span>verde</button>
+        </div>
+      </div>
+      <div class="psec" data-cat="Esperar" style="--c:var(--c-ct)">
+        <h3><i></i>Esperar</h3>
+        <div class="prow">
+          <button class="pb c-wait" data-add='{"t":"wait","s":0.5}'>esperar 0,5 s</button>
+          <button class="pb c-wait" data-add='{"t":"wait","s":1}'>1 s</button>
+          <button class="pb c-wait" data-add='{"t":"wait","s":2}'>2 s</button>
+          <button class="pb c-wait" data-add='{"t":"wait","s":5}'>5 s</button>
+        </div>
+      </div>
+      <div class="psec" data-mod="zum" data-cat="Zumbador" style="--c:var(--c-bz)">
+        <h3><i></i>Zumbador <span>D8</span></h3>
+        <div class="durs" id="durs">cada nota dura
+          <button data-d="0.25">0,25</button><button data-d="0.5" class="on">0,5</button><button data-d="1">1</button> segundos
+        </div>
+        <div class="prow" id="notes"></div>
+      </div>
+      <div class="psec" data-mod="servo" data-cat="Servo" style="--c:var(--c-sv)">
+        <h3><i></i>Servo <span>D9</span></h3>
+        <div class="prow">
+          <button class="pb c-servo" data-add='{"t":"servo","a":0}'>servo a 0°</button>
+          <button class="pb c-servo" data-add='{"t":"servo","a":90}'>90°</button>
+          <button class="pb c-servo" data-add='{"t":"servo","a":180}'>180°</button>
+        </div>
+      </div>
+      <div class="psec" data-mod="rgb" data-cat="RGB" style="--c:var(--c-rgb)">
+        <h3><i></i>LED RGB <span>D11 · D12 · D13</span></h3>
+        <div class="prow" id="rgbs"></div>
+      </div>
+      <div class="psec" data-mod="motor" data-cat="Motor" style="--c:var(--c-mo)">
+        <h3><i></i>Motor <span>D10</span></h3>
+        <div class="prow">
+          <button class="pb c-motor" data-add='{"t":"motor","m":0}'>motor parado</button>
+          <button class="pb c-motor" data-add='{"t":"motor","m":1}'>lento</button>
+          <button class="pb c-motor" data-add='{"t":"motor","m":2}'>rápido</button>
+        </div>
+      </div>
+      <div class="psec" data-mod="disp" data-cat="Pantalla" style="--c:var(--c-disp)">
+        <h3><i></i>Pantalla <span>A2 · A3</span></h3>
+        <div class="prow" id="digs"></div>
+      </div>
+      <div class="psec" data-ctl="1" data-cat="Control" style="--c:var(--c-ct)">
+        <h3><i></i>Control <span>entradas y bucles</span></h3>
+        <div id="ctls" style="display:flex;flex-direction:column;gap:.28rem;align-items:flex-start"></div>
+        <label class="tog" id="elseTog"><input type="checkbox" id="withElse" checked> el «si» lleva también «si no»</label>
+      </div>
+    </div>
+    <div class="phint">En el programa: <b>clic</b> en un bloque lo quita · <b>arrástralo</b> para moverlo · clic en una zona amarilla para elegir dónde van los nuevos.</div>
+  </section>
+
+  <section class="panel p-scope">
+    <div class="ph"><h2>Cronograma</h2><span id="scopeLeg"></span><span class="clockv" id="clockv">■ parado</span></div>
+    <div class="scopewrap"><canvas id="scope"></canvas><div class="scope-empty" id="scopeEmpty">Pulsa ▶ Ejecutar y aquí verás, segundo a segundo, cuándo se enciende cada cosa.</div></div>
+  </section>
+</main>
+<div class="foot"><span>Pines: LED D2 rojo, D3 ámbar, D4 verde · zumbador D8 · servo D9 · motor D10 · RGB D11-D13 · pantalla A2/A3 · pulsador D5 · ultrasonidos D6/D7 · luz A0 · potenciómetro A1 · temperatura A4.</span><span>© 2026 Juan Salguero Salguero · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es" target="_blank" rel="noopener license">CC BY-NC-SA 4.0</a></span></div>
+
+<!-- ventanas -->
+<div class="modal" id="mRetos" hidden><div class="dlg wide">
+  <h3>Retos</h3>
+  <p class="sub">Elige un reto, haz el programa y pulsa <b>✓ Comprobar</b>: la placa compara tu cronograma con el que pide el reto.</p>
+  <div id="retoList"></div>
+  <div class="btns"><button class="chip" id="libre">Programar libre (sin reto)</button><button class="chip go" data-close>Cerrar</button></div>
+</div></div>
+
+<div class="modal" id="mIno" hidden><div class="dlg wide">
+  <h3>Código Arduino</h3>
+  <p class="sub">Así se escribe tu programa en el lenguaje de Arduino. Es lo que Bitbloq prepara por dentro antes de mandarlo a la placa.</p>
+  <pre class="ino" id="inoCode"></pre>
+  <div class="btns"><button class="chip" id="inoCopy">Copiar</button><button class="chip go" data-close>Cerrar</button></div>
+</div></div>
+
+<div class="modal" id="mHelp" hidden><div class="dlg">
+  <h3>Cómo se usa</h3>
+  <ul>
+    <li><b>Clic</b> en un bloque de la derecha lo añade al programa, dentro de «por siempre». Arriba de los bloques hay botones para saltar a cada grupo.</li>
+    <li>En el programa: <b>clic</b> en un bloque lo quita; <b>arrástralo</b> para cambiarlo de sitio. Las casillas blancas se pueden cambiar.</li>
+    <li>La <b>raya naranja</b> marca dónde se añaden los bloques nuevos. Pulsa en otra zona amarilla (dentro de un «si», de un «repetir» o en «por siempre») para cambiarla.</li>
+    <li><b>▶ Ejecutar</b> repite el programa sin parar. <b>⏭ Paso</b> lo ejecuta bloque a bloque. <b>×3</b> va tres veces más rápido.</li>
+    <li>El <b>cronograma</b> dibuja cuándo está encendida cada cosa, qué nota suena, dónde está el servo…</li>
+    <li>Los sensores se cambian en la placa: mantén pulsado el pulsador, arrastra la luz, la temperatura o el coche, y gira el potenciómetro.</li>
+    <li><b>Niveles:</b> 1 actuadores · 2 entradas y «si… entonces» · 3 LED RGB, motor y pantalla · 4 «repetir», «esperar hasta que» y temperatura.</li>
+  </ul>
+  <p class="sub">Atajos: <kbd>Ctrl</kbd>+<kbd>Intro</kbd> ejecutar · <kbd>Esc</kbd> parar · <kbd>Ctrl</kbd>+<kbd>Z</kbd> deshacer. El programa se guarda solo en este navegador; para entregarlo, <b>⬇ Imagen</b>.</p>
+  <div class="btns"><button class="chip go" data-close>Entendido</button></div>
+</div></div>
+
+<div class="modal" id="mBorrar" hidden><div class="dlg red">
+  <h3>¿Borrar todo el progreso?</h3>
+  <p>Se borra todo lo que la Placa virtual tiene guardado <b>en este equipo y este navegador</b>, y empieza de cero:</p>
+  <ul>
+    <li>los programas de los 4 niveles,</li>
+    <li>los retos hechos y los que se hicieron con ayuda,</li>
+    <li>el nombre y el curso escritos para el desafío,</li>
+    <li>el desafío entregado, si lo hay: <b id="bPdf">descarga antes su PDF si todavía no lo has subido a Classroom.</b></li>
+  </ul>
+  <p>No se puede deshacer.</p>
+  <div class="btns"><button class="chip" data-close>Cancelar</button><button class="chip go" id="bYes" style="background:var(--red);color:#fff">Sí, borrar todo</button></div>
+</div></div>
+<div class="modal" id="mExam" hidden><div class="dlg red">
+  <h3>⏱ ¿Empezar el desafío?</h3>
+  <ul>
+    <li>Tendrás <b><span class="xMin">45</span> minutos</b> para programar <b>5 ejercicios nuevos</b> de los 4 niveles. Pasa de uno a otro con las flechas de arriba.</li>
+    <li>Durante el desafío <b>no hay</b> retos, ni Solución, ni Comprobar. Puedes ejecutar tus programas para probarlos.</li>
+    <li>El <b>sonido está apagado</b>: las notas del zumbador se ven salir en la placa y en su pentagrama.</li>
+    <li>Al terminar (o al acabarse el tiempo) se descarga un <b>PDF</b> con tus programas y un código QR para el profesor. <b>Súbelo a Classroom.</b></li>
+  </ul>
+  <label class="f">Nombre y apellidos <input type="text" id="xNombre" maxlength="60" autocomplete="name"></label>
+  <label class="f">Curso y grupo <input type="text" id="xCurso" maxlength="30" placeholder="por ejemplo 2º ESO B"></label>
+  <p class="err" id="xErr"></p>
+  <div class="btns"><button class="chip" data-close>Cancelar</button><button class="chip go" id="xStart">Sí, empezar el desafío</button></div>
+</div></div>
+<div class="modal" id="mEntregar" hidden><div class="dlg red">
+  <h3>¿Entregar ya?</h3>
+  <p>Después ya no podrás cambiar tus programas. Te quedan <b id="eLeft"></b>. <span id="eVacios"></span></p>
+  <div class="btns"><button class="chip" data-close>Seguir con el desafío</button><button class="chip go" id="eYes">Sí, entregar</button></div>
+</div></div>
+<div class="modal" id="mFin" hidden><div class="dlg red">
+  <h3 id="fTitle">¡Desafío terminado!</h3>
+  <p>Descarga el PDF y <b>súbelo a Classroom</b>. Tiene una página por ejercicio y una última con el código QR para el profesor.</p>
+  <p class="err" id="fErr"></p>
+  <div class="btns"><button class="chip" id="fVer">Ver mis programas</button><button class="chip" id="fPractica">Volver a practicar</button><button class="chip go" id="fPdf">⬇ Descargar PDF</button></div>
+  <p class="small"><button class="link" id="fNuevo">Empezar otro desafío</button></p>
+</div></div>
+
+<script src="nucleo.js"></script>
+<script>
+(function () {
+'use strict';
+const P = PlacaNucleo;
+const { fmt, fmt1, LEDS, KLED, NOTES, HZ, NCOL, RGBN, RGBC, MOTOR, SENS, KIDS, B } = P;
+const $ = (s, r) => (r || document).querySelector(s), $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+function el(t, c, h) { const e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const clone = o => JSON.parse(JSON.stringify(o));
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const SVGNS = 'http://www.w3.org/2000/svg';
+
+/* =================== niveles =================== */
+const LEVELS = {
+  L1: { n: 1, mods: ['sem', 'zum', 'servo'], cols: 3, rows: 2, areas: ['sem zum zum', 'sem servo servo'], sens: [], ctl: [] },
+  L2: { n: 2, mods: ['sem', 'zum', 'servo', 'btn', 'luz', 'pot', 'ultra'], cols: 3, rows: 4, areas: ['sem zum zum', 'sem servo servo', 'btn luz pot', 'ultra ultra ultra'], sens: ['btn', 'luz', 'dist', 'pot'], ctl: ['if'] },
+  L3: { n: 3, mods: ['sem', 'rgb', 'disp', 'zum', 'motor', 'servo'], cols: 3, rows: 3, areas: ['sem rgb disp', 'sem zum zum', 'motor servo servo'], sens: [], ctl: [] },
+  L4: { n: 4, mods: ['sem', 'zum', 'rgb', 'motor', 'btn', 'luz', 'temp'], cols: 3, rows: 3, areas: ['sem zum zum', 'sem rgb motor', 'btn luz temp'], sens: ['btn', 'luz', 'temp'], ctl: ['if', 'rep', 'until'] }
+};
+
+/* =================== estado guardado =================== */
+const KEY = 'placa-virtual-v1';
+let S;
+try { S = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { S = {}; }
+if (!LEVELS[S.level]) S.level = 'L1';
+S.prog = S.prog || {}; S.reto = S.reto || {}; S.done = S.done || {}; S.help = S.help || {};
+const DEFRETO = { L1: 'semaforo', L2: 'timbre', L3: 'arcoiris', L4: 'tres' };
+Object.keys(LEVELS).forEach(L => { S.prog[L] = P.clean(S.prog[L]); if (!(L in S.reto)) S.reto[L] = DEFRETO[L]; });
+if (S.exam) { S.exam.progs = (S.exam.progs || []).map(P.clean); if (!S.exam.ids || !S.exam.ids.length) S.exam = null; }
+const MS = P.MINUTOS * 60 * 1000;
+const exActivo = () => !!(S.exam && S.exam.activo);
+if (exActivo()) S.view = 'X';
+if (!S.exam) S.view = 'P';
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* sin almacenamiento: no pasa nada */ } }
+
+const EXV = () => S.view === 'X' && !!S.exam;
+const curEx = () => P.EXAM[S.exam.ids[S.exam.cur]];
+const lvKey = () => EXV() ? 'L' + curEx().lv : S.level;
+const LV = () => LEVELS[lvKey()];
+const prog = () => EXV() ? S.exam.progs[S.exam.cur] : S.prog[S.level];
+function setProg(p) { if (EXV()) S.exam.progs[S.exam.cur] = p; else S.prog[S.level] = p; }
+const HIST = {};
+const hist = () => { const k = EXV() ? 'X' + S.exam.cur : S.level; return HIST[k] || (HIST[k] = []); };
+const locked = () => EXV() && !exActivo();
+const silent = () => !!S.mute || EXV();
+
+/* =================== módulos de la placa (SVG) =================== */
+function card(w, h, t) {
+  return '<rect x="4" y="4" width="' + (w - 8) + '" height="' + (h - 8) + '" rx="12" fill="#1d6b47" stroke="#0e3d27" stroke-width="3"/>' +
+    '<rect x="4" y="4" width="' + (w - 8) + '" height="' + (h - 8) + '" rx="12" fill="url(#hatch)"/>' +
+    [[14, 14], [w - 14, 14], [14, h - 14], [w - 14, h - 14]].map(p => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4.5" fill="#0e3d27" stroke="#d9a441" stroke-width="2"/>').join('') +
+    '<text x="24" y="19" class="silk">' + t + '</text>';
+}
+const H7 = (x1, x2, y) => [[x1 + 3, y], [x2 - 3, y], [x2, y + 3.5], [x2 - 3, y + 7], [x1 + 3, y + 7], [x1, y + 3.5]];
+const V7 = (x, y1, y2) => [[x + 3.5, y1], [x + 7, y1 + 3], [x + 7, y2 - 3], [x + 3.5, y2], [x, y2 - 3], [x, y1 + 3]];
+const SEGS = { a: H7(60, 90, 44), g: H7(60, 90, 74.5), d: H7(60, 90, 105), f: V7(55, 48, 76), b: V7(88, 48, 76), e: V7(55, 79, 107), c: V7(88, 79, 107) };
+const DIGIT = ['abcdef', 'bc', 'abged', 'abgcd', 'fgbc', 'afgcd', 'afgedc', 'abc', 'abcdefg', 'abcdfg'];
+const MOD = {
+  sem: { w: 150, h: 300, svg() {
+    let s = card(150, 300, 'SEMÁFORO') + '<rect x="39" y="30" width="72" height="246" rx="16" fill="#121615" stroke="#000" stroke-width="2"/>';
+    [['rojo', 78, 'D2'], ['ámbar', 154, 'D3'], ['verde', 230, 'D4']].forEach(L => {
+      const d = LEDS[L[0]];
+      s += '<circle class="glow" data-c="' + L[0] + '" cx="75" cy="' + L[1] + '" r="30" fill="' + d.col + '" filter="url(#glow)" opacity="0"/>' +
+        '<circle class="lamp" data-c="' + L[0] + '" cx="75" cy="' + L[1] + '" r="26" fill="' + d.off + '" stroke="#000" stroke-width="2"/>' +
+        '<circle cx="67" cy="' + (L[1] - 9) + '" r="6" fill="#fff" opacity=".13"/>' +
+        '<path d="M47 ' + (L[1] - 12) + 'A28 28 0 0 1 103 ' + (L[1] - 12) + '" fill="none" stroke="#000" stroke-width="5"/>' +
+        '<text x="75" y="' + (L[1] + 40) + '" class="silk sm" text-anchor="middle">' + L[2] + '</text>';
+    });
+    return s;
+  } },
+  zum: { w: 300, h: 150, svg() {
+    let s = card(300, 150, 'ZUMBADOR · D8') +
+      '<circle cx="64" cy="84" r="30" fill="#111" stroke="#2c2c2c" stroke-width="4"/><circle cx="64" cy="84" r="18" fill="none" stroke="#2a2a2a" stroke-width="1.5"/>' +
+      '<circle cx="64" cy="84" r="5" fill="#000"/><text x="40" y="58" class="silk">+</text>' +
+      '<g id="waves" fill="none" stroke="#ffd23f" stroke-width="2.5" stroke-linecap="round"><path d="M100 74q6 10 0 20"/><path d="M108 67q11 17 0 34"/><path d="M116 60q16 24 0 48"/></g>' +
+      '<rect x="134" y="30" width="152" height="106" rx="6" fill="#0c2418" stroke="#000" stroke-width="2"/>';
+    for (let i = 0; i < 5; i++) s += '<line x1="144" x2="226" y1="' + (112 - i * 11) + '" y2="' + (112 - i * 11) + '" stroke="#7dffb0" stroke-opacity=".5" stroke-width="1.2"/>';
+    s += '<text x="146" y="108" class="lcd" font-size="44" opacity=".55">𝄞</text>' +
+      '<g id="staffN" opacity="0"><line id="ledger" x1="178" x2="200" stroke="#7dffb0" stroke-width="1.5"/><ellipse id="nHead" cx="189" rx="7" ry="5.2"/><line id="nStem" x1="195.6" x2="195.6" stroke-width="2"/></g>' +
+      '<text id="lcdN" x="234" y="86" class="lcd big">—</text><text id="lcdH" x="234" y="104" class="lcd">silencio</text>' +
+      '<g id="flyG"></g>';
+    return s;
+  } },
+  servo: { w: 300, h: 150, svg() {
+    let s = card(300, 150, 'SERVO · D9') +
+      '<path d="M42 124A108 108 0 0 1 258 124" fill="none" stroke="#eef5e8" stroke-opacity=".45" stroke-width="1.5" stroke-dasharray="2 4"/>';
+    [0, 45, 90, 135, 180].forEach(a => {
+      const r = a * Math.PI / 180, c = Math.cos(r), sn = Math.sin(r);
+      s += '<path d="M' + (150 + 102 * c).toFixed(1) + ' ' + (124 - 102 * sn).toFixed(1) + 'L' + (150 + 113 * c).toFixed(1) + ' ' + (124 - 113 * sn).toFixed(1) + '" stroke="#eef5e8" stroke-opacity=".7" stroke-width="1.5"/>';
+    });
+    s += '<text x="272" y="128" class="silk sm" text-anchor="middle">0°</text><text x="168" y="26" class="silk sm">90°</text><text x="28" y="128" class="silk sm" text-anchor="middle">180°</text>' +
+      '<rect x="114" y="122" width="72" height="7" rx="2" fill="#2f6fe0" stroke="#14201a" stroke-width="1.5"/><rect x="122" y="112" width="56" height="32" rx="4" fill="#2f6fe0" stroke="#14201a" stroke-width="2"/>' +
+      '<g id="arm" style="transform-origin:150px 124px"><rect x="146" y="118" width="100" height="12" rx="6" fill="url(#stripes)" stroke="#14201a" stroke-width="1.5"/></g>' +
+      '<circle cx="150" cy="124" r="10" fill="#fbf8ef" stroke="#14201a" stroke-width="2"/><circle cx="150" cy="124" r="3" fill="#14201a"/>' +
+      '<text id="svDeg" x="196" y="145" class="degt">0°</text>';
+    return s;
+  } },
+  btn: { w: 150, h: 150, svg() {
+    return card(150, 150, 'PULSADOR · D5') +
+      '<g id="btnG" class="ctl"><rect x="35" y="40" width="9" height="6" fill="#9aa3a0"/><rect x="35" y="86" width="9" height="6" fill="#9aa3a0"/><rect x="106" y="40" width="9" height="6" fill="#9aa3a0"/><rect x="106" y="86" width="9" height="6" fill="#9aa3a0"/>' +
+      '<rect x="43" y="34" width="64" height="64" rx="6" fill="#2a2e2c" stroke="#000" stroke-width="2"/><circle cx="75" cy="66" r="23" fill="#14201a"/>' +
+      '<circle id="btnCap" cx="75" cy="64" r="19" fill="#ffd23f" stroke="#14201a" stroke-width="2"/></g>' +
+      '<text id="btnV" x="75" y="122" class="silk val" text-anchor="middle">suelto</text><text x="75" y="137" class="silk sm" text-anchor="middle">mantenlo pulsado</text>';
+  } },
+  luz: { w: 150, h: 150, svg() {
+    return card(150, 150, 'LUZ · A0') +
+      '<circle cx="36" cy="58" r="16" fill="#c8553d" stroke="#14201a" stroke-width="2"/><path d="M24 56h4v6h5v-8h5v8h5v-6h4" fill="none" stroke="#fbe7c6" stroke-width="1.8"/>' +
+      '<rect id="skyR" x="62" y="34" width="74" height="48" rx="5" fill="#9fd8ff" stroke="#14201a" stroke-width="2"/><rect x="62" y="34" width="74" height="48" rx="5" fill="url(#sky)"/>' +
+      '<circle id="sun" cx="84" cy="54" r="9" fill="#ffd23f"/><path id="moon" d="M116 46a9 9 0 1 0 8 13a7 7 0 1 1-8-13z" fill="#f4f1d0"/>' +
+      '<g id="ldrG" class="drag"><rect x="10" y="92" width="130" height="28" fill="transparent"/>' +
+      '<line x1="22" y1="105" x2="128" y2="105" stroke="#0e3d27" stroke-width="6" stroke-linecap="round"/><line id="ldrF" x1="22" y1="105" x2="86" y2="105" stroke="#ffd23f" stroke-width="6" stroke-linecap="round"/>' +
+      '<circle id="ldrK" cx="86" cy="105" r="8" fill="#fbf8ef" stroke="#14201a" stroke-width="2"/></g>' +
+      '<text id="ldrV" x="75" y="136" class="silk val" text-anchor="middle">60 %</text>';
+  } },
+  pot: { w: 150, h: 150, svg() {
+    let s = card(150, 150, 'POTENCIÓMETRO · A1') + '<g id="potG" class="knob"><rect x="45" y="34" width="60" height="60" rx="6" fill="#2f6fe0" stroke="#14201a" stroke-width="2"/>';
+    for (let i = 0; i <= 10; i++) {
+      const a = (-135 + i * 27) * Math.PI / 180;
+      s += '<path d="M' + (75 + 24 * Math.sin(a)).toFixed(1) + ' ' + (64 - 24 * Math.cos(a)).toFixed(1) + 'L' + (75 + 28 * Math.sin(a)).toFixed(1) + ' ' + (64 - 28 * Math.cos(a)).toFixed(1) + '" stroke="#eef5e8" stroke-width="1.4"/>';
+    }
+    return s + '<g id="potK" style="transform-origin:75px 64px"><circle cx="75" cy="64" r="19" fill="#d9dde0" stroke="#14201a" stroke-width="2"/><rect x="73" y="47" width="4" height="13" rx="2" fill="#14201a"/></g></g>' +
+      '<text id="potV" x="75" y="122" class="silk val" text-anchor="middle">50 %</text><text x="75" y="137" class="silk sm" text-anchor="middle">gíralo</text>';
+  } },
+  ultra: { w: 450, h: 150, svg() {
+    let s = card(450, 150, 'ULTRASONIDOS · D6 D7') +
+      '<rect x="16" y="46" width="84" height="44" rx="4" fill="#1f5bd0" stroke="#14201a" stroke-width="2"/>' +
+      '<circle cx="38" cy="68" r="15" fill="#c9cdd1" stroke="#14201a" stroke-width="2"/><circle cx="38" cy="68" r="8" fill="#5b6166"/>' +
+      '<circle cx="78" cy="68" r="15" fill="#c9cdd1" stroke="#14201a" stroke-width="2"/><circle cx="78" cy="68" r="8" fill="#5b6166"/>' +
+      '<line id="sonar" x1="102" y1="68" x2="300" y2="68" stroke="#ffd23f" stroke-width="2" stroke-dasharray="4 4"/>' +
+      '<line x1="112" y1="114" x2="432" y2="114" stroke="#eef5e8" stroke-opacity=".6" stroke-width="1.5"/>';
+    for (let cm = 0; cm <= 100; cm += 10) {
+      const x = 112 + cm * 3.2;
+      s += '<path d="M' + x + ' 114v' + (cm % 20 ? 4 : 7) + '" stroke="#eef5e8" stroke-opacity=".7" stroke-width="1.2"/>' + (cm % 20 ? '' : '<text x="' + x + '" y="131" class="silk sm" text-anchor="middle">' + cm + '</text>');
+    }
+    s += '<text x="436" y="131" class="silk sm" text-anchor="end">cm</text>';
+    // coche visto de lado, mirando al sensor (el morro está en x = -31)
+    s += '<g id="distG" class="drag"><rect x="104" y="24" width="342" height="96" fill="transparent"/>' +
+      '<g id="objG">' +
+      '<ellipse cx="0" cy="15" rx="34" ry="3.5" fill="#000" opacity=".25"/>' +
+      '<path d="M-31 6V-4Q-31 -9 -26 -10L-17 -12L-9 -22Q-7 -24 -3 -24H13Q17 -24 19 -21L25 -12L29 -11Q33 -10 33 -5V6Q33 9 30 9H-28Q-31 9 -31 6Z" fill="url(#carBody)" stroke="#14201a" stroke-width="2" stroke-linejoin="round"/>' +
+      '<path d="M-15 -13L-8.5 -21H0V-13Z" fill="#bfe6ff" stroke="#14201a" stroke-width="1.5" stroke-linejoin="round"/>' +
+      '<path d="M3 -21H12Q15 -21 16.5 -18.5L20 -13H3Z" fill="#bfe6ff" stroke="#14201a" stroke-width="1.5" stroke-linejoin="round"/>' +
+      '<path d="M1.5 -12V6" stroke="#14201a" stroke-width="1.2" opacity=".6"/><path d="M6 -5h5" stroke="#14201a" stroke-width="1.6" stroke-linecap="round"/>' +
+      '<rect x="-31" y="-6" width="5" height="4" rx="1.5" fill="#fff6b0" stroke="#14201a" stroke-width="1"/>' +
+      '<rect x="29" y="-6" width="4" height="4" rx="1.2" fill="#ff3b30" stroke="#14201a" stroke-width="1"/>' +
+      '<circle cx="-17" cy="9" r="7" fill="#14201a"/><circle cx="-17" cy="9" r="3" fill="#c9cdd1"/>' +
+      '<circle cx="19" cy="9" r="7" fill="#14201a"/><circle cx="19" cy="9" r="3" fill="#c9cdd1"/>' +
+      '<text id="distV" x="0" y="-31" class="silk val" text-anchor="middle">80 cm</text></g></g>';
+    return s;
+  } },
+  rgb: { w: 150, h: 150, svg() {
+    return card(150, 150, 'LED RGB · D11 D12 D13') +
+      '<circle id="rgbGlow" cx="75" cy="62" r="34" fill="#fff" filter="url(#glow)" opacity="0"/>' +
+      '<g stroke="#c9cdd1" stroke-width="3" stroke-linecap="round"><path d="M61 98v22M70 98v28M80 98v24M89 98v22"/></g>' +
+      '<rect x="51" y="92" width="48" height="8" rx="2" fill="#d7dade" stroke="#14201a" stroke-width="1.5"/>' +
+      '<path id="rgbDome" d="M54 94V64A21 21 0 0 1 96 64V94Z" fill="#3a3f45" stroke="#14201a" stroke-width="2" fill-opacity=".92"/>' +
+      '<path d="M61 88V65A14 14 0 0 1 70 52" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>' +
+      '<text id="rgbV" x="75" y="140" class="silk val" text-anchor="middle">apagado</text>';
+  } },
+  motor: { w: 150, h: 150, svg() {
+    let s = card(150, 150, 'MOTOR · D10') +
+      '<rect x="14" y="50" width="46" height="40" rx="6" fill="#9aa3ad" stroke="#14201a" stroke-width="2"/><path d="M22 50v40M30 50v40" stroke="#6b7480" stroke-width="2"/>' +
+      '<rect x="60" y="58" width="8" height="24" rx="2" fill="#c9cdd1" stroke="#14201a" stroke-width="1.5"/><path d="M68 70h26" stroke="#5b6166" stroke-width="3"/>' +
+      '<circle cx="100" cy="70" r="33" fill="none" stroke="#eef5e8" stroke-opacity=".35" stroke-width="1.5" stroke-dasharray="3 4"/>' +
+      '<g id="fan">';
+    [0, 120, 240].forEach(a => { s += '<path transform="rotate(' + a + ' 100 70)" d="M100 70C104 54 120 42 128 50C130 58 116 68 100 70Z" fill="#cfd6de" stroke="#14201a" stroke-width="1.5"/>'; });
+    return s + '<circle cx="100" cy="70" r="6" fill="#5b6166" stroke="#14201a" stroke-width="1.5"/></g>' +
+      '<text id="moV" x="75" y="132" class="silk val" text-anchor="middle">parado</text>';
+  } },
+  disp: { w: 150, h: 150, svg() {
+    let s = card(150, 150, 'PANTALLA · A2 A3') + '<rect x="38" y="30" width="74" height="98" rx="6" fill="#111" stroke="#000" stroke-width="2"/><g id="segs">';
+    Object.keys(SEGS).forEach(k => { s += '<polygon id="seg-' + k + '" points="' + SEGS[k].map(p => p.join(',')).join(' ') + '" fill="#3a120c"/>'; });
+    return s + '</g><text id="dispV" x="75" y="141" class="silk sm" text-anchor="middle">apagada</text>';
+  } },
+  temp: { w: 150, h: 150, svg() {
+    let s = card(150, 150, 'TEMPERATURA · A4') +
+      '<rect x="28" y="28" width="16" height="72" rx="8" fill="#eef5e8" stroke="#14201a" stroke-width="2"/><circle cx="36" cy="106" r="12" fill="#e53935" stroke="#14201a" stroke-width="2"/>' +
+      '<rect id="tFill" x="32" y="60" width="8" height="44" rx="4" fill="#e53935"/>';
+    for (let t = 0; t <= 40; t += 10) s += '<path d="M46 ' + (94 - t * 1.5) + 'h6" stroke="#eef5e8" stroke-width="1.3"/><text x="55" y="' + (96.5 - t * 1.5) + '" class="silk sm">' + t + '</text>';
+    return s + '<text id="tempV" x="112" y="62" class="degt" text-anchor="middle">22 °C</text>' +
+      '<g id="tempG" class="drag"><rect x="70" y="80" width="76" height="40" fill="transparent"/>' +
+      '<line x1="80" y1="100" x2="136" y2="100" stroke="#0e3d27" stroke-width="6" stroke-linecap="round"/><line id="tempF" x1="80" y1="100" x2="110" y2="100" stroke="#ff8a80" stroke-width="6" stroke-linecap="round"/>' +
+      '<circle id="tempK" cx="110" cy="100" r="8" fill="#fbf8ef" stroke="#14201a" stroke-width="2"/></g>' +
+      '<text x="108" y="132" class="silk sm" text-anchor="middle">arrástralo</text>';
+  } }
+};
+function buildBoard() {
+  const L = LV(), box = $('#mods');
+  box.innerHTML = L.mods.map(m => '<div class="mod" style="grid-area:' + m + '"><svg viewBox="0 0 ' + MOD[m].w + ' ' + MOD[m].h + '" preserveAspectRatio="xMidYMid meet" xmlns="' + SVGNS + '">' + MOD[m].svg() + '</svg></div>').join('');
+  box.style.gridTemplateAreas = L.areas.map(a => '"' + a + '"').join(' ');
+  fitBoard(); bindInputs();
+  P.OUTK.forEach(paintOut); paintIn();
+  $('#boardHint').textContent = L.sens.length ? 'cambia los sensores con el ratón' : 'así se ve tu montaje';
+}
+function fitBoard() {
+  const L = LV(), w = $('.boardwrap'), cs = getComputedStyle(w);
+  const W = w.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight), Hh = w.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+  const cell = Math.max(20, Math.floor(Math.min(W / L.cols, Hh / L.rows)));
+  $('#mods').style.gridTemplateColumns = 'repeat(' + L.cols + ',' + cell + 'px)';
+  $('#mods').style.gridTemplateRows = 'repeat(' + L.rows + ',' + cell + 'px)';
+}
+
+/* ----- salidas ----- */
+const OUT = { r: 0, a: 0, g: 0, bz: null, sv: 0, rgb: null, mo: 0, d7: null };
+const IN = Object.assign({}, P.INDEF);
+const NPOS = { 'Do': -2, 'Re': -1, 'Mi': 0, 'Fa': 1, 'Sol': 2, 'La': 3, 'Si': 4, 'Do+': 5 };
+let flyT = null, flip = false;
+function fly(n) {
+  const G = $('#flyG'); if (!G) return;
+  const t = document.createElementNS(SVGNS, 'text');
+  flip = !flip;
+  t.setAttribute('x', 56 + Math.random() * 14); t.setAttribute('y', 66);
+  t.setAttribute('class', 'fly' + (flip ? ' l' : '')); t.setAttribute('fill', NCOL[n]);
+  t.setAttribute('font-family', 'Martian Mono, monospace'); t.setAttribute('font-weight', '800'); t.setAttribute('stroke', '#14201a'); t.setAttribute('stroke-width', '.6');
+  t.innerHTML = '<tspan font-size="22">♪</tspan><tspan font-size="10" dy="-2">' + esc(n) + '</tspan>';
+  G.appendChild(t); setTimeout(() => t.remove(), 1350);
+}
+function paintOut(k) {
+  if (k === 'r' || k === 'a' || k === 'g') {
+    const c = KLED[k], lamp = $('.lamp[data-c="' + c + '"]'), gl = $('.glow[data-c="' + c + '"]');
+    if (lamp) lamp.style.fill = OUT[k] ? LEDS[c].col : LEDS[c].off;
+    if (gl) gl.style.opacity = OUT[k] ? .95 : 0;
+  } else if (k === 'bz') {
+    const n = OUT.bz, zm = $('#waves') && $('#waves').ownerSVGElement;
+    if (zm) zm.classList.toggle('bzon', !!n);
+    if ($('#lcdN')) { $('#lcdN').textContent = n || '—'; $('#lcdN').setAttribute('fill', n ? NCOL[n] : '#7dffb0'); $('#lcdH').textContent = n ? HZ[n] + ' Hz' : 'silencio'; }
+    const g = $('#staffN');
+    if (g) {
+      g.setAttribute('opacity', n ? 1 : 0);
+      if (n) {
+        const y = 112 - NPOS[n] * 5.5;
+        $('#nHead').setAttribute('cy', y); $('#nHead').setAttribute('fill', NCOL[n]); $('#nHead').setAttribute('transform', 'rotate(-20 189 ' + y + ')');
+        $('#nStem').setAttribute('y1', y); $('#nStem').setAttribute('y2', y - 30); $('#nStem').setAttribute('stroke', NCOL[n]);
+        $('#ledger').setAttribute('y1', 123); $('#ledger').setAttribute('y2', 123); $('#ledger').setAttribute('opacity', n === 'Do' ? 1 : 0);
+      }
+    }
+    clearInterval(flyT); flyT = null;
+    if (n) { fly(n); flyT = setInterval(() => fly(n), 330); }
+    if (n) toneOn(n); else toneOff();
+  } else if (k === 'sv') {
+    if ($('#arm')) { $('#arm').style.transform = 'rotate(' + (-OUT.sv) + 'deg)'; $('#svDeg').textContent = OUT.sv + '°'; }
+  } else if (k === 'rgb') {
+    const c = OUT.rgb;
+    if ($('#rgbDome')) {
+      $('#rgbDome').setAttribute('fill', c ? RGBC[c] : '#3a3f45');
+      $('#rgbGlow').setAttribute('fill', c ? RGBC[c] : '#fff'); $('#rgbGlow').setAttribute('opacity', c ? .9 : 0);
+      $('#rgbV').textContent = c || 'apagado';
+    }
+  } else if (k === 'mo') {
+    const f = $('#fan'); if (f) { f.classList.toggle('s1', OUT.mo === 1); f.classList.toggle('s2', OUT.mo === 2); $('#moV').textContent = MOTOR[OUT.mo]; }
+  } else if (k === 'd7') {
+    const d = OUT.d7, on = d == null ? '' : DIGIT[d];
+    Object.keys(SEGS).forEach(s => { const p = $('#seg-' + s); if (p) { const lit = on.indexOf(s) >= 0; p.setAttribute('fill', lit ? '#ff4a2a' : '#3a120c'); p.setAttribute('filter', lit ? 'url(#glow2)' : ''); } });
+    if ($('#dispV')) $('#dispV').textContent = d == null ? 'apagada' : 'muestra ' + d;
+  }
+}
+function resetOut() { OUT.r = OUT.a = OUT.g = 0; OUT.bz = null; OUT.sv = 0; OUT.rgb = null; OUT.mo = 0; OUT.d7 = null; P.OUTK.forEach(paintOut); }
+
+/* ----- entradas ----- */
+function mix(a, b, t) {
+  const p = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16)), A = p(a), Bc = p(b);
+  return 'rgb(' + A.map((v, i) => Math.round(v + (Bc[i] - v) * t)).join(',') + ')';
+}
+function paintIn() {
+  const cap = $('#btnCap');
+  if (cap) { cap.setAttribute('cy', IN.btn ? 67 : 64); cap.setAttribute('r', IN.btn ? 17.5 : 19); cap.setAttribute('fill', IN.btn ? '#e09a00' : '#ffd23f'); $('#btnV').textContent = IN.btn ? 'PULSADO' : 'suelto'; }
+  if ($('#ldrK')) {
+    const lx = 22 + IN.luz * 1.06;
+    $('#ldrK').setAttribute('cx', lx); $('#ldrF').setAttribute('x2', lx);
+    $('#skyR').setAttribute('fill', mix('#0b1a3a', '#9fd8ff', IN.luz / 100));
+    $('#sun').setAttribute('opacity', (IN.luz / 100).toFixed(2)); $('#moon').setAttribute('opacity', (1 - IN.luz / 100).toFixed(2));
+    $('#ldrV').textContent = IN.luz + ' %';
+  }
+  if ($('#potK')) { $('#potK').style.transform = 'rotate(' + (-135 + IN.pot * 2.7) + 'deg)'; $('#potV').textContent = IN.pot + ' %'; }
+  if ($('#objG')) {
+    const fx = 112 + IN.dist * 3.2;
+    $('#objG').setAttribute('transform', 'translate(' + (fx + 31) + ' 82)');
+    $('#distV').textContent = IN.dist + ' cm'; $('#sonar').setAttribute('x2', fx - 2);
+  }
+  if ($('#tempK')) {
+    const tx = 80 + IN.temp * 1.4;
+    $('#tempK').setAttribute('cx', tx); $('#tempF').setAttribute('x2', tx);
+    const h = 8 + IN.temp * 1.5; $('#tFill').setAttribute('y', 104 - h); $('#tFill').setAttribute('height', h);
+    $('#tempV').textContent = IN.temp + ' °C';
+  }
+}
+function setIn(k, v) { if (IN[k] === v) return; IN[k] = v; paintIn(); if (R.on) TR.push(nowVT(), k, v); }
+function svgPt(e, s) { const p = s.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(s.getScreenCTM().inverse()); }
+function dragger(g, fn) {
+  if (!g) return;
+  const s = g.ownerSVGElement;
+  g.addEventListener('pointerdown', e => {
+    e.preventDefault(); try { g.setPointerCapture(e.pointerId); } catch (er) { /* nada */ } fn(svgPt(e, s));
+    const mv = ev => fn(svgPt(ev, s)), up = () => { g.removeEventListener('pointermove', mv); g.removeEventListener('pointerup', up); g.removeEventListener('pointercancel', up); };
+    g.addEventListener('pointermove', mv); g.addEventListener('pointerup', up); g.addEventListener('pointercancel', up);
+  });
+}
+function bindInputs() {
+  dragger($('#ldrG'), p => setIn('luz', Math.round(clamp((p.x - 22) / 106, 0, 1) * 100)));
+  dragger($('#distG'), p => setIn('dist', Math.round(clamp((p.x - 112) / 3.2, 2, 100))));
+  dragger($('#tempG'), p => setIn('temp', Math.round(clamp((p.x - 80) / 1.4, 0, 40))));
+  dragger($('#potG'), p => { const a = Math.atan2(p.x - 75, -(p.y - 64)) * 180 / Math.PI; setIn('pot', Math.round((clamp(a, -135, 135) + 135) / 270 * 100)); });
+  const g = $('#btnG');
+  if (g) {
+    g.addEventListener('pointerdown', e => { e.preventDefault(); try { g.setPointerCapture(e.pointerId); } catch (er) { /* nada */ } setIn('btn', 1); });
+    const up = () => setIn('btn', 0);
+    g.addEventListener('pointerup', up); g.addEventListener('pointercancel', up);
+  }
+}
+
+/* ----- sonido (Web Audio, onda cuadrada, volumen bajo) ----- */
+let AC = null, OSC = null, GAIN = null;
+function toneOn(n) {
+  toneOff();
+  if (silent()) return;
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === 'suspended') AC.resume();
+    const t = AC.currentTime, g = AC.createGain(), o = AC.createOscillator();
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.05, t + 0.01);
+    o.type = 'square'; o.frequency.value = HZ[n]; o.connect(g); g.connect(AC.destination); o.start();
+    OSC = o; GAIN = g;
+  } catch (e) { OSC = null; }
+}
+function toneOff() {
+  if (!OSC) return;
+  try { const t = AC.currentTime; GAIN.gain.cancelScheduledValues(t); GAIN.gain.setValueAtTime(GAIN.gain.value, t); GAIN.gain.linearRampToValueAtTime(0, t + 0.012); OSC.stop(t + 0.02); } catch (e) { /* nada */ }
+  OSC = null; GAIN = null;
+}
+
+/* =================== ejecución =================== */
+// Tiempo virtual: avanza con el reloj real (×1 o ×3) y se ajusta exacto al acabar cada «esperar».
+const R = { on: false, tok: 0, step: false, gate: null, vt: 0, base: { vt: 0, real: 0 }, frozen: false, laps: 0, cur: null, speed: 1 };
+function nowVT() { if (!R.on || R.frozen) return R.vt; return R.base.vt + (performance.now() - R.base.real) / 1000 * R.speed; }
+const TR = {
+  init: {}, ev: [],
+  reset() { this.init = Object.assign({}, OUT, IN); this.ev = []; },
+  push(t, k, v) {
+    this.ev.push([t, k, v]);
+    if (this.ev.length > 6000) { this.ev.splice(0, 2000).forEach(e => { this.init[e[1]] = e[2]; }); }
+  }
+};
+const LIVE = {
+  set(k, v) { if (OUT[k] === v) return; OUT[k] = v; TR.push(nowVT(), k, v); paintOut(k); },
+  read(k) { return IN[k]; }
+};
+function mark(n) {
+  unmark(); R.cur = n;
+  const e = nodeEl.get(n); if (!e) return;
+  e.classList.add('cur');
+  const w = $('#prog'), er = e.getBoundingClientRect(), wr = w.getBoundingClientRect();
+  if (er.top < wr.top + 4 || er.bottom > wr.bottom - 4) w.scrollTop += er.top - wr.top - wr.height / 3;
+}
+function unmark() { $$('#prog .cur, #prog .timing').forEach(e => e.classList.remove('cur', 'timing')); }
+function bar(n) {
+  const e = nodeEl.get(n); if (!e) return;
+  e.style.setProperty('--d', Math.round(n.s * 1000 / R.speed) + 'ms');
+  e.classList.remove('timing'); void e.offsetWidth; e.classList.add('timing');
+}
+async function drive(my) {
+  const main = prog();
+  while (R.on && my === R.tok) {
+    R.laps++;
+    const it = P.run(main, LIVE); let adv = false, r;
+    while (!(r = it.next()).done) {
+      if (my !== R.tok) return;
+      const y = r.value;
+      if (typeof y === 'object') {
+        mark(y.n);
+        if (R.step) {
+          R.vt = nowVT(); R.frozen = true; updRun();
+          await new Promise(res => { R.gate = res; });
+          R.gate = null; if (my !== R.tok) return;
+          R.frozen = false; R.base = { vt: R.vt, real: performance.now() };
+        }
+        if (y.n.t === 'wait' || y.n.t === 'tone') bar(y.n);
+        continue;
+      }
+      adv = true;
+      const v0 = nowVT(); R.vt = v0; R.base = { vt: v0, real: performance.now() };
+      await sleep(y * 1000 / R.speed);
+      if (my !== R.tok) return;
+      R.vt = v0 + y; R.base = { vt: R.vt, real: performance.now() };
+    }
+    if (!adv) { await sleep(25); if (my !== R.tok) return; }   // como el loop() de Arduino: vuelve a empezar enseguida
+  }
+}
+function start(step) {
+  if (!prog().length) { say('El programa está vacío: pulsa los bloques de la derecha para añadirlos.', true); return; }
+  stop(true);
+  resetOut();
+  R.on = true; R.tok++; R.step = !!step; R.laps = 0; R.vt = 0; R.frozen = false; R.base = { vt: 0, real: performance.now() };
+  TR.reset(); scopeMode = 'live'; liveRows = P.rowsFor([prog()]);
+  document.body.classList.add('running');
+  hideMsg(); updRun();
+  requestAnimationFrame(frame);
+  drive(R.tok).catch(err => { console.error(err); stop(); });
+}
+function stop() {
+  const was = R.on;
+  if (R.on) R.vt = nowVT();
+  R.on = false; R.tok++; R.frozen = false;
+  if (R.gate) { const g = R.gate; R.gate = null; g(); }
+  if (OUT.bz) { OUT.bz = null; paintOut('bz'); }
+  toneOff(); unmark(); R.cur = null;
+  document.body.classList.remove('running');
+  updRun();
+  if (was) drawScope();
+}
+function updRun() {
+  $('#run').classList.toggle('stepping', R.on && R.step);
+  $('#step').classList.toggle('on', R.on && R.step);
+  $('#run').textContent = R.on && R.step ? '▶ Seguir' : '▶ Ejecutar';
+}
+function frame() { drawScope(); if (R.on) requestAnimationFrame(frame); }
+
+/* =================== cronograma =================== */
+const cv = $('#scope'), cx = cv.getContext('2d');
+let scopeMode = 'empty', liveRows = P.rowsFor([]), cmp = null;
+function remPx() { return parseFloat(getComputedStyle(document.documentElement).fontSize); }
+function drawScope() {
+  const dpr = window.devicePixelRatio || 1, r = cv.getBoundingClientRect();
+  const W = Math.max(10, Math.round(r.width * dpr)), H = Math.max(10, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const fs = remPx() * .62 * dpr;
+  $('#scopeEmpty').hidden = scopeMode !== 'empty';
+  $('#scopeLeg').innerHTML = scopeMode === 'cmp' ? '<span class="lg"><i></i>tu programa</span> <span class="lg"><i class="d"></i>lo que pide el reto</span>' : '';
+  if (scopeMode === 'empty') { cx.fillStyle = '#0d1714'; cx.fillRect(0, 0, W, H); $('#clockv').textContent = '■ parado'; return; }
+  if (scopeMode === 'cmp') {
+    P.paintScope(cx, W, H, { fs, rows: cmp.rows, t0: 0, t1: cmp.T, series: [{ tr: cmp.res.B, ghost: true }, { tr: cmp.res.A }], bad: cmp.res.first ? cmp.res.first.t : null });
+    $('#clockv').textContent = 'comprobación · 0–' + cmp.T + ' s';
+    return;
+  }
+  const now = nowVT(), span = 15, t1 = Math.max(span, now), t0 = t1 - span;
+  P.paintScope(cx, W, H, { fs, rows: liveRows, t0, t1, series: [{ tr: TR, tEnd: now }], now: R.on ? now : null });
+  $('#clockv').textContent = R.on ? (R.step ? '⏭ paso a paso' : '▶ ejecutando') + ' · vuelta ' + R.laps + ' · ' + fmt1(now) + ' s' + (R.speed > 1 ? ' · ×3' : '')
+    : '■ parado · ' + fmt1(now) + ' s';
+}
+
+/* =================== programa (editor de bloques) =================== */
+function sel(f, opts, val) {
+  const num = typeof opts[0][0] === 'number';
+  return '<select data-f="' + f + '"' + (num ? ' data-num="1"' : '') + '>' +
+    opts.map(o => '<option value="' + o[0] + '"' + (o[0] === val ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select>';
+}
+function condHTML(c) {
+  const ss = (LV().sens.length ? LV().sens : P.SKEYS).slice(); if (ss.indexOf(c.s) < 0) ss.push(c.s);
+  const s = SENS[c.s];
+  const h = '<span class="sens">' + sel('cond.s', ss.map(k => [k, SENS[k].ico + ' ' + SENS[k].lab]), c.s) + '</span>';
+  if (c.s === 'btn') return h + sel('cond.v', [[1, 'pulsado'], [0, 'suelto']], c.v);
+  return h + sel('cond.op', [['<', '<'], ['>', '>']], c.op) + sel('cond.v', s.vals.map(v => [v, v + ' ' + s.unit]), c.v);
+}
+const DIGOPTS = [[-1, 'nada']].concat([0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(d => [d, String(d)]));
+const HT = {
+  led: n => '<span class="dot' + (n.v ? '' : ' off') + '" style="background:' + LEDS[n.c].col + '"></span>' +
+    sel('v', [[1, 'encender'], [0, 'apagar']], n.v) + '<span>LED</span>' + sel('c', [['rojo', 'rojo'], ['ámbar', 'ámbar'], ['verde', 'verde']], n.c),
+  wait: n => 'esperar ' + sel('s', [[0.5, '0,5'], [1, '1'], [2, '2'], [5, '5']], n.s) + ' s',
+  tone: n => '♪ sonar zumbador ' + sel('n', NOTES.map(x => [x, x]), n.n) + ' durante ' + sel('s', [[0.25, '0,25'], [0.5, '0,5'], [1, '1']], n.s) + ' s',
+  servo: n => 'mover servo a ' + sel('a', [[0, '0°'], [90, '90°'], [180, '180°']], n.a),
+  rgb: n => '<span class="dot' + (n.col === 'apagado' ? ' off' : '') + '" style="background:' + (RGBC[n.col] || '#000') + '"></span>LED RGB en ' + sel('col', RGBN.map(c => [c, c]), n.col),
+  motor: n => '⟳ motor ' + sel('m', [[0, 'parado'], [1, 'lento'], [2, 'rápido']], n.m),
+  disp: n => 'mostrar ' + sel('d', DIGOPTS, n.d) + ' en la pantalla',
+  'if': n => 'si ' + condHTML(n.cond) + ' entonces',
+  rep: n => '↻ repetir ' + sel('n', [[2, '2'], [3, '3'], [4, '4'], [5, '5'], [10, '10']], n.n) + ' veces',
+  until: n => 'esperar hasta que ' + condHTML(n.cond)
+};
+const CLS = { led: 'c-led', wait: 'c-wait', tone: 'c-tone', servo: 'c-servo', rgb: 'c-rgb', motor: 'c-motor', disp: 'c-disp', 'if': 'c-if', rep: 'c-if', until: 'c-wait' };
+
+const wrap = $('#prog');
+let nodeEl = new WeakMap(), snap = '[]', caret = null;
+function inTree(list, root) {
+  root = root || prog();
+  if (list === root) return true;
+  return root.some(n => (KIDS[n.t] || []).some(k => n[k] && inTree(list, n[k])));
+}
+function listInside(node, list) {
+  return (KIDS[node.t] || []).some(k => node[k] && (node[k] === list || node[k].some(m => listInside(m, list))));
+}
+function render() {
+  const main = prog();
+  if (!caret || !inTree(caret)) caret = main;
+  nodeEl = new WeakMap();
+  wrap.innerHTML = '';
+  wrap.appendChild(el('div', 'blk hat', 'al iniciar la placa'));
+  const fv = el('div', 'cblk forever');
+  fv.appendChild(el('div', 'blk fhead', 'por siempre <small>· bucle principal</small>'));
+  fv.appendChild(mouth(main, true));
+  fv.appendChild(el('div', 'blk ffoot'));
+  wrap.appendChild(fv);
+  snap = JSON.stringify(main);
+  $('#undo').disabled = !hist().length || locked();
+  $('#clear').disabled = locked();
+  document.body.classList.toggle('locked', locked());
+  if (R.on && R.cur) { const e = nodeEl.get(R.cur); if (e) e.classList.add('cur'); }
+  if (EXV()) exDots();
+}
+function mouth(list, isMain) {
+  const m = el('div', 'mouth'); m._list = list;
+  list.forEach(n => m.appendChild(nodeDom(n, list)));
+  const ez = el('div', 'endzone');
+  if (!locked()) {
+    if (list === caret) { m.classList.add('caret'); ez.innerHTML = '<i></i>' + (list.length ? 'aquí se añaden' : (isMain ? 'vacío · pulsa los bloques de la derecha' : 'aquí se añaden')); }
+    else if (!list.length) ez.textContent = 'vacío · clic aquí para meter bloques';
+  } else if (!list.length) ez.textContent = 'vacío';
+  m.appendChild(ez);
+  return m;
+}
+function nodeDom(n, list) {
+  const ks = KIDS[n.t];
+  if (ks) {
+    const d = el('div', 'nd cnt'); d._node = n; d._list = list;
+    const h = el('div', 'blk ch grab ' + CLS[n.t], HT[n.t](n)); d.appendChild(h); nodeEl.set(n, h);
+    ks.forEach((k, i) => {
+      if (n[k] == null) return;
+      if (i) { const e = el('div', 'blk elseh', 'si no'); d.appendChild(e); }
+      d.appendChild(mouth(n[k]));
+    });
+    d.appendChild(el('div', 'blk cfoot'));
+    return d;
+  }
+  const b = el('div', 'nd blk grab ' + CLS[n.t], HT[n.t](n)); b._node = n; b._list = list; nodeEl.set(n, b);
+  return b;
+}
+function commit(fn) {
+  if (locked()) { say('El desafío ya está entregado: los programas no se pueden cambiar.', true); return false; }
+  if (R.on) stop();
+  hist().push(snap); if (hist().length > 60) hist().shift();
+  fn(); save(); leaveCmp(); render();
+  return true;
+}
+function leaveCmp() { if (scopeMode === 'cmp') { scopeMode = TR.ev.length || R.vt ? 'live' : 'empty'; drawScope(); } }
+function add(n, btn) {
+  const list = caret && inTree(caret) ? caret : prog();
+  if (!commit(() => list.push(n))) return;
+  if (KIDS[n.t]) { caret = n[KIDS[n.t][0]]; render(); }
+  const e = nodeEl.get(n);
+  if (e) { e.classList.add('pop'); const er = e.getBoundingClientRect(), wr = wrap.getBoundingClientRect(); if (er.bottom > wr.bottom - 20) wrap.scrollTop += er.bottom - wr.bottom + 40; }
+  if (btn) { btn.classList.remove('flash'); void btn.offsetWidth; btn.classList.add('flash'); }
+}
+function removeNode(n, list) { commit(() => { const i = list.indexOf(n); if (i >= 0) list.splice(i, 1); }); }
+
+// cambiar una casilla de un bloque del programa
+wrap.addEventListener('change', e => {
+  const s = e.target; if (s.tagName !== 'SELECT') return;
+  const nd = s.closest('.nd'); if (!nd) return;
+  if (locked()) { render(); return; }
+  hist().push(snap);
+  const v = s.dataset.num ? Number(s.value) : s.value;
+  if (s.dataset.f === 'cond.s') nd._node.cond = P.defCond(v); else P.setP(nd._node, s.dataset.f, v);
+  save(); leaveCmp(); render();
+});
+
+// clic = quitar · arrastrar = mover · clic en zona amarilla = elegir dónde se añaden
+let drag = null;
+wrap.addEventListener('pointerdown', e => {
+  if (e.button !== 0 || e.target.closest('select') || locked()) return;
+  const g = e.target.closest('.grab');
+  if (!g) {
+    let m = null;
+    const eh = e.target.closest('.elseh');
+    if (eh) m = eh.nextElementSibling;
+    else if (e.target.closest('.fhead,.ffoot')) m = wrap.querySelector('.forever>.mouth');
+    else m = e.target.closest('.mouth');
+    if (m && m._list) { caret = m._list; render(); }
+    return;
+  }
+  const nd = g.closest('.nd');
+  drag = { g, nd, node: nd._node, list: nd._list, x: e.clientX, y: e.clientY, on: false, t: null };
+  try { g.setPointerCapture(e.pointerId); } catch (er) { /* nada */ }
+});
+wrap.addEventListener('pointermove', e => {
+  if (!drag) return;
+  if (!drag.on) {
+    if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
+    if (R.on) stop();
+    drag.on = true;
+    const r = drag.nd.getBoundingClientRect();
+    drag.dx = e.clientX - r.left; drag.dy = e.clientY - r.top;
+    drag.ghost = drag.nd.cloneNode(true); drag.ghost.classList.add('ghost'); drag.ghost.style.width = r.width + 'px';
+    document.body.appendChild(drag.ghost);
+    drag.nd.classList.add('ghosted');
+    drag.line = el('div', 'dropline'); document.body.appendChild(drag.line);
+  }
+  drag.ghost.style.left = (e.clientX - drag.dx) + 'px'; drag.ghost.style.top = (e.clientY - drag.dy) + 'px';
+  const wr = wrap.getBoundingClientRect();
+  if (e.clientY < wr.top + 24) wrap.scrollTop -= 10; else if (e.clientY > wr.bottom - 24) wrap.scrollTop += 10;
+  drag.t = findDrop(e.clientX, e.clientY, drag);
+  if (drag.t) {
+    const rr = drag.t.el.getBoundingClientRect(), y = drag.t.pos === 'top' ? rr.top - 2 : rr.bottom;
+    Object.assign(drag.line.style, { display: 'block', left: (rr.left + (drag.t.indent ? remPx() : 0)) + 'px', top: (y - 2) + 'px', width: Math.max(rr.width, 90) + 'px' });
+  } else drag.line.style.display = 'none';
+});
+function endDrag() {
+  if (!drag) return null;
+  const d = drag; drag = null;
+  if (d.ghost) d.ghost.remove(); if (d.line) d.line.remove(); d.nd.classList.remove('ghosted');
+  return d;
+}
+wrap.addEventListener('pointerup', () => {
+  const d = endDrag(); if (!d) return;
+  if (!d.on) { removeNode(d.node, d.list); return; }
+  const t = d.t; if (!t) return;
+  commit(() => {
+    const si = d.list.indexOf(d.node); d.list.splice(si, 1);
+    let i = t.i; if (t.list === d.list && si < i) i--;
+    t.list.splice(i, 0, d.node);
+  });
+});
+wrap.addEventListener('pointercancel', endDrag);
+function findDrop(x, y, d) {
+  const e = document.elementFromPoint(x, y);
+  if (!e || !wrap.contains(e)) return null;
+  let t = null;
+  const ez = e.closest('.endzone'), g = e.closest('.grab'), cf = e.closest('.cfoot'), m = e.closest('.mouth');
+  if (ez) t = { list: ez.parentNode._list, i: ez.parentNode._list.length, el: ez, pos: 'top' };
+  else if (g) {
+    const nd = g.closest('.nd'), r = g.getBoundingClientRect(), up = y < r.top + r.height / 2;
+    if (g.classList.contains('ch') && !up) t = { list: nd._node[KIDS[nd._node.t][0]], i: 0, el: g, pos: 'bottom', indent: true };
+    else { const i = nd._list.indexOf(nd._node); t = { list: nd._list, i: up ? i : i + 1, el: up ? g : nd, pos: up ? 'top' : 'bottom' }; }
+  } else if (cf) {
+    const nd = cf.closest('.nd'); t = { list: nd._list, i: nd._list.indexOf(nd._node) + 1, el: nd, pos: 'bottom' };
+  } else if (m) t = { list: m._list, i: m._list.length, el: m.lastElementChild, pos: 'top' };
+  else if (e.closest('.fhead,.hat')) { const mm = wrap.querySelector('.forever>.mouth'); t = { list: mm._list, i: 0, el: mm.firstElementChild, pos: 'top' }; }
+  if (!t) return null;
+  if (listInside(d.node, t.list)) return null;
+  return t;
+}
+
+/* ----- paleta ----- */
+let dur = 0.5;
+$('#notes').innerHTML = NOTES.map(n => '<button class="pb c-tone note" data-add=\'{"t":"tone","n":"' + n + '"}\'>' + n + '</button>').join('');
+$('#rgbs').innerHTML = RGBN.map(c => '<button class="pb c-rgb" data-add=\'{"t":"rgb","col":"' + c + '"}\'><span class="dot' + (c === 'apagado' ? ' off' : '') + '" style="background:' + (RGBC[c] || '#000') + '"></span>' + c + '</button>').join('');
+$('#digs').innerHTML = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(d => '<button class="pb c-disp dig" data-add=\'{"t":"disp","d":' + d + '}\'>' + d + '</button>').join('') +
+  '<button class="pb c-disp" data-add=\'{"t":"disp","d":-1}\'>apagar pantalla</button>';
+function buildPalette() {
+  const L = LV();
+  $$('.psec').forEach(s => { s.hidden = s.dataset.mod ? L.mods.indexOf(s.dataset.mod) < 0 : s.dataset.ctl ? !L.ctl.length : false; });
+  const s0 = L.sens[0] || 'btn';
+  const items = [];
+  if (L.ctl.indexOf('if') >= 0) { const c = P.defCond(s0); items.push('<div class="pb pif c-if" role="button" tabindex="0" data-add=\'' + JSON.stringify({ t: 'if', cond: c }) + '\'>si ' + condHTML(c) + ' entonces</div>'); }
+  if (L.ctl.indexOf('rep') >= 0) items.push('<div class="pb pif c-if" role="button" tabindex="0" data-add=\'{"t":"rep","n":3}\'>↻ repetir ' + sel('n', [[2, '2'], [3, '3'], [4, '4'], [5, '5'], [10, '10']], 3) + ' veces</div>');
+  if (L.ctl.indexOf('until') >= 0) { const c = P.defCond(s0); items.push('<div class="pb pif c-wait" role="button" tabindex="0" data-add=\'' + JSON.stringify({ t: 'until', cond: c }) + '\'>esperar hasta que ' + condHTML(c) + '</div>'); }
+  $('#ctls').innerHTML = items.join('');
+  $('#elseTog').hidden = L.ctl.indexOf('if') < 0;
+  $('#cats').innerHTML = $$('.psec').filter(s => !s.hidden).map((s, i) => '<button data-i="' + i + '" style="' + s.getAttribute('style') + '"><i></i>' + s.dataset.cat + '</button>').join('');
+}
+$('#cats').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const s = $$('.psec').filter(x => !x.hidden)[+b.dataset.i], pal = $('#pal');
+  pal.scrollTop = s.offsetTop - pal.offsetTop - 4;
+});
+// en las casillas de la paleta: si se cambia el sensor, se ponen sus opciones
+$('#ctls').addEventListener('change', e => {
+  const s = e.target; if (s.dataset.f !== 'cond.s') return;
+  const pb = s.closest('[data-add]'), n = JSON.parse(pb.dataset.add); n.cond = P.defCond(s.value);
+  pb.dataset.add = JSON.stringify(n);
+  pb.innerHTML = (n.t === 'if' ? 'si ' : 'esperar hasta que ') + condHTML(n.cond) + (n.t === 'if' ? ' entonces' : '');
+});
+$('#durs').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  dur = Number(b.dataset.d); $$('#durs button').forEach(x => x.classList.toggle('on', x === b));
+});
+function palAdd(b) {
+  const n = JSON.parse(b.dataset.add);
+  if (n.t === 'tone') n.s = dur;
+  $$('select', b).forEach(s => P.setP(n, s.dataset.f, s.dataset.num ? Number(s.value) : s.value));
+  if (n.t === 'if') { n.then = []; n.else = $('#withElse').checked ? [] : null; }
+  if (n.t === 'rep') n.body = [];
+  add(n, b);
+}
+$('#pal').addEventListener('click', e => {
+  if (e.target.closest('select')) return;
+  const b = e.target.closest('[data-add]'); if (b) palAdd(b);
+});
+$('#pal').addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('pif')) { e.preventDefault(); palAdd(e.target); }
+});
+
+/* =================== retos =================== */
+const ALLRETOS = [].concat(P.RETOS.L1, P.RETOS.B1, P.RETOS.L2, P.RETOS.B2, P.RETOS.L3, P.RETOS.B3, P.RETOS.L4, P.RETOS.B4);
+const getReto = id => ALLRETOS.find(r => r.id === id) || null;
+const curReto = () => EXV() ? null : getReto(S.reto[S.level]);
+const baseOf = r => r ? (r.target ? getReto(r.target) : r) : null;
+function retoCount() {
+  const L = P.RETOS['L' + LEVELS[S.level].n], d = L.filter(r => S.done[r.id]).length;
+  $('#retosCount').textContent = d + '/' + L.length;
+}
+function renderReto() {
+  const box = $('#retoCard');
+  if (EXV()) {
+    const ex = curEx(), i = S.exam.cur;
+    box.hidden = false;
+    box.innerHTML = '<span class="no bug">' + (i + 1) + '</span><div class="tx"><b>Desafío · ejercicio ' + (i + 1) + ' de ' + S.exam.ids.length + ' · ' + esc(ex.tit) +
+      (exActivo() ? '' : ' <span class="done" style="color:var(--red)">entregado</span>') + '</b><p>' + esc(ex.txt) + '</p></div>';
+    return;
+  }
+  const r = curReto();
+  retoCount();
+  if (!r) { box.hidden = true; return; }
+  const n = LEVELS[S.level].n, bug = !!r.target, list = P.RETOS[(bug ? 'B' : 'L') + n], i = list.indexOf(r) + 1;
+  const st = S.done[r.id];
+  box.hidden = false;
+  box.innerHTML = '<span class="no' + (bug ? ' bug' : '') + '">' + (bug ? '✗' : String(i).padStart(2, '0')) + '</span>' +
+    '<div class="tx"><b>' + (bug ? 'Encuentra el fallo · ' : 'Reto · ') + esc(r.tit) + (st ? ' <span class="done">' + (st === 'ok' ? '✓ ¡hecho!' : '✓ con ayuda') + '</span>' : '') + '</b><p>' + esc(r.txt) + '</p></div>' +
+    '<div class="acts"><button class="chip go" id="check" title="Comparar tu programa con lo que pide el reto">✓ Comprobar</button><button class="chip" id="sol" title="Cargar la solución (se puede deshacer)">Solución</button></div>' +
+    '<button class="x" id="noReto" title="Quitar el reto">✕</button>';
+  $('#check').onclick = check; $('#sol').onclick = showSol;
+  $('#noReto').onclick = () => { S.reto[S.level] = null; save(); leaveCmp(); renderReto(); };
+}
+function check() {
+  if (EXV()) return;
+  const r = curReto(), base = baseOf(r); if (!base) return;
+  stop();
+  const main = prog();
+  if (!main.length) { say('El programa está vacío: primero haz el programa y luego compruébalo.', true); return; }
+  const res = P.compare(base, main);
+  cmp = { res, T: base.T, rows: P.rowsFor([main, base.sol], base.scen) };
+  scopeMode = 'cmp'; drawScope();
+  if (res.ok) {
+    S.done[r.id] = S.help[r.id] && S.done[r.id] !== 'ok' ? 'help' : 'ok';
+    save(); renderReto();
+    const st = $('#stamp'); st.classList.remove('show'); void st.offsetWidth; st.classList.add('show');
+    say('¡Bien! Tu cronograma es igual que el del reto.' + (S.help[r.id] ? ' (Has mirado la solución: queda «con ayuda».)' : ''));
+  } else say(P.describe(res.first, base) + ' Mira la raya roja del cronograma.', true);
+}
+function showSol() {
+  if (EXV()) return;
+  const r = curReto(), base = baseOf(r); if (!base) return;
+  commit(() => { setProg(clone(base.sol)); });
+  S.help[r.id] = 1; caret = null; save(); render();
+  say('Esta es una solución. Pulsa ▶ Ejecutar para verla funcionar. ↶ Deshacer recupera tu programa.');
+}
+function chooseReto(id) {
+  const r = getReto(id);
+  S.reto[S.level] = id;
+  if (r && r.prog) {
+    commit(() => { setProg(clone(r.prog)); }); caret = null; render();
+    say('Programa con fallo cargado. Ejecútalo, busca el error y arréglalo. ↶ Deshacer recupera el tuyo.');
+  } else hideMsg();
+  save(); leaveCmp(); renderReto(); closeModals();
+}
+function buildRetos() {
+  const n = LEVELS[S.level].n, cur = S.reto[S.level];
+  const NOM = { 1: '1 · actuadores', 2: '2 · entradas', 3: '3 · más salidas', 4: '4 · bucles' };
+  const card = (r, i, bug) => {
+    const st = S.done[r.id] || '';
+    return '<button class="rc ' + st + (r.id === cur ? ' cur' : '') + '" data-id="' + r.id + '"><span class="no' + (bug ? ' bug' : '') + '">' + (bug ? '✗' : String(i).padStart(2, '0')) + '</span>' +
+      '<span class="tx"><b>' + esc(r.tit) + '</b><span>' + esc(r.txt) + '</span></span><span class="st">' + (st === 'ok' ? '¡hecho!' : st === 'help' ? 'con ayuda' : '') + '</span></button>';
+  };
+  $('#retoList').innerHTML = '<h4>Retos · Nivel ' + NOM[n] + '</h4><div class="rgrid">' + P.RETOS['L' + n].map((r, i) => card(r, i + 1)).join('') + '</div>' +
+    '<h4>Encuentra el fallo</h4><div class="rgrid">' + P.RETOS['B' + n].map((r, i) => card(r, i + 1, true)).join('') + '</div>';
+}
+$('#retoList').addEventListener('click', e => { const b = e.target.closest('.rc'); if (b) chooseReto(b.dataset.id); });
+$('#libre').onclick = () => { S.reto[S.level] = null; save(); leaveCmp(); renderReto(); closeModals(); };
+
+/* =================== Arduino =================== */
+function inoCode(main) {
+  const u = P.scan(main, {}), L = [], leds = {};
+  (function w(list) { list.forEach(n => { if (n.t === 'led') leds[n.c] = 1; (KIDS[n.t] || []).forEach(k => { if (n[k]) w(n[k]); }); }); })(main);
+  L.push('// Programa hecho con Placa virtual · Computación y Robótica 2.º ESO');
+  if (u.sv) L.push('#include <Servo.h>');
+  if (u.d7) L.push('#include <TM1637Display.h>');
+  L.push('');
+  ['rojo', 'ámbar', 'verde'].forEach(c => { if (leds[c]) L.push('const int ' + LEDS[c].id + ' = ' + LEDS[c].pin + ';      // LED ' + c); });
+  if (u.bz) L.push('const int zumbador = 8;');
+  if (u.mo) L.push('const int motor = 10;        // a través de un transistor');
+  if (u.rgb) L.push('const int rgbRojo = 11;', 'const int rgbVerde = 12;', 'const int rgbAzul = 13;');
+  if (u.btn) L.push('const int pulsador = 5;');
+  if (u.dist) L.push('const int trigPin = 6;      // ultrasonidos: disparo', 'const int echoPin = 7;      // ultrasonidos: eco');
+  if (u.luz) L.push('const int sensorLuz = A0;');
+  if (u.pot) L.push('const int potenciometro = A1;');
+  if (u.temp) L.push('const int sensorTemp = A4;  // LM35');
+  if (u.sv) L.push('Servo barrera;               // servo en el pin 9');
+  if (u.d7) L.push('TM1637Display pantalla(A2, A3);');
+  if (L[L.length - 1] !== '') L.push('');
+  L.push('void setup() {');
+  ['rojo', 'ámbar', 'verde'].forEach(c => { if (leds[c]) L.push('  pinMode(' + LEDS[c].id + ', OUTPUT);'); });
+  if (u.bz) L.push('  pinMode(zumbador, OUTPUT);');
+  if (u.mo) L.push('  pinMode(motor, OUTPUT);');
+  if (u.rgb) L.push('  pinMode(rgbRojo, OUTPUT);', '  pinMode(rgbVerde, OUTPUT);', '  pinMode(rgbAzul, OUTPUT);');
+  if (u.btn) L.push('  pinMode(pulsador, INPUT);');
+  if (u.dist) L.push('  pinMode(trigPin, OUTPUT);', '  pinMode(echoPin, INPUT);');
+  if (u.sv) L.push('  barrera.attach(9);');
+  if (u.d7) L.push('  pantalla.setBrightness(7);', '  pantalla.clear();');
+  L.push('}', '', 'void loop() {');
+  if (!main.length) L.push('  // (vacío)'); else body(main, '  ', L, 0);
+  L.push('}');
+  if (u.dist) L.push('', '// Mide la distancia en cm con el sensor de ultrasonidos', 'long distanciaCm() {', '  digitalWrite(trigPin, LOW);', '  delayMicroseconds(2);',
+    '  digitalWrite(trigPin, HIGH);', '  delayMicroseconds(10);', '  digitalWrite(trigPin, LOW);', '  return pulseIn(echoPin, HIGH) / 58;', '}');
+  if (u.temp) L.push('', '// Temperatura en °C con un LM35', 'float temperatura() {', '  return analogRead(sensorTemp) * 500.0 / 1023.0;', '}');
+  return L.join('\n');
+}
+function condC(c) {
+  if (c.s === 'btn') return 'digitalRead(pulsador) == ' + (c.v ? 'HIGH' : 'LOW');
+  if (c.s === 'dist') return 'distanciaCm() ' + c.op + ' ' + c.v;
+  if (c.s === 'temp') return 'temperatura() ' + c.op + ' ' + c.v;
+  return 'map(analogRead(' + (c.s === 'luz' ? 'sensorLuz' : 'potenciometro') + '), 0, 1023, 0, 100) ' + c.op + ' ' + c.v;
+}
+function body(list, ind, L, depth) {
+  list.forEach(n => {
+    if (n.t === 'led') L.push(ind + 'digitalWrite(' + LEDS[n.c].id + ', ' + (n.v ? 'HIGH' : 'LOW') + ');');
+    else if (n.t === 'wait') L.push(ind + 'delay(' + Math.round(n.s * 1000) + ');');
+    else if (n.t === 'tone') { L.push(ind + 'tone(zumbador, ' + HZ[n.n] + ', ' + Math.round(n.s * 900) + ');   // ' + n.n); L.push(ind + 'delay(' + Math.round(n.s * 1000) + ');'); }
+    else if (n.t === 'servo') L.push(ind + 'barrera.write(' + n.a + ');');
+    else if (n.t === 'rgb') { const p = P.RGBP[n.col]; L.push(ind + 'digitalWrite(rgbRojo, ' + (p[0] ? 'HIGH' : 'LOW') + ');   // ' + n.col, ind + 'digitalWrite(rgbVerde, ' + (p[1] ? 'HIGH' : 'LOW') + ');', ind + 'digitalWrite(rgbAzul, ' + (p[2] ? 'HIGH' : 'LOW') + ');'); }
+    else if (n.t === 'motor') L.push(ind + 'analogWrite(motor, ' + [0, 150, 255][n.m] + ');   // ' + MOTOR[n.m]);
+    else if (n.t === 'disp') L.push(ind + (n.d < 0 ? 'pantalla.clear();' : 'pantalla.showNumberDec(' + n.d + ');'));
+    else if (n.t === 'until') L.push(ind + 'while (!(' + condC(n.cond) + ')) {', ind + '  delay(10);', ind + '}');
+    else if (n.t === 'rep') { const v = 'ijk'[depth] || 'n' + depth; L.push(ind + 'for (int ' + v + ' = 0; ' + v + ' < ' + n.n + '; ' + v + '++) {'); body(n.body, ind + '  ', L, depth + 1); L.push(ind + '}'); }
+    else if (n.t === 'if') {
+      L.push(ind + 'if (' + condC(n.cond) + ') {'); body(n.then, ind + '  ', L, depth);
+      if (n.else) { L.push(ind + '} else {'); body(n.else, ind + '  ', L, depth); }
+      L.push(ind + '}');
+    }
+  });
+}
+function hl(code) {
+  const re = /(\/\/.*$)|(#include|<Servo\.h>|<TM1637Display\.h>)|(\b(?:void|const|int|long|float|if|else|return|for|while)\b)|(\b(?:HIGH|LOW|OUTPUT|INPUT|A0|A1|A2|A3|A4)\b)|(\b\d+(?:\.\d+)?\b)|(\b[a-zA-Z_]\w*(?=\())/gm;
+  let out = '', last = 0, m;
+  while ((m = re.exec(code))) {
+    out += esc(code.slice(last, m.index));
+    const c = m[1] ? 'cm' : m[2] ? 'pp' : m[3] ? 'kw' : m[4] ? 'ct' : m[5] ? 'nm' : 'fn';
+    out += '<span class="' + c + '">' + esc(m[0]) + '</span>'; last = re.lastIndex;
+  }
+  return out + esc(code.slice(last));
+}
+$('#inoBtn').onclick = () => { $('#inoCode').innerHTML = hl(inoCode(prog())); openModal('#mIno'); };
+$('#inoCopy').onclick = () => {
+  const t = inoCode(prog()), done = () => { $('#inoCopy').textContent = '¡Copiado!'; setTimeout(() => { $('#inoCopy').textContent = 'Copiar'; }, 1500); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, () => {});
+  else { const ta = el('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) { /* nada */ } ta.remove(); }
+};
+
+/* =================== imágenes (Classroom y PDF) =================== */
+function progCanvas(main) {
+  const h = P.cProg(document.createElement('canvas').getContext('2d'), main, 0, 0);
+  const c = document.createElement('canvas'); c.width = Math.ceil(P.progWidth(main) + 30); c.height = h + 24;
+  const x = c.getContext('2d'); x.fillStyle = '#fbf8ef'; x.fillRect(0, 0, c.width, c.height); P.cProg(x, main, 12, 12);
+  return c;
+}
+function scopeCanvas(main, ex, W, rowH) {
+  const scen = ex && ex.scen ? P.SCEN[ex.scen] : null, Tend = ex ? ex.T : 15;
+  const tr = P.simulate(main, scen, Tend, IN), rows = P.rowsFor([main], ex && ex.scen);
+  const c = document.createElement('canvas'); c.width = W; c.height = rows.length * (rowH || 46) + 40;
+  P.paintScope(c.getContext('2d'), c.width, c.height, { fs: 15, rows, t0: 0, t1: Tend, series: [{ tr }] });
+  return { c, Tend };
+}
+$('#png').onclick = () => {
+  stop();
+  const main = prog(), r = curReto(), base = EXV() ? curEx() : baseOf(r);
+  const pc = progCanvas(main), sc = scopeCanvas(main, base, 780);
+  const W = Math.max(1600, pc.width + sc.c.width + 140), H = Math.max(pc.height + 230, sc.c.height + 260);
+  const cnv = document.createElement('canvas'); cnv.width = W; cnv.height = H; const c = cnv.getContext('2d');
+  c.fillStyle = '#fbf8ef'; c.fillRect(0, 0, W, H); c.strokeStyle = '#14201a'; c.lineWidth = 4; c.strokeRect(16, 16, W - 32, H - 32);
+  c.fillStyle = '#14201a'; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
+  c.font = '900 48px "Big Shoulders Stencil", "Arial Narrow", sans-serif'; c.fillText('PLACA VIRTUAL', 44, 80);
+  c.font = '600 16px "Martian Mono", monospace'; c.fillStyle = '#55605a';
+  const titulo = EXV() ? 'Desafío: ' + curEx().tit : r ? (r.target ? 'Encuentra el fallo: ' : 'Reto: ') + r.tit : 'Programa libre';
+  c.fillText(titulo + '  ·  Nivel ' + LV().n + '  ·  ' + new Date().toLocaleDateString('es-ES'), 46, 112);
+  if (r && S.done[r.id]) { c.font = '700 34px Caveat, cursive'; c.fillStyle = '#1f8a4c'; c.fillText(S.done[r.id] === 'ok' ? '✓ ¡reto superado!' : '✓ superado con ayuda', W - 380, 84); }
+  c.drawImage(pc, 34, 138);
+  const sx = W - sc.c.width - 46;
+  c.font = '800 13px "Martian Mono", monospace'; c.fillStyle = '#14201a'; c.fillText('CRONOGRAMA (0–' + sc.Tend + ' s)', sx, 142);
+  c.drawImage(sc.c, sx, 152);
+  c.font = '600 12px "Martian Mono", monospace'; c.fillStyle = '#55605a';
+  c.fillText('Placa virtual · © 2026 Juan Salguero Salguero · CC BY-NC-SA 4.0', 46, H - 34);
+  cnv.toBlob(b => {
+    if (!b) return;
+    const a = el('a'); a.href = URL.createObjectURL(b);
+    a.download = 'placa-virtual-' + (EXV() ? 'desafio-' + (S.exam.cur + 1) : r ? r.id : 'programa') + '.png';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }, 'image/png');
+};
+
+/* =================== EXAMEN =================== */
+function fmtT(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+function exDots() {
+  if (!S.exam) return;
+  $('#exDots').innerHTML = S.exam.ids.map((_, i) => '<button class="' + (S.exam.progs[i].length ? 'done ' : '') + (i === S.exam.cur ? 'cur' : '') + '" data-i="' + i + '" title="Ejercicio ' + (i + 1) + '">' + (i + 1) + '</button>').join('');
+  $('#exN').textContent = S.exam.cur + 1; $('#exT').textContent = S.exam.ids.length;
+  $('#exPrev').disabled = S.exam.cur === 0; $('#exNext').disabled = S.exam.cur === S.exam.ids.length - 1;
+}
+$('#exDots').addEventListener('click', e => { const b = e.target.closest('button'); if (b) goEx(+b.dataset.i); });
+$('#exPrev').onclick = () => goEx(S.exam.cur - 1);
+$('#exNext').onclick = () => goEx(S.exam.cur + 1);
+function goEx(i) {
+  if (!S.exam || i < 0 || i >= S.exam.ids.length || i === S.exam.cur) return;
+  stop(); S.exam.cur = i; caret = null; save(); applyView();
+}
+function tick() {
+  if (!exActivo()) return;
+  const left = S.exam.inicio + MS - Date.now(), tl = $('#timeLeft');
+  tl.textContent = fmtT(left); tl.classList.toggle('low', left < 5 * 60 * 1000);
+  if (left <= 0) finishExam(true);
+}
+setInterval(tick, 1000);
+$('#examBtn').onclick = () => {
+  if (exActivo()) { enterExam(); return; }
+  if (S.exam && S.exam.codigo) { openFin(false); return; }
+  openStart();
+};
+function openStart() {
+  $$('.xMin').forEach(e => { e.textContent = P.MINUTOS; });
+  $('#xNombre').value = S.name || ''; $('#xCurso').value = S.group || ''; $('#xErr').textContent = '';
+  closeModals(); openModal('#mExam'); setTimeout(() => $('#xNombre').focus(), 50);
+}
+$('#xStart').onclick = () => {
+  // el desafío siempre es de los 4 niveles (el alumnado no elige)
+  const nom = $('#xNombre').value.trim(), cur = $('#xCurso').value.trim(), lvs = [1, 2, 3, 4];
+  if (nom.length < 3) { $('#xErr').textContent = 'Escribe tu nombre y apellidos: saldrán en el PDF.'; return; }
+  S.name = nom; S.group = cur;
+  const ids = P.elegirExamen(lvs);
+  S.exam = { ids, niveles: lvs, inicio: Date.now(), activo: true, progs: ids.map(() => []), cur: 0 };
+  Object.keys(HIST).forEach(k => { if (k[0] === 'X') delete HIST[k]; });
+  save(); closeModals(); enterExam();
+};
+function enterExam() { stop(); S.view = 'X'; caret = null; save(); applyView(); tick(); }
+function leaveExam() { if (exActivo()) return; stop(); S.view = 'P'; caret = null; save(); applyView(); }
+$('#exSalir').onclick = leaveExam;
+$('#entregar').onclick = () => {
+  $('#eLeft').textContent = fmtT(S.exam.inicio + MS - Date.now());
+  const vac = S.exam.progs.filter(p => !p.length).length;
+  $('#eVacios').textContent = vac ? 'Ojo: tienes ' + vac + (vac > 1 ? ' ejercicios vacíos.' : ' ejercicio vacío.') : '';
+  openModal('#mEntregar');
+};
+$('#eYes').onclick = () => { closeModals(); finishExam(false); };
+function exDatos() {
+  const E = S.exam;
+  return { inicio: E.inicio, duracion: (E.fin || Date.now()) - E.inicio, niveles: E.niveles, ids: E.ids, progs: E.progs, nombre: S.name, curso: S.group };
+}
+function finishExam(auto) {
+  if (!exActivo()) return;
+  stop();
+  S.exam.activo = false; S.exam.fin = Math.min(Date.now(), S.exam.inicio + MS);
+  S.exam.codigo = P.codificar(exDatos()); save();
+  applyView(); openFin(auto);
+}
+function openFin(auto) {
+  $('#fTitle').textContent = auto ? '¡Se acabó el tiempo!' : '¡Desafío terminado!';
+  $('#fErr').textContent = ''; closeModals(); openModal('#mFin');
+}
+$('#fVer').onclick = () => { closeModals(); enterExam(); };
+$('#fPractica').onclick = () => { closeModals(); leaveExam(); };
+$('#fNuevo').onclick = () => openStart();
+$('#fPdf').onclick = function () {
+  const btn = this; btn.disabled = true; btn.textContent = 'Preparando…';
+  makePDF().then(() => { btn.disabled = false; btn.textContent = '⬇ Descargar PDF'; },
+    e => { btn.disabled = false; btn.textContent = '⬇ Descargar PDF'; $('#fErr').textContent = 'No se pudo crear el PDF (' + e.message + '). Comprueba la conexión a internet y vuelve a intentarlo.'; });
+};
+function loadScript(src) {
+  return new Promise((ok, ko) => {
+    if (document.querySelector('script[src="' + src + '"]')) { ok(); return; }
+    const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => ko(new Error('sin conexión')); document.head.appendChild(s);
+  });
+}
+const PROFE_URL = 'https://jsalsal003.github.io/placa/profe.html';
+function makePDF() {
+  return Promise.all([loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'), loadScript('https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js')])
+    .then(() => (document.fonts && document.fonts.ready) || null)
+    .then(() => {
+      const E = S.exam, doc = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      const d = new Date(E.inicio), fecha = d.toLocaleDateString('es-ES') + ' ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      const usado = fmtT(E.fin - E.inicio), quien = S.name + (S.group ? '  ·  ' + S.group : '') + '  ·  ' + fecha + '  ·  tiempo: ' + usado;
+      // k = mm por píxel; con tope para que un programa corto no salga gigante
+      const fit = (c, x, y, mw, mh) => { const k = Math.min(mw / c.width, mh / c.height, 0.24); doc.addImage(c.toDataURL('image/png'), 'PNG', x, y, c.width * k, c.height * k, undefined, 'FAST'); };
+      E.ids.forEach((id, i) => {
+        if (i) doc.addPage();
+        const ex = P.EXAM[id], pg = E.progs[i];
+        doc.setTextColor(20); doc.setFont('helvetica', 'bold'); doc.setFontSize(15);
+        doc.text('Desafío de robótica  ·  Ejercicio ' + (i + 1) + ' de ' + E.ids.length + ': ' + ex.tit, 14, 14);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.text(quien + '  ·  nivel ' + ex.lv, 14, 20);
+        doc.setFontSize(11); doc.text(doc.splitTextToSize('Enunciado: ' + ex.txt, 268), 14, 28);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.text('TU PROGRAMA', 14, 42); doc.text('LO QUE HACE (cronograma simulado)', 150, 42);
+        if (pg.length) fit(progCanvas(pg), 14, 45, 130, 150);
+        else { doc.setFont('helvetica', 'italic'); doc.setFontSize(12); doc.text('(sin programa)', 14, 52); }
+        fit(scopeCanvas(pg, ex, 900, 80).c, 150, 45, 133, 150);
+      });
+      doc.addPage();
+      doc.setTextColor(20); doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.text('Código para el profesor', 148.5, 22, { align: 'center' });
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.text(quien, 148.5, 30, { align: 'center' });
+      const qr = qrcode(0, 'M'); qr.addData(PROFE_URL + '#r=' + E.codigo); qr.make();
+      const n = qr.getModuleCount(), size = 130, cell = size / n, x0 = 148.5 - size / 2, y0 = 40;
+      doc.setFillColor(20, 32, 26);
+      for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) doc.rect(x0 + c * cell, y0 + r * cell, cell + .05, cell + .05, 'F');
+      doc.setFontSize(9); doc.setTextColor(90);
+      doc.text('El profesor lo escanea con el corrector de la Placa virtual (con contraseña) y obtiene la nota y la corrección.', 148.5, y0 + size + 10, { align: 'center' });
+      doc.text('© 2026 Juan Salguero Salguero · CC BY-NC-SA 4.0', 148.5, 200, { align: 'center' });
+      const who = (S.name || 'alumno').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '_');
+      doc.save('desafio_robotica_' + who + '.pdf');
+    });
+}
+
+/* =================== vista (práctica o examen) =================== */
+function applyView() {
+  const L = lvKey(), ex = EXV();
+  document.body.classList.remove('L1', 'L2', 'L3', 'L4'); document.body.classList.add(L);
+  document.body.classList.toggle('tall', L !== 'L1');
+  document.body.classList.toggle('in-exam', ex);
+  $$('.lv').forEach(b => b.classList.toggle('on', ex ? b.id === 'examBtn' : b.dataset.level === S.level));
+  $('#levels').hidden = ex; $('#exBar').hidden = !ex; $('#retosBtn').hidden = ex; $('#resetAll').hidden = exActivo();
+  if (ex) {
+    $('#entregar').hidden = !exActivo(); $('#exSalir').hidden = exActivo();
+    const tl = $('#timeLeft'); tl.classList.toggle('fin', !exActivo()); if (!exActivo()) { tl.textContent = 'entregado'; tl.classList.remove('low'); }
+    exDots();
+  }
+  resetOut(); buildBoard(); buildPalette(); render(); renderReto(); updMute(); hideMsg();
+  scopeMode = 'empty'; TR.reset(); R.vt = 0; liveRows = P.rowsFor([prog()]);
+  requestAnimationFrame(() => { fitBoard(); drawScope(); });
+}
+function setLevel(L) {
+  if (L === S.level && !EXV()) return;
+  stop(); S.level = L; S.view = 'P'; caret = null; save(); applyView();
+}
+$$('.lv[data-level]').forEach(b => { b.onclick = () => { if (!exActivo()) setLevel(b.dataset.level); }; });
+
+/* =================== mensajes, ventanas y botones =================== */
+let msgT = null;
+function say(t, bad) {
+  const m = $('#msg'); m.textContent = t; m.classList.toggle('bad', !!bad); m.classList.add('show');
+  clearTimeout(msgT); msgT = setTimeout(hideMsg, bad ? 12000 : 6000);
+}
+function hideMsg() { $('#msg').classList.remove('show'); }
+$('#msg').onclick = hideMsg;
+function openModal(id) { $(id).hidden = false; }
+function closeModals() { $$('.modal').forEach(m => { m.hidden = true; }); }
+$$('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m || e.target.closest('[data-close]')) closeModals(); }));
+$('#retosBtn').onclick = () => { buildRetos(); openModal('#mRetos'); };
+$('#helpBtn').onclick = () => openModal('#mHelp');
+// Borrar el progreso (equipos compartidos entre grupos): se quita todo lo guardado y se recarga
+$('#resetAll').onclick = () => {
+  if (exActivo()) { say('Durante el desafío no se puede borrar el progreso.', true); return; }
+  $('#bPdf').parentNode.hidden = !(S.exam && S.exam.codigo);
+  openModal('#mBorrar');
+};
+$('#bYes').onclick = () => {
+  stop();
+  try { localStorage.removeItem(KEY); } catch (e) { /* nada */ }
+  location.reload();
+};
+
+$('#run').onclick = () => { if (R.on && R.step) { R.step = false; updRun(); if (R.gate) R.gate(); } else start(false); };
+$('#stop').onclick = () => stop();
+$('#step').onclick = () => {
+  if (!R.on) { start(true); return; }
+  if (!R.step) { R.step = true; updRun(); return; }
+  if (R.gate) R.gate();
+};
+$('#fast').onclick = () => {
+  if (R.on) { R.vt = nowVT(); R.base = { vt: R.vt, real: performance.now() }; }
+  R.speed = R.speed > 1 ? 1 : 3; S.speed = R.speed; save();
+  $('#fast').textContent = '×' + R.speed; $('#fast').classList.toggle('on', R.speed > 1);
+};
+$('#undo').onclick = () => {
+  if (!hist().length || locked()) return;
+  if (R.on) stop();
+  setProg(P.clean(JSON.parse(hist().pop()))); caret = null; save(); leaveCmp(); render();
+};
+$('#clear').onclick = () => {
+  if (!prog().length) return;
+  if (commit(() => { prog().length = 0; })) say('Programa borrado. ↶ Deshacer lo recupera.');
+};
+function updMute() {
+  const b = $('#mute');
+  if (EXV()) { b.textContent = '♪ Sonido: no (desafío)'; b.disabled = true; b.classList.add('on'); return; }
+  b.disabled = false; b.textContent = '♪ Sonido: ' + (S.mute ? 'no' : 'sí'); b.classList.toggle('on', !!S.mute);
+}
+$('#mute').onclick = () => { if (EXV()) return; S.mute = !S.mute; save(); updMute(); if (S.mute) toneOff(); else if (OUT.bz) toneOn(OUT.bz); };
+
+document.addEventListener('keydown', e => {
+  const modal = $$('.modal').some(m => !m.hidden);
+  if (e.key === 'Escape') { if (modal) closeModals(); else if (R.on) stop(); return; }
+  if (modal) return;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.target.closest('input,textarea')) { e.preventDefault(); $('#undo').click(); }
+  else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); $('#run').click(); }
+});
+addEventListener('resize', () => { fitBoard(); drawScope(); });
+
+/* =================== arranque =================== */
+R.speed = S.speed === 3 ? 3 : 1; $('#fast').textContent = '×' + R.speed; $('#fast').classList.toggle('on', R.speed > 1);
+updRun();
+applyView();
+if (exActivo() && S.exam.inicio + MS <= Date.now()) finishExam(true); // se acabó el tiempo mientras estaba cerrado
+else if (exActivo()) tick();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawScope);
+window.Placa = { P, get S() { return S; }, applyView, setLevel }; // para pruebas
+})();
+</script>
+</body>
+</html>

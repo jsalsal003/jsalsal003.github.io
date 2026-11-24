@@ -1,0 +1,47 @@
+{
+  "app": "taller-plano",
+  "version": 1,
+  "nombre": "Soporte en L - vistas",
+  "unidad": "mm",
+  "escala": [1, 1],
+  "hoja": {
+    "formato": "A4",
+    "orientacion": "apaisada",
+    "margen": 10,
+    "cajetin": "ancho",
+    "origen": [0, 210],
+    "datos": { "titulo": "Soporte en L · alzado, planta y perfil", "nombre": "", "curso": "", "fecha": "", "numero": "2", "centro": "" }
+  },
+  "rejilla": { "paso": 5, "ver": true, "iman": true },
+  "estiloCota": { "texto": 3.5, "flecha": 3, "extremo": "flecha", "sobresale": 2, "hueco": 1, "separacion": 8, "decimales": 1, "unidad": null, "decAng": 0 },
+  "capaActual": "0",
+  "entidades": [
+    { "id": "a1", "tipo": "polilinea", "capa": "0", "cerrada": true, "pts": [[40, 122], [100, 122], [100, 137], [60, 137], [60, 167], [40, 167]] },
+    { "id": "a2", "tipo": "linea", "capa": "ocultas", "a": [72, 122], "b": [72, 137] },
+    { "id": "a3", "tipo": "linea", "capa": "ocultas", "a": [88, 122], "b": [88, 137] },
+    { "id": "a4", "tipo": "linea", "capa": "ejes", "a": [80, 118], "b": [80, 141] },
+
+    { "id": "pl1", "tipo": "polilinea", "capa": "0", "cerrada": true, "pts": [[40, 52], [100, 52], [100, 92], [40, 92]] },
+    { "id": "pl2", "tipo": "linea", "capa": "0", "a": [60, 52], "b": [60, 92] },
+    { "id": "pl3", "tipo": "circulo", "capa": "0", "c": [80, 72], "r": 8 },
+    { "id": "pl4", "tipo": "linea", "capa": "ejes", "a": [68, 72], "b": [92, 72] },
+    { "id": "pl5", "tipo": "linea", "capa": "ejes", "a": [80, 60], "b": [80, 84] },
+
+    { "id": "pf1", "tipo": "polilinea", "capa": "0", "cerrada": true, "pts": [[130, 122], [170, 122], [170, 167], [130, 167]] },
+    { "id": "pf2", "tipo": "linea", "capa": "ocultas", "a": [130, 137], "b": [170, 137] },
+    { "id": "pf3", "tipo": "linea", "capa": "ocultas", "a": [142, 122], "b": [142, 137] },
+    { "id": "pf4", "tipo": "linea", "capa": "ocultas", "a": [158, 122], "b": [158, 137] },
+    { "id": "pf5", "tipo": "linea", "capa": "ejes", "a": [150, 118], "b": [150, 141] },
+
+    { "id": "c1", "tipo": "cota", "capa": "cotas", "clase": "lineal", "dir": "v", "p1": [40, 122], "p2": [40, 167], "pos": [30, 144.5], "r1": { "id": "a1", "k": "v0" }, "r2": { "id": "a1", "k": "v5" } },
+    { "id": "c2", "tipo": "cota", "capa": "cotas", "clase": "lineal", "dir": "v", "p1": [100, 122], "p2": [100, 137], "pos": [110, 129.5], "r1": { "id": "a1", "k": "v1" }, "r2": { "id": "a1", "k": "v2" } },
+    { "id": "c3", "tipo": "cota", "capa": "cotas", "clase": "lineal", "dir": "h", "p1": [40, 167], "p2": [60, 167], "pos": [50, 177], "r1": { "id": "a1", "k": "v5" }, "r2": { "id": "a1", "k": "v4" } },
+    { "id": "c4", "tipo": "cota", "capa": "cotas", "clase": "lineal", "dir": "h", "p1": [80, 72], "p2": [100, 52], "pos": [90, 44], "r1": { "id": "pl3", "k": "c" }, "r2": { "id": "pl1", "k": "v1" } },
+    { "id": "c5", "tipo": "cota", "capa": "cotas", "clase": "lineal", "dir": "h", "p1": [40, 52], "p2": [100, 52], "pos": [70, 36], "r1": { "id": "pl1", "k": "v0" }, "r2": { "id": "pl1", "k": "v1" } },
+    { "id": "c6", "tipo": "cota", "capa": "cotas", "clase": "lineal", "dir": "v", "p1": [80, 72], "p2": [100, 52], "pos": [110, 62], "r1": { "id": "pl3", "k": "c" }, "r2": { "id": "pl1", "k": "v1" } },
+    { "id": "c7", "tipo": "cota", "capa": "cotas", "clase": "diametro", "c": [80, 72], "r": 8, "pos": [94, 103], "rc": { "id": "pl3" } },
+    { "id": "c8", "tipo": "cota", "capa": "cotas", "clase": "lineal", "dir": "h", "p1": [130, 122], "p2": [170, 122], "pos": [150, 112], "r1": { "id": "pf1", "k": "v0" }, "r2": { "id": "pf1", "k": "v1" } }
+  ],
+  "defs": {},
+  "sigId": 100
+}

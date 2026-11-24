@@ -1,0 +1,30 @@
+{
+  "app": "taller-plano",
+  "version": 1,
+  "nombre": "Dormitorio modelo",
+  "unidad": "cm",
+  "escala": [1, 20],
+  "hoja": {
+    "formato": "A4",
+    "orientacion": "apaisada",
+    "margen": 10,
+    "cajetin": "compacto",
+    "origen": [32.5, 167.5],
+    "datos": { "titulo": "Dormitorio · planta", "nombre": "", "curso": "2º ESO", "fecha": "", "numero": "1", "centro": "" }
+  },
+  "rejilla": { "paso": 100, "ver": true, "iman": true },
+  "estiloCota": { "texto": 3.5, "flecha": 3, "extremo": "flecha", "sobresale": 2, "hueco": 1, "separacion": 8, "decimales": 0, "unidad": null, "decAng": 0 },
+  "capaActual": "0",
+  "entidades": [
+    { "id": "p1", "tipo": "pared", "capa": "paredes", "a": [-75, -75], "b": [3275, -75], "grosor": 150, "altura": 2500 },
+    { "id": "p2", "tipo": "pared", "capa": "paredes", "a": [3275, -75], "b": [3275, 2875], "grosor": 150, "altura": 2500 },
+    { "id": "p3", "tipo": "pared", "capa": "paredes", "a": [3275, 2875], "b": [-75, 2875], "grosor": 150, "altura": 2500 },
+    { "id": "p4", "tipo": "pared", "capa": "paredes", "a": [-75, 2875], "b": [-75, -75], "grosor": 150, "altura": 2500 },
+    { "id": "h1", "tipo": "hueco", "capa": "paredes", "pared": "p4", "clase": "ventana", "ref": "arquitectura/ventana", "pos": 875, "ancho": 1200, "alto": 1200, "antepecho": 900, "abre": 1, "bisagra": "ini", "color": "#e8eef2" },
+    { "id": "h2", "tipo": "hueco", "capa": "paredes", "pared": "p1", "clase": "puerta", "ref": "arquitectura/puerta", "pos": 1875, "ancho": 800, "alto": 2100, "antepecho": 0, "abre": 1, "bisagra": "fin", "color": "#b07a4a" },
+    { "id": "t1", "tipo": "texto", "capa": "texto", "p": [1600, 1550], "txt": "DORMITORIO", "h": 5, "ang": 0, "al": "c" }
+  ],
+  "defs": {},
+  "sigId": 100,
+  "casa": { "altura": 2500, "grosor": 150, "colorPared": "#f4efe4", "colorSuelo": "#c8a27a", "texturaSuelo": "parquet", "colorTecho": "#ffffff" }
+}

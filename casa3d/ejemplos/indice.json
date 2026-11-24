@@ -1,0 +1,26 @@
+{
+ "_ayuda": "Ejemplos de Casa 3D. Para añadir uno: hazlo en Casa 3D, «Guardar archivo», copia el .casa3d.json a esta carpeta y añádelo aquí.",
+ "ejemplos": [
+  {
+   "archivo": "dormitorio-amueblado.casa3d.json",
+   "nombre": "Dormitorio amueblado",
+   "en": "Furnished bedroom",
+   "icono": "⌂",
+   "descripcion": "El dormitorio modelo de 320 × 280 cm con cama, armario y escritorio."
+  },
+  {
+   "archivo": "piso-pequeno.casa3d.json",
+   "nombre": "Piso pequeño",
+   "en": "Small flat",
+   "icono": "⌂⌂",
+   "descripcion": "Salón-cocina, dormitorio y baño (unos 45 m²)."
+  },
+  {
+   "archivo": "../../plano2d/plantillas/dormitorio-modelo.plano.json",
+   "nombre": "Dormitorio vacío",
+   "en": "Empty bedroom",
+   "icono": "▢",
+   "descripcion": "La plantilla de Plano 2D, sin muebles, para amueblarla tú."
+  }
+ ]
+}

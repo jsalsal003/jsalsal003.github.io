@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Juan Salguero Salguero">
+<meta name="copyright" content="© 2026 Juan Salguero Salguero · CC BY-NC-SA 4.0">
+<title>Plano 2D · Dibujo técnico</title>
+<meta name="description" content="Plano 2D: un AutoCAD muy sencillo para clase. Dibuja a escala, acota según la norma y exporta a PDF a tamaño real.">
+<meta name="theme-color" content="#fbf8ef">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23fbf8ef'/%3E%3Cpath d='M6 24V8M26 24V8M6 16h20' stroke='%231f5bd0' stroke-width='2'/%3E%3Cpath d='M6 16l4-2v4zM26 16l-4-2v4z' fill='%231f5bd0'/%3E%3Crect x='3' y='3' width='26' height='26' fill='none' stroke='%2314201a' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&family=Big+Shoulders+Stencil:wght@700;900&family=Caveat:wght@700&family=Martian+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../comun/taller.css">
+<style>
+  /* Plano 2D: el acento es el azul de las cotas (tinta de delineante) */
+  :root{--acento:var(--blue)}
+  .accion{border-style:dashed}
+  #pRevision .total{font-family:var(--mono);font-size:.6rem;color:var(--ink-2)}
+  .escalas{display:flex;gap:.3rem;align-items:center}
+  .escalas input{width:3.4rem}
+  .dlg .campo{grid-template-columns:9rem 1fr}
+  .seccion{border:1.5px solid var(--line);padding:.4rem .6rem .5rem;margin-bottom:.6rem;background:#fff}
+  .seccion > b{font-family:var(--display);font-size:1.1rem;text-transform:uppercase;display:block;margin-bottom:.2rem}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="https://jsalsal003.github.io/" title="Volver a la portada">← Taller</a>
+  <div class="brand"><h1>Plano <span>2D</span></h1><small>DIBUJO TÉCNICO · TECHNICAL DRAWING</small></div>
+  <input class="nombre" id="nombre" spellcheck="false" title="Nombre del plano (será el nombre del archivo)">
+  <span class="guardado" id="guardado"></span>
+  <span class="esp"></span>
+  <div class="grupo">
+    <button class="chip" id="bNuevo" title="Plano nuevo o una plantilla de ejemplo">▤ <span class="lbl">Nuevo · plantillas</span></button>
+    <button class="chip" id="bAbrir" title="Abrir un archivo .plano.json (Ctrl+O)">↥ <span class="lbl">Abrir archivo</span></button>
+    <button class="chip" id="bGuardar" title="Guardar el plano en un archivo .plano.json (Ctrl+S)">↧ <span class="lbl">Guardar archivo</span></button>
+    <button class="chip" id="bHoja" title="Tamaño de la hoja, cajetín, escala, unidades y estilo de cota">⚙ <span class="lbl">Hoja y escala</span></button>
+    <div class="menu">
+      <button class="chip go" id="bExportar" title="PDF, PNG o Casa 3D">⬇ Exportar ▾</button>
+      <div class="lista" id="mExportar" hidden>
+        <button data-x="pdf">PDF a tamaño real<small>Imprímelo al 100 % («tamaño real») · .pdf</small></button>
+        <button data-x="png">Imagen PNG<small>Para entregar en Classroom · .png</small></button>
+        <button data-x="casa">Abrir en Casa 3D<small>Levanta las paredes, huecos y muebles en 3D</small></button>
+        <button data-x="casajson">Archivo para Casa 3D<small>Paredes, huecos y muebles · .casa3d.json</small></button>
+      </div>
+    </div>
+    <button class="chip" id="bAyuda" title="¿Cómo se usa? (F1)">? <span class="lbl">¿Cómo se usa?</span></button>
+    <button class="chip" id="bPantalla" title="Pantalla completa">⛶</button>
+  </div>
+</header>
+
+<main class="trabajo">
+  <nav class="panel carril" id="carril" aria-label="Herramientas"></nav>
+  <section class="panel p2 lienzo">
+    <div class="ed2d" id="lienzo">
+      <div class="zoom">
+        <button id="zMas" title="Acercar (+ o rueda)">+</button>
+        <button id="zMenos" title="Alejar (− o rueda)">−</button>
+        <button id="zAjustar" title="Ver la hoja entera (0)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+      </div>
+    </div>
+    <div class="ordenes">
+      <span class="msg" id="msg"></span>
+      <input id="cmd" placeholder="Escribe: 120,80 · @50,0 · 300<45 · 250" autocomplete="off" spellcheck="false" title="Entrada de coordenadas y medidas (en las unidades del plano). Intro para aplicar.">
+    </div>
+  </section>
+  <aside class="panel p3 lateral">
+    <div class="pestanas" id="pestanas">
+      <button data-p="pProp" class="on">Objeto<small>Properties</small></button>
+      <button data-p="pCapas">Capas<small>Layers</small></button>
+      <button data-p="pBloques">Bloques<small>Blocks</small></button>
+      <button data-p="pRevision" id="tabRevision" hidden>Revisión<small>Check</small></button>
+    </div>
+    <div class="cuerpo" id="pProp"></div>
+    <div class="cuerpo" id="pCapas" hidden></div>
+    <div class="cuerpo" id="pBloques" hidden></div>
+    <div class="cuerpo" id="pRevision" hidden></div>
+  </aside>
+</main>
+
+<footer class="estado">
+  <span class="xy" id="xy">x — · y —</span>
+  <button class="t" id="tRejilla" title="Ver la rejilla · Grid (F7)">REJILLA</button>
+  <button class="t" id="tIman" title="Imán a la rejilla · Snap (F9)">IMÁN</button>
+  <button class="t" id="tObjetos" title="Referencia a objetos: extremos, puntos medios, centros e intersecciones · Object snap (F3)">OBJETOS</button>
+  <button class="t" id="tOrto" title="Ortogonal: solo en horizontal y vertical · Ortho (F8)">ORTO</button>
+  <label title="Paso de la rejilla y del imán">Paso <input id="paso" inputmode="decimal"> <span id="pasoU"></span></label>
+  <label>Escala <select id="escala"></select></label>
+  <label>Unidades <select id="unidad"><option value="mm">mm</option><option value="cm">cm</option><option value="m">m</option></select></label>
+  <span class="firma">© 2026 Juan Salguero Salguero · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></span>
+</footer>
+
+<!-- Nuevo y plantillas -->
+<div class="modal" id="mNuevo" hidden>
+  <div class="dlg">
+    <header><h3>Nuevo plano <small>New drawing · templates</small></h3><button class="chip x" data-cerrar>✕</button></header>
+    <div class="cuerpo">
+      <p class="nota" id="nuevoAviso"></p>
+      <div class="sub">En blanco · Blank</div>
+      <div class="tarjetas" id="blancos"></div>
+      <div class="sub">Plantillas de ejemplo · Templates</div>
+      <div class="tarjetas" id="plantillas"><p class="nota">Cargando…</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- Hoja, escala y estilo de cota -->
+<div class="modal" id="mHoja" hidden>
+  <div class="dlg">
+    <header><h3>Hoja y escala <small>Sheet · scale · dimension style</small></h3><button class="chip x" data-cerrar>✕</button></header>
+    <div class="cuerpo" id="hojaCuerpo"></div>
+    <footer><button class="chip" data-cerrar>Cancelar</button><button class="chip go" id="hojaOk">Aplicar</button></footer>
+  </div>
+</div>
+
+<!-- Ayuda -->
+<div class="modal" id="mAyuda" hidden>
+  <div class="dlg">
+    <header><h3>¿Cómo se usa? <small>How to use it</small></h3><button class="chip x" data-cerrar>✕</button></header>
+    <div class="cuerpo">
+      <ol class="pasos">
+        <li><span><b>Elige la hoja y la escala</b> con <b>⚙ Hoja y escala</b> (o empieza desde <b>▤ Nuevo · plantillas</b>). Se dibuja siempre con <b>medidas reales</b>; la app lo pone a escala en la hoja.</span></li>
+        <li><span><b>Dibuja</b> con las herramientas de la izquierda. Haz clic para cada punto o <b>escribe</b> las medidas abajo: <code>120,80</code> (punto x,y), <code>@50,0</code> (relativo al último punto), <code>300&lt;45</code> (longitud y ángulo) o solo <code>250</code> (longitud hacia donde apunta el ratón).</span></li>
+        <li><span><b>Engancha</b> los puntos con el imán: extremos ▢, puntos medios △, centros ○ e intersecciones ✕ (botón <b>OBJETOS</b>, F3). <b>ORTO</b> (F8) solo deja líneas horizontales y verticales.</span></li>
+        <li><span><b>Acota</b>: pincha los dos puntos y luego dónde va la línea de cota, o usa la <b>acotación rápida</b> (Q): clic en una línea o un círculo. La cifra es siempre la medida real. Pulsa <b>Revisar cotas</b> para comprobarlas.</span></li>
+        <li><span><b>Guarda y entrega</b>: <b>Guardar archivo</b> (.plano.json) para seguir otro día, y <b>Exportar → PDF</b> para imprimir a tamaño real o <b>PNG</b> para Classroom.</span></li>
+      </ol>
+      <div class="sub">Atajos de teclado · Shortcuts</div>
+      <div class="atajos" id="atajos"></div>
+      <div class="sub">Ratón y panel táctil · Mouse and touchpad</div>
+      <p class="nota">Rueda o pellizco: zoom · Arrastrar con dos dedos, con el botón central o con <kbd>Espacio</kbd> pulsado: mover la vista · Clic derecho o <kbd>Intro</kbd>: terminar · Doble clic en un texto o una cota: cambiar el texto · Doble clic en el cajetín: datos de la hoja.</p>
+      <div class="sub">Las reglas de la acotación · Dimensioning rules</div>
+      <p class="nota">Cotas <b>mínimas</b> (solo las necesarias), <b>suficientes</b> (que se pueda fabricar la pieza) y <b>adecuadas</b> (fáciles de leer). No repitas medidas, no cruces las líneas de cota y deja al menos 7 mm entre la pieza y la primera cota, y entre cotas paralelas.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmar -->
+<div class="modal" id="mConfirmar" hidden>
+  <div class="dlg" style="max-width:30rem">
+    <header><h3 id="confTit">¿Seguro?</h3></header>
+    <div class="cuerpo"><p id="confTxt"></p></div>
+    <footer><button class="chip" data-cerrar>Cancelar</button><button class="chip go" id="confOk">Sí</button></footer>
+  </div>
+</div>
+
+<div id="aviso" role="status" aria-live="polite"></div>
+
+<script src="../comun/nucleo.js"></script>
+<script src="../comun/dibujo.js"></script>
+<script src="../comun/editor2d.js"></script>
+<script src="../comun/panel.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

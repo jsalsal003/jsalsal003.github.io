@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="author" content="Juan Salguero Salguero">
+<title>Corrector del Desafío · Placa virtual</title>
+<meta name="theme-color" content="#14201a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&family=Big+Shoulders+Stencil:wght@700;900&family=Caveat:wght@700&family=Martian+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  /* Corrector del profesor: misma familia visual que la Placa virtual (alfombrilla azul pizarra, papel y tinta),
+     con la barra en tinta oscura y el lápiz rojo de corregir como protagonista. */
+  :root{
+    --mat:#24414b; --paper:#fbf8ef; --paper-2:#f3efe4; --ink:#14201a; --ink-2:#55605a; --line:#cfc6ae;
+    --yellow:#ffd23f; --blue:#1f5bd0; --red:#d7262c; --green:#1f8a4c; --orange:#b06000;
+    --display:"Big Shoulders Stencil","Arial Narrow",sans-serif; --body:"Atkinson Hyperlegible Next",system-ui,sans-serif;
+    --mono:"Martian Mono",ui-monospace,monospace; --hand:"Caveat",cursive;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--body);color:var(--ink);background:var(--mat);
+    background-image:radial-gradient(rgba(214,233,240,.10) 1px,transparent 1.4px);background-size:16px 16px;min-height:100vh}
+  header{background:var(--ink);color:var(--paper);padding:.8rem 1.2rem;display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap}
+  header h1{font-family:var(--display);font-weight:900;font-size:1.9rem;margin:0;text-transform:uppercase;letter-spacing:.02em}
+  header h1 span{color:var(--red)}
+  header small{font-family:var(--mono);font-size:.68rem;color:#b9c3bc}
+  main{max-width:1150px;margin:0 auto;padding:1.2rem}
+  .card{background:var(--paper);border:2px solid var(--ink);box-shadow:6px 6px 0 rgba(0,0,0,.35);padding:1.1rem 1.3rem;margin-bottom:1.2rem}
+  .card h2{font-family:var(--mono);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;margin:0 0 .8rem}
+  button,input,textarea{font:inherit}
+  .btn{border:2px solid var(--ink);background:var(--paper);padding:.55rem 1rem;border-radius:.25rem;cursor:pointer;font-family:var(--mono);font-size:.78rem;font-weight:700;box-shadow:3px 3px 0 var(--ink)}
+  .btn.go{background:var(--yellow)}
+  .btn:active{transform:translate(2px,2px);box-shadow:none}
+  .row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+  input[type=password],textarea{border:2px solid var(--ink);border-radius:.2rem;padding:.55rem .6rem;background:#fff;width:100%}
+  textarea{font-family:var(--mono);font-size:.72rem;min-height:4.5rem}
+  .err{color:var(--red);font-weight:700;min-height:1.2em}
+  #lock{max-width:420px;margin:12vh auto 0}
+  video{width:100%;max-height:60vh;background:#000;border:2px solid var(--ink);display:block;object-fit:cover}
+  .scanbox{position:relative}
+  .scanbox::after{content:"";position:absolute;inset:18%;border:3px dashed var(--yellow);pointer-events:none}
+  .head{display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center}
+  .who b{font-family:var(--display);font-weight:900;font-size:2.2rem;text-transform:uppercase;display:block;line-height:1}
+  .who span{font-family:var(--mono);font-size:.7rem;color:var(--ink-2)}
+  .grade{text-align:center;border:3px solid var(--red);color:var(--red);border-radius:50%;width:8.5rem;height:8.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-6deg)}
+  .grade b{font-family:var(--hand);font-size:3.6rem;line-height:.8}
+  .grade small{font-family:var(--mono);font-size:.6rem;color:var(--ink-2)}
+  .ej{border-top:2px solid var(--ink);padding-top:.8rem;margin-top:.9rem}
+  .ej:first-of-type{border-top:0;margin-top:0;padding-top:0}
+  .ej h3{margin:0 0 .3rem;font-family:var(--display);font-weight:900;font-size:1.4rem;text-transform:uppercase;display:flex;gap:.6rem;align-items:baseline;flex-wrap:wrap}
+  .ej h3 small{font-family:var(--mono);font-size:.6rem;font-weight:600;color:var(--ink-2);text-transform:none}
+  .tag{font-family:var(--mono);font-size:.62rem;font-weight:800;padding:.15rem .5rem;border-radius:.2rem;color:#fff;text-transform:none}
+  .tag.perfecto{background:var(--green)} .tag.casi{background:var(--orange)} .tag.no,.tag.vacío{background:var(--red)}
+  .txt{margin:0 0 .5rem;font-size:.9rem;color:#3c4640}
+  .why{font-family:var(--hand);font-size:1.35rem;color:var(--red);margin:.2rem 0 .5rem;line-height:1.1}
+  .why.ok{color:var(--green)}
+  .two{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:.8rem;align-items:start}
+  .two figure{margin:0;border:1px solid var(--line);background:#fff;padding:.4rem}
+  .two figcaption{font-family:var(--mono);font-size:.58rem;font-weight:800;margin-bottom:.3rem;letter-spacing:.06em}
+  .two canvas{display:block;max-width:100%;height:auto}
+  details{margin-top:.4rem}
+  summary{font-family:var(--mono);font-size:.62rem;cursor:pointer;color:var(--ink-2)}
+  .legend{display:flex;gap:1rem;flex-wrap:wrap;font-family:var(--mono);font-size:.6rem;color:var(--ink-2);margin:.5rem 0 0}
+  .legend i{display:inline-block;width:1.4rem;vertical-align:middle;margin-right:.3rem;border-top:3px solid var(--ink)}
+  .legend i.d{border-top:2px dashed var(--ink)}
+  .note{font-family:var(--mono);font-size:.62rem;color:var(--ink-2)}
+  @media (max-width:760px){ .two{grid-template-columns:1fr} .head{grid-template-columns:1fr} .grade{width:7rem;height:7rem} }
+  @media print{ header,.noprint{display:none} body{background:#fff} .card{box-shadow:none} .ej{break-inside:avoid} }
+</style>
+</head>
+<body>
+<header><h1>Corrector del <span>Desafío</span></h1><small>PLACA VIRTUAL · SOLO PROFESORADO</small></header>
+<main>
+  <section class="card" id="lock">
+    <h2>Acceso del profesor</h2>
+    <input type="password" id="pw" placeholder="Contraseña" autocomplete="current-password">
+    <p class="err" id="pwErr"></p>
+    <button class="btn go" id="pwGo">Entrar</button>
+  </section>
+
+  <section id="app" hidden>
+    <div class="card noprint" id="scan">
+      <h2>Escanear el QR del alumno</h2>
+      <div class="row"><button class="btn go" id="camOn">📷 Abrir la cámara</button><button class="btn" id="camOff" hidden>Cerrar la cámara</button></div>
+      <p class="note">Apunta a la última página del PDF del alumno (en papel o en la pantalla). También vale abrir el enlace del QR con la cámara del móvil.</p>
+      <div class="scanbox" id="scanbox" hidden><video id="video" playsinline muted></video></div>
+      <p class="err" id="camErr"></p>
+      <details><summary>…o pegar el código a mano</summary>
+        <textarea id="paste" placeholder="Pega aquí el enlace o el código del QR"></textarea>
+        <button class="btn" id="pasteGo">Corregir</button>
+      </details>
+    </div>
+    <div id="result"></div>
+  </section>
+</main>
+<canvas id="cv" hidden></canvas>
+
+<script src="nucleo.js"></script>
+<script>
+(function () {
+  'use strict';
+  var P = PlacaNucleo;
+  // Huella (SHA-256) de la contraseña: la misma que el corrector de Vistas 3D. La contraseña no aparece escrita en el código.
+  var HASH = '9ce6568a8423eb39e54a5d5d9aca6c4305b882cfc36a185edcb4dc8704037cc1';
+  function sha256(s) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)).then(function (b) {
+      return Array.from(new Uint8Array(b)).map(function (x) { return x.toString(16).padStart(2, '0'); }).join('');
+    });
+  }
+  function unlock() { document.getElementById('lock').hidden = true; document.getElementById('app').hidden = false; fromHash(); }
+  function tryPw() {
+    sha256(document.getElementById('pw').value).then(function (h) {
+      if (h === HASH) { try { sessionStorage.setItem('placaProfe', HASH); } catch (e) { /* nada */ } unlock(); }
+      else document.getElementById('pwErr').textContent = 'Contraseña incorrecta';
+    });
+  }
+  document.getElementById('pwGo').onclick = tryPw;
+  document.getElementById('pw').addEventListener('keydown', function (e) { if (e.key === 'Enter') tryPw(); });
+
+  /* ---------- cámara + lector de QR ---------- */
+  var stream = null, raf = 0, video = document.getElementById('video'), cv = document.getElementById('cv'), cx = cv.getContext('2d', { willReadFrequently: true });
+  function loadJsQR() {
+    return new Promise(function (ok, ko) {
+      if (window.jsQR) { ok(); return; }
+      var s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+      s.onload = ok; s.onerror = function () { ko(new Error('no se pudo cargar el lector de QR (¿hay internet?)')); }; document.head.appendChild(s);
+    });
+  }
+  document.getElementById('camOn').onclick = function () {
+    document.getElementById('camErr').textContent = '';
+    loadJsQR().then(function () { return navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false }); })
+      .then(function (s) {
+        stream = s; video.srcObject = s; video.play();
+        document.getElementById('scanbox').hidden = false; document.getElementById('camOn').hidden = true; document.getElementById('camOff').hidden = false;
+        scan();
+      })
+      .catch(function (e) { document.getElementById('camErr').textContent = 'No se puede usar la cámara: ' + (e.message || e.name) + '. Da permiso a la cámara o pega el código a mano.'; });
+  };
+  function stopCam() {
+    cancelAnimationFrame(raf); if (stream) stream.getTracks().forEach(function (t) { t.stop(); }); stream = null;
+    document.getElementById('scanbox').hidden = true; document.getElementById('camOn').hidden = false; document.getElementById('camOff').hidden = true;
+  }
+  document.getElementById('camOff').onclick = stopCam;
+  function scan() {
+    if (!stream) return;
+    if (video.readyState >= 2) {
+      cv.width = video.videoWidth; cv.height = video.videoHeight; cx.drawImage(video, 0, 0);
+      var code = jsQR(cx.getImageData(0, 0, cv.width, cv.height).data, cv.width, cv.height, { inversionAttempts: 'dontInvert' });
+      if (code && code.data && /r=/.test(code.data)) { stopCam(); if (navigator.vibrate) navigator.vibrate(80); show(code.data); return; }
+    }
+    raf = requestAnimationFrame(scan);
+  }
+  document.getElementById('pasteGo').onclick = function () { show(document.getElementById('paste').value); };
+  function fromHash() { if (/r=/.test(location.hash)) show(location.hash); }
+  window.addEventListener('hashchange', function () { if (!document.getElementById('app').hidden) fromHash(); });
+
+  /* ---------- dibujos ---------- */
+  function progCanvas(main) {
+    var h = P.cProg(document.createElement('canvas').getContext('2d'), main, 0, 0);
+    var c = document.createElement('canvas'); c.width = Math.ceil(P.progWidth(main) + 30); c.height = h + 24;
+    var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); P.cProg(x, main, 12, 12);
+    c.style.width = Math.min(c.width / 1.6, 100000) + 'px';
+    return c;
+  }
+  function scopeCanvas(e) {
+    var rows = P.rowsFor([e.prog, e.ex.sol], e.ex.scen), c = document.createElement('canvas');
+    c.width = 1000; c.height = rows.length * 60 + 40;
+    P.paintScope(c.getContext('2d'), c.width, c.height, { fs: 16, rows: rows, t0: 0, t1: e.ex.T,
+      series: [{ tr: e.res.B, ghost: true }, { tr: e.res.A }], bad: e.res.first ? e.res.first.t : null });
+    return c;
+  }
+
+  /* ---------- mostrar la corrección ---------- */
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function fmt(ms) { var s = Math.round(ms / 1000); return Math.floor(s / 60) + ' min ' + String(s % 60).padStart(2, '0') + ' s'; }
+  var EST = { perfecto: 'perfecto · 2 puntos', casi: 'casi · 1 punto', no: 'no · 0 puntos', 'vacío': 'vacío · 0 puntos' };
+  function show(txt) {
+    var out = document.getElementById('result'), data, cor;
+    try { data = P.decodificar(txt); cor = P.corregirExamen(data); }
+    catch (e) { out.innerHTML = '<div class="card"><p class="err">No se ha podido leer el código: ' + esc(e.message) + '</p></div>'; return; }
+    var d = new Date(data.inicio);
+    out.innerHTML = '<div class="card"><div class="head"><div class="who"><b>' + esc(data.nombre || 'Sin nombre') + '</b><span>' + esc(data.curso || '') +
+      ' · ' + d.toLocaleDateString('es-ES') + ' ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) +
+      ' · tiempo: ' + fmt(data.duracion) + ' · niveles ' + data.niveles.join(', ') + '</span></div>' +
+      '<div class="grade"><b>' + String(cor.nota).replace('.', ',') + '</b><small>' + cor.puntos + ' / ' + cor.max + ' puntos</small></div></div>' +
+      '<p class="note">Cada ejercicio vale 2 puntos: <b>perfecto</b> si el cronograma es igual que el de la solución; <b>casi</b> (1 punto) si solo se diferencia en menos del 10 % del tiempo; si no, 0. ' +
+      'En los ejercicios con sensores, los sensores se mueven siempre igual para todos.</p>' +
+      '<div class="legend"><span><i></i>lo que hace su programa</span><span><i class="d"></i>lo que pide el ejercicio</span><span><i style="border-color:#d7262c"></i>primer fallo</span></div></div>' +
+      '<div class="card" id="ejs"><h2>Ejercicio a ejercicio</h2></div>' +
+      '<div class="row noprint"><button class="btn" onclick="window.print()">🖨 Imprimir esta corrección</button><button class="btn go" id="otro">📷 Escanear otro</button></div>';
+    var box = document.getElementById('ejs');
+    cor.ej.forEach(function (e, i) {
+      var s = document.createElement('div'); s.className = 'ej';
+      s.innerHTML = '<h3>' + (i + 1) + '. ' + esc(e.ex.tit) + ' <span class="tag ' + e.est + '">' + EST[e.est] + '</span><small>nivel ' + e.ex.lv + ' · nº ' + (e.id + 1) + ' de la batería</small></h3>' +
+        '<p class="txt">' + esc(e.ex.txt) + '</p>' +
+        '<p class="why' + (e.res.ok ? ' ok' : '') + '">' + (e.res.ok ? '¡Hace exactamente lo que pide!' : !e.prog.length ? 'No ha hecho ningún programa.' : esc(P.describe(e.res.first, e.ex)) +
+          ' (distinto en el ' + Math.round(e.res.miss * 100) + ' % del tiempo)') + '</p>' +
+        '<div class="two"><figure><figcaption>SU PROGRAMA</figcaption><div class="pc"></div></figure><figure><figcaption>CRONOGRAMA (0–' + e.ex.T + ' s)</figcaption><div class="sc"></div></figure></div>' +
+        '<details><summary>Ver la solución</summary><div class="sol"></div></details>';
+      if (e.prog.length) s.querySelector('.pc').appendChild(progCanvas(e.prog)); else s.querySelector('.pc').innerHTML = '<p class="note">(vacío)</p>';
+      var sc = scopeCanvas(e); sc.style.width = '100%'; s.querySelector('.sc').appendChild(sc);
+      s.querySelector('.sol').appendChild(progCanvas(e.ex.sol));
+      box.appendChild(s);
+    });
+    document.getElementById('otro').onclick = function () { document.getElementById('scan').scrollIntoView(); document.getElementById('camOn').click(); };
+    out.scrollIntoView({ behavior: 'smooth' });
+    if (location.hash) history.replaceState(null, '', location.pathname); // el código no se queda en la barra de direcciones
+  }
+
+  // al final: si ya se entró en esta sesión, se corrige directamente el código del enlace
+  try { if (sessionStorage.getItem('placaProfe') === HASH) unlock(); } catch (e) { /* nada */ }
+})();
+</script>
+</body>
+</html>

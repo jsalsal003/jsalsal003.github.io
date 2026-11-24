@@ -1,0 +1,12 @@
+{
+  "_ayuda": "Lista de catálogos de bloques. Para añadir uno, crea su archivo .json en esta carpeta y escribe su nombre aquí. Instrucciones en LEEME-CATALOGOS.md",
+  "catalogos": [
+    "arquitectura.json",
+    "dormitorio.json",
+    "salon.json",
+    "cocina.json",
+    "bano.json",
+    "aula.json",
+    "taller.json"
+  ]
+}

@@ -1,0 +1,789 @@
+{
+ "app": "taller-casa3d",
+ "version": 1,
+ "nombre": "Dormitorio amueblado",
+ "unidad": "cm",
+ "escala": [
+  1,
+  50
+ ],
+ "hoja": {
+  "formato": "A4",
+  "orientacion": "apaisada",
+  "margen": 10,
+  "cajetin": "ancho",
+  "origen": [
+   40,
+   170
+  ],
+  "datos": {
+   "titulo": "Dormitorio amueblado",
+   "nombre": "",
+   "curso": "",
+   "fecha": "",
+   "numero": "1",
+   "centro": ""
+  }
+ },
+ "rejilla": {
+  "paso": 100,
+  "ver": true,
+  "iman": true
+ },
+ "estiloCota": {
+  "texto": 3.5,
+  "flecha": 3,
+  "extremo": "flecha",
+  "sobresale": 2,
+  "hueco": 1,
+  "separacion": 8,
+  "decimales": 0,
+  "unidad": null,
+  "decAng": 0
+ },
+ "capaActual": "0",
+ "entidades": [
+  {
+   "id": "e1",
+   "tipo": "pared",
+   "capa": "paredes",
+   "a": [
+    -75,
+    -75
+   ],
+   "b": [
+    3275,
+    -75
+   ],
+   "grosor": 150,
+   "altura": 2500
+  },
+  {
+   "id": "e2",
+   "tipo": "pared",
+   "capa": "paredes",
+   "a": [
+    3275,
+    -75
+   ],
+   "b": [
+    3275,
+    2875
+   ],
+   "grosor": 150,
+   "altura": 2500
+  },
+  {
+   "id": "e3",
+   "tipo": "pared",
+   "capa": "paredes",
+   "a": [
+    3275,
+    2875
+   ],
+   "b": [
+    -75,
+    2875
+   ],
+   "grosor": 150,
+   "altura": 2500
+  },
+  {
+   "id": "e4",
+   "tipo": "pared",
+   "capa": "paredes",
+   "a": [
+    -75,
+    2875
+   ],
+   "b": [
+    -75,
+    -75
+   ],
+   "grosor": 150,
+   "altura": 2500
+  },
+  {
+   "id": "e5",
+   "tipo": "hueco",
+   "capa": "paredes",
+   "pared": "e4",
+   "clase": "ventana",
+   "ref": "arquitectura/ventana",
+   "pos": 875,
+   "ancho": 1200,
+   "alto": 1200,
+   "antepecho": 900,
+   "abre": 1,
+   "bisagra": "ini",
+   "color": "#e8eef2"
+  },
+  {
+   "id": "e6",
+   "tipo": "hueco",
+   "capa": "paredes",
+   "pared": "e1",
+   "clase": "puerta",
+   "ref": "arquitectura/puerta",
+   "pos": 1875,
+   "ancho": 800,
+   "alto": 2100,
+   "antepecho": 0,
+   "abre": 1,
+   "bisagra": "fin",
+   "color": "#b07a4a"
+  },
+  {
+   "id": "e7",
+   "tipo": "suelo",
+   "capa": "paredes",
+   "pts": [
+    [
+     0,
+     0
+    ],
+    [
+     3200,
+     0
+    ],
+    [
+     3200,
+     2800
+    ],
+    [
+     0,
+     2800
+    ]
+   ],
+   "nombre": "Dormitorio",
+   "textura": "parquet",
+   "color": "#c8a27a",
+   "techo": true
+  },
+  {
+   "id": "e8",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "dormitorio/cama-individual",
+   "p": [
+    1100,
+    900
+   ],
+   "giro": 0,
+   "med": {
+    "ancho": 900,
+    "fondo": 1900,
+    "alto": 500
+   },
+   "par": {},
+   "color": "#7d9cc0"
+  },
+  {
+   "id": "e9",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "dormitorio/mesilla",
+   "p": [
+    2050,
+    2400
+   ],
+   "giro": 0,
+   "med": {
+    "ancho": 450,
+    "fondo": 400,
+    "alto": 550
+   },
+   "par": {},
+   "color": "#a87b52"
+  },
+  {
+   "id": "e10",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "dormitorio/armario",
+   "p": [
+    2600,
+    2500
+   ],
+   "giro": 270,
+   "med": {
+    "ancho": 1200,
+    "fondo": 600,
+    "alto": 2200
+   },
+   "par": {},
+   "color": "#d9c6a5"
+  },
+  {
+   "id": "e11",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "dormitorio/escritorio",
+   "p": [
+    600,
+    800
+   ],
+   "giro": 90,
+   "med": {
+    "ancho": 1200,
+    "fondo": 600,
+    "alto": 750
+   },
+   "par": {},
+   "color": "#e8e1d2"
+  },
+  {
+   "id": "e12",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "dormitorio/silla",
+   "p": [
+    620,
+    1625
+   ],
+   "giro": 270,
+   "med": {
+    "ancho": 450,
+    "fondo": 480,
+    "alto": 850
+   },
+   "par": {},
+   "color": "#2f6f9f"
+  },
+  {
+   "id": "e13",
+   "tipo": "bloque",
+   "capa": "mobiliario",
+   "ref": "dormitorio/estanteria",
+   "p": [
+    100,
+    2500
+   ],
+   "giro": 0,
+   "med": {
+    "ancho": 800,
+    "fondo": 300,
+    "alto": 1800
+   },
+   "par": {
+    "baldas": 5
+   },
+   "color": "#c49a6c"
+  }
+ ],
+ "defs": {
+  "dormitorio/cama-individual": {
+   "factor": 10,
+   "categoria": "dormitorio",
+   "id": "cama-individual",
+   "nombre": "Cama individual",
+   "en": "Single bed",
+   "medidas": {
+    "ancho": 90,
+    "fondo": 190,
+    "alto": 50
+   },
+   "color": "#7d9cc0",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "rect": [
+      8,
+      "fondo-30",
+      "ancho-16",
+      20
+     ]
+    },
+    {
+     "linea": [
+      0,
+      "fondo*0.68",
+      "ancho",
+      "fondo*0.68"
+     ]
+    },
+    {
+     "linea": [
+      0,
+      "fondo*0.68",
+      "ancho*0.3",
+      "fondo*0.6",
+      "ancho",
+      "fondo*0.68"
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      0,
+      "ancho",
+      "fondo",
+      28
+     ],
+     "color": "#8a6440"
+    },
+    {
+     "caja": [
+      2,
+      2,
+      28,
+      "ancho-4",
+      "fondo-7",
+      18
+     ],
+     "color": "#f3f0e8"
+    },
+    {
+     "caja": [
+      8,
+      "fondo-31",
+      46,
+      "ancho-16",
+      20,
+      8
+     ],
+     "color": "#ffffff"
+    },
+    {
+     "caja": [
+      1,
+      1,
+      44,
+      "ancho-2",
+      "fondo*0.68",
+      4
+     ]
+    },
+    {
+     "caja": [
+      0,
+      "fondo-5",
+      0,
+      "ancho",
+      5,
+      "alto+45"
+     ],
+     "color": "#8a6440"
+    }
+   ],
+   "ref": "dormitorio/cama-individual"
+  },
+  "dormitorio/mesilla": {
+   "factor": 10,
+   "categoria": "dormitorio",
+   "id": "mesilla",
+   "nombre": "Mesilla de noche",
+   "en": "Bedside table",
+   "medidas": {
+    "ancho": 45,
+    "fondo": 40,
+    "alto": 55
+   },
+   "color": "#a87b52",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "rect": [
+      4,
+      4,
+      "ancho-8",
+      "fondo-8"
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      0,
+      "ancho",
+      "fondo",
+      "alto"
+     ]
+    },
+    {
+     "caja": [
+      "ancho/2-6",
+      -1.5,
+      "alto-14",
+      12,
+      1.5,
+      2
+     ],
+     "color": "#3d3d3d"
+    }
+   ],
+   "ref": "dormitorio/mesilla"
+  },
+  "dormitorio/armario": {
+   "factor": 10,
+   "categoria": "dormitorio",
+   "id": "armario",
+   "nombre": "Armario",
+   "en": "Wardrobe",
+   "medidas": {
+    "ancho": 120,
+    "fondo": 60,
+    "alto": 220
+   },
+   "color": "#d9c6a5",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "linea": [
+      "ancho/2",
+      0,
+      "ancho/2",
+      4
+     ]
+    },
+    {
+     "linea": [
+      4,
+      "fondo/2",
+      "ancho-4",
+      "fondo/2"
+     ],
+     "trazo": "oculta"
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      0,
+      "ancho",
+      "fondo",
+      "alto"
+     ]
+    },
+    {
+     "caja": [
+      "ancho/2-0.5",
+      -0.5,
+      4,
+      1,
+      0.5,
+      "alto-8"
+     ],
+     "color": "#8c7a5c"
+    },
+    {
+     "cilindro": [
+      "ancho/2-6",
+      -2,
+      100,
+      1,
+      30
+     ],
+     "color": "#3d3d3d"
+    },
+    {
+     "cilindro": [
+      "ancho/2+6",
+      -2,
+      100,
+      1,
+      30
+     ],
+     "color": "#3d3d3d"
+    }
+   ],
+   "ref": "dormitorio/armario"
+  },
+  "dormitorio/escritorio": {
+   "factor": 10,
+   "categoria": "dormitorio",
+   "id": "escritorio",
+   "nombre": "Escritorio",
+   "en": "Desk",
+   "medidas": {
+    "ancho": 120,
+    "fondo": 60,
+    "alto": 75
+   },
+   "color": "#e8e1d2",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      "alto-3",
+      "ancho",
+      "fondo",
+      3
+     ]
+    },
+    {
+     "caja": [
+      2,
+      2,
+      0,
+      4,
+      "fondo-4",
+      "alto-3"
+     ],
+     "color": "#55605a"
+    },
+    {
+     "caja": [
+      "ancho-6",
+      2,
+      0,
+      4,
+      "fondo-4",
+      "alto-3"
+     ],
+     "color": "#55605a"
+    },
+    {
+     "caja": [
+      6,
+      "fondo-4",
+      "alto-25",
+      "ancho-12",
+      2,
+      20
+     ],
+     "color": "#55605a"
+    }
+   ],
+   "ref": "dormitorio/escritorio"
+  },
+  "dormitorio/silla": {
+   "factor": 10,
+   "categoria": "dormitorio",
+   "id": "silla",
+   "nombre": "Silla",
+   "en": "Chair",
+   "medidas": {
+    "ancho": 45,
+    "fondo": 48,
+    "alto": 85
+   },
+   "color": "#2f6f9f",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo-6"
+     ]
+    },
+    {
+     "rect": [
+      0,
+      "fondo-6",
+      "ancho",
+      6
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      42,
+      "ancho",
+      "fondo-4",
+      4
+     ]
+    },
+    {
+     "caja": [
+      0,
+      "fondo-6",
+      46,
+      "ancho",
+      4,
+      "alto-46"
+     ]
+    },
+    {
+     "caja": [
+      2,
+      2,
+      0,
+      3,
+      3,
+      42
+     ],
+     "color": "#3d3d3d"
+    },
+    {
+     "caja": [
+      "ancho-5",
+      2,
+      0,
+      3,
+      3,
+      42
+     ],
+     "color": "#3d3d3d"
+    },
+    {
+     "caja": [
+      2,
+      "fondo-6",
+      0,
+      3,
+      3,
+      42
+     ],
+     "color": "#3d3d3d"
+    },
+    {
+     "caja": [
+      "ancho-5",
+      "fondo-6",
+      0,
+      3,
+      3,
+      42
+     ],
+     "color": "#3d3d3d"
+    }
+   ],
+   "ref": "dormitorio/silla"
+  },
+  "dormitorio/estanteria": {
+   "factor": 10,
+   "categoria": "dormitorio",
+   "id": "estanteria",
+   "nombre": "Estantería",
+   "en": "Bookcase",
+   "medidas": {
+    "ancho": 80,
+    "fondo": 30,
+    "alto": 180
+   },
+   "parametros": {
+    "baldas": 5
+   },
+   "color": "#c49a6c",
+   "planta": [
+    {
+     "rect": [
+      0,
+      0,
+      "ancho",
+      "fondo"
+     ]
+    },
+    {
+     "linea": [
+      2,
+      2,
+      "ancho-2",
+      2,
+      "ancho-2",
+      "fondo-2",
+      2,
+      "fondo-2",
+      2,
+      2
+     ]
+    }
+   ],
+   "piezas": [
+    {
+     "caja": [
+      0,
+      0,
+      0,
+      2,
+      "fondo",
+      "alto"
+     ]
+    },
+    {
+     "caja": [
+      "ancho-2",
+      0,
+      0,
+      2,
+      "fondo",
+      "alto"
+     ]
+    },
+    {
+     "caja": [
+      2,
+      "fondo-1",
+      0,
+      "ancho-4",
+      1,
+      "alto"
+     ],
+     "color": "#a87b52"
+    },
+    {
+     "repetir": {
+      "n": "baldas + 1",
+      "var": "i",
+      "elementos": [
+       {
+        "caja": [
+         2,
+         0,
+         "i*(alto-2)/baldas",
+         "ancho-4",
+         "fondo-1",
+         2
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "ref": "dormitorio/estanteria"
+  }
+ },
+ "sigId": 14,
+ "casa": {
+  "altura": 2500,
+  "grosor": 150,
+  "colorPared": "#f4efe4",
+  "colorSuelo": "#c8a27a",
+  "texturaSuelo": "parquet",
+  "colorTecho": "#ffffff"
+ }
+}

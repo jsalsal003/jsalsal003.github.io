@@ -1,0 +1,41 @@
+{
+  "biblioteca": "Arquitectura",
+  "en": "Architecture",
+  "categoria": "arquitectura",
+  "nombre": "Arquitectura",
+  "en_categoria": "Architecture",
+  "unidad": "cm",
+  "bloques": [
+    { "id": "pared", "nombre": "Pared", "en": "Wall", "herramienta": "pared" },
+    { "id": "habitacion", "nombre": "Habitación", "en": "Room", "herramienta": "habitacion" },
+    { "id": "puerta", "nombre": "Puerta", "en": "Door", "hueco": "puerta", "medidas": { "ancho": 80, "alto": 210 }, "color": "#b07a4a" },
+    { "id": "puerta-doble", "nombre": "Puerta doble", "en": "Double door", "hueco": "puerta-doble", "medidas": { "ancho": 140, "alto": 210 }, "color": "#b07a4a" },
+    { "id": "corredera", "nombre": "Puerta corredera", "en": "Sliding door", "hueco": "corredera", "medidas": { "ancho": 90, "alto": 210 }, "color": "#c99a6a" },
+    { "id": "ventana", "nombre": "Ventana", "en": "Window", "hueco": "ventana", "medidas": { "ancho": 120, "alto": 120, "antepecho": 90 }, "color": "#e8eef2" },
+    { "id": "balconera", "nombre": "Ventana balconera", "en": "French window", "hueco": "balconera", "medidas": { "ancho": 90, "alto": 210, "antepecho": 0 }, "color": "#e8eef2" },
+    { "id": "abertura", "nombre": "Abertura (sin puerta)", "en": "Opening", "hueco": "abertura", "medidas": { "ancho": 90, "alto": 210 } },
+    {
+      "id": "escalera", "nombre": "Escalera recta", "en": "Straight staircase",
+      "medidas": { "ancho": 100, "fondo": 300, "alto": 280 },
+      "parametros": { "peldanos": 15 },
+      "color": "#c8b9a0",
+      "planta": [
+        { "rect": [0, 0, "ancho", "fondo"], "gruesa": true },
+        { "repetir": { "n": "peldanos - 1", "var": "i", "elementos": [ { "linea": [0, "(i+1)*fondo/peldanos", "ancho", "(i+1)*fondo/peldanos"] } ] } },
+        { "linea": ["ancho/2", 10, "ancho/2", "fondo-12"] },
+        { "poligono": ["ancho/2", "fondo-4", "ancho/2-5", "fondo-14", "ancho/2+5", "fondo-14"], "relleno": "#14201a" },
+        { "circulo": ["ancho/2", 10, 3] }
+      ],
+      "piezas": [
+        { "repetir": { "n": "peldanos", "var": "i", "elementos": [ { "caja": [0, "i*fondo/peldanos", 0, "ancho", "fondo/peldanos", "(i+1)*alto/peldanos"] } ] } }
+      ]
+    },
+    {
+      "id": "pilar", "nombre": "Pilar", "en": "Column",
+      "medidas": { "ancho": 30, "fondo": 30, "alto": 250 },
+      "color": "#9a9284",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"], "gruesa": true, "relleno": "#55605a" } ],
+      "piezas": [ { "caja": [0, 0, 0, "ancho", "fondo", "alto"] } ]
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "biblioteca": "Mobiliario",
+  "en": "Furniture",
+  "categoria": "salon",
+  "nombre": "Salón",
+  "en_categoria": "Living room",
+  "unidad": "cm",
+  "bloques": [
+    {
+      "id": "sofa", "nombre": "Sofá", "en": "Sofa",
+      "medidas": { "ancho": 200, "fondo": 90, "alto": 80 },
+      "color": "#7a8f6a",
+      "planta": [
+        { "rect": [0, 0, "ancho", "fondo"] },
+        { "linea": [18, 0, 18, "fondo-22", "ancho-18", "fondo-22", "ancho-18", 0] },
+        { "linea": ["ancho/2", 0, "ancho/2", "fondo-22"] }
+      ],
+      "piezas": [
+        { "caja": [0, 0, 0, "ancho", "fondo", 42] },
+        { "caja": [0, "fondo-22", 42, "ancho", 22, "alto-42"] },
+        { "caja": [0, 0, 42, 18, "fondo-22", 22] },
+        { "caja": ["ancho-18", 0, 42, 18, "fondo-22", 22] }
+      ]
+    },
+    {
+      "id": "sillon", "nombre": "Sillón", "en": "Armchair",
+      "medidas": { "ancho": 90, "fondo": 90, "alto": 80 },
+      "color": "#b2784a",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "linea": [16, 0, 16, "fondo-20", "ancho-16", "fondo-20", "ancho-16", 0] } ],
+      "piezas": [
+        { "caja": [0, 0, 0, "ancho", "fondo", 42] },
+        { "caja": [0, "fondo-20", 42, "ancho", 20, "alto-42"] },
+        { "caja": [0, 0, 42, 16, "fondo-20", 22] },
+        { "caja": ["ancho-16", 0, 42, 16, "fondo-20", 22] }
+      ]
+    },
+    {
+      "id": "mesa-centro", "nombre": "Mesa de centro", "en": "Coffee table",
+      "medidas": { "ancho": 110, "fondo": 60, "alto": 45 },
+      "color": "#c49a6c",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] } ],
+      "piezas": [
+        { "caja": [0, 0, "alto-4", "ancho", "fondo", 4] },
+        { "caja": [3, 3, 0, 5, 5, "alto-4"] }, { "caja": ["ancho-8", 3, 0, 5, 5, "alto-4"] },
+        { "caja": [3, "fondo-8", 0, 5, 5, "alto-4"] }, { "caja": ["ancho-8", "fondo-8", 0, 5, 5, "alto-4"] }
+      ]
+    },
+    {
+      "id": "mueble-tv", "nombre": "Mueble de televisión", "en": "TV stand",
+      "medidas": { "ancho": 160, "fondo": 45, "alto": 50 },
+      "color": "#4b4f54",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] }, { "rect": ["ancho/2-55", "fondo-12", 110, 6], "gruesa": true } ],
+      "piezas": [
+        { "caja": [0, 0, 0, "ancho", "fondo", "alto"] },
+        { "caja": ["ancho/2-55", "fondo-12", "alto", 110, 4, 65], "color": "#111111" },
+        { "caja": ["ancho/2-15", "fondo-16", "alto", 30, 12, 2], "color": "#111111" }
+      ]
+    },
+    {
+      "id": "mesa-comedor", "nombre": "Mesa de comedor", "en": "Dining table",
+      "medidas": { "ancho": 160, "fondo": 90, "alto": 75 },
+      "color": "#d8b98a",
+      "planta": [ { "rect": [0, 0, "ancho", "fondo"] } ],
+      "piezas": [
+        { "caja": [0, 0, "alto-4", "ancho", "fondo", 4] },
+        { "caja": [5, 5, 0, 6, 6, "alto-4"] }, { "caja": ["ancho-11", 5, 0, 6, 6, "alto-4"] },
+        { "caja": [5, "fondo-11", 0, 6, 6, "alto-4"] }, { "caja": ["ancho-11", "fondo-11", 0, 6, 6, "alto-4"] }
+      ]
+    },
+    {
+      "id": "mesa-redonda", "nombre": "Mesa redonda", "en": "Round table",
+      "medidas": { "ancho": 100, "fondo": 100, "alto": 75 },
+      "color": "#d8b98a",
+      "planta": [ { "circulo": ["ancho/2", "fondo/2", "ancho/2"] } ],
+      "piezas": [
+        { "cilindro": ["ancho/2", "fondo/2", "alto-4", "ancho/2", 4] },
+        { "cilindro": ["ancho/2", "fondo/2", 0, 5, "alto-4"], "color": "#55605a" },
+        { "cilindro": ["ancho/2", "fondo/2", 0, 25, 3], "color": "#55605a" }
+      ]
+    },
+    {
+      "id": "planta", "nombre": "Planta", "en": "Plant",
+      "medidas": { "ancho": 40, "fondo": 40, "alto": 110 },
+      "color": "#3f8f4f",
+      "planta": [ { "circulo": ["ancho/2", "fondo/2", "ancho/2"] }, { "circulo": ["ancho/2", "fondo/2", "ancho/4"] } ],
+      "piezas": [
+        { "cilindro": ["ancho/2", "fondo/2", 0, "ancho/4", 35], "color": "#b5603a" },
+        { "cilindro": ["ancho/2", "fondo/2", 35, "ancho/2", "alto-35"] }
+      ]
+    }
+  ]
+}

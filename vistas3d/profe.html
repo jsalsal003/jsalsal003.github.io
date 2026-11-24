@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="author" content="Juan Salguero Salguero">
+<title>Corrector del Desafío · Vistas 3D</title>
+<meta name="theme-color" content="#14201a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&family=Big+Shoulders+Stencil:wght@700;900&family=Caveat:wght@700&family=Martian+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  /* Corrector del profesor: misma familia visual que Vistas 3D (mesa de dibujo), pero con la barra en tinta oscura
+     y el lápiz rojo como protagonista: es la mesa del que corrige. */
+  :root{
+    --desk:#e9e3d3; --paper:#fbf8ef; --paper-2:#f3efe4; --ink:#14201a; --ink-2:#55605a; --line:#cfc6ae;
+    --yellow:#ffd23f; --blue:#1f5bd0; --red:#d7262c; --green:#1f8a4c;
+    --display:"Big Shoulders Stencil","Arial Narrow",sans-serif; --body:"Atkinson Hyperlegible Next",system-ui,sans-serif;
+    --mono:"Martian Mono",ui-monospace,monospace; --hand:"Caveat",cursive;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--body);color:var(--ink);background:var(--desk);
+    background-image:radial-gradient(rgba(20,32,26,.13) 1px,transparent 1.2px);background-size:16px 16px;min-height:100vh}
+  header{background:var(--ink);color:var(--paper);padding:.8rem 1.2rem;display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap}
+  header h1{font-family:var(--display);font-weight:900;font-size:1.9rem;margin:0;text-transform:uppercase;letter-spacing:.02em}
+  header h1 span{color:var(--red)}
+  header small{font-family:var(--mono);font-size:.68rem;color:#b9c3bc}
+  main{max-width:1100px;margin:0 auto;padding:1.2rem}
+  .card{background:var(--paper);border:2px solid var(--ink);box-shadow:6px 6px 0 rgba(20,32,26,.18);padding:1.1rem 1.3rem;margin-bottom:1.2rem}
+  .card h2{font-family:var(--mono);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;margin:0 0 .8rem}
+  button,input,textarea{font:inherit}
+  .btn{border:2px solid var(--ink);background:var(--paper);padding:.55rem 1rem;border-radius:.25rem;cursor:pointer;font-family:var(--mono);font-size:.78rem;font-weight:700;box-shadow:3px 3px 0 var(--ink)}
+  .btn.go{background:var(--yellow)}
+  .btn:active{transform:translate(2px,2px);box-shadow:none}
+  .row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+  input[type=password],textarea{border:2px solid var(--ink);border-radius:.2rem;padding:.55rem .6rem;background:#fff;width:100%}
+  textarea{font-family:var(--mono);font-size:.72rem;min-height:4.5rem}
+  .err{color:var(--red);font-weight:700;min-height:1.2em}
+  #lock{max-width:420px;margin:12vh auto 0}
+  #lock h2{font-size:.8rem}
+  video{width:100%;max-height:60vh;background:#000;border:2px solid var(--ink);display:block;object-fit:cover}
+  .scanbox{position:relative}
+  .scanbox::after{content:"";position:absolute;inset:18%;border:3px dashed var(--yellow);pointer-events:none}
+  /* resultado */
+  .head{display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center}
+  .who b{font-family:var(--display);font-weight:900;font-size:2.2rem;text-transform:uppercase;display:block;line-height:1}
+  .who span{font-family:var(--mono);font-size:.7rem;color:var(--ink-2)}
+  .grade{text-align:center;border:3px solid var(--red);color:var(--red);border-radius:50%;width:8.5rem;height:8.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-6deg)}
+  .grade b{font-family:var(--hand);font-size:3.6rem;line-height:.8}
+  .grade small{font-family:var(--mono);font-size:.6rem;color:var(--ink-2)}
+  .pieces{display:grid;gap:1rem}
+  .piece{border-top:2px solid var(--ink);padding-top:.8rem}
+  .piece h3{margin:0 0 .5rem;font-family:var(--display);font-weight:900;font-size:1.35rem;text-transform:uppercase;display:flex;gap:.6rem;align-items:baseline}
+  .piece h3 small{font-family:var(--mono);font-size:.6rem;font-weight:600;color:var(--ink-2);text-transform:none}
+  .views{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}
+  .view{border:1px solid var(--line);background:#fff;padding:.5rem}
+  .view .t{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.6rem;font-weight:800;margin-bottom:.3rem}
+  .view .ok{color:var(--green)} .view .ko{color:var(--red)}
+  .view svg{width:100%;height:auto;display:block}
+  .legend{display:flex;gap:1rem;flex-wrap:wrap;font-family:var(--mono);font-size:.6rem;color:var(--ink-2);margin:.4rem 0 0}
+  .legend i{display:inline-block;width:1.4rem;vertical-align:middle;margin-right:.3rem;border-top:3px solid}
+  .note{font-family:var(--mono);font-size:.62rem;color:var(--ink-2)}
+  @media (max-width:700px){ .views{grid-template-columns:1fr} .head{grid-template-columns:1fr} .grade{width:7rem;height:7rem} }
+  @media print{ header,.noprint{display:none} body{background:#fff} .card{box-shadow:none} }
+</style>
+</head>
+<body>
+<header><h1>Corrector del <span>Desafío</span></h1><small>VISTAS 3D · SOLO PROFESORADO</small></header>
+<main>
+  <section class="card" id="lock">
+    <h2>Acceso del profesor</h2>
+    <input type="password" id="pw" placeholder="Contraseña" autocomplete="current-password">
+    <p class="err" id="pwErr"></p>
+    <button class="btn go" id="pwGo">Entrar</button>
+  </section>
+
+  <section id="app" hidden>
+    <div class="card noprint" id="scan">
+      <h2>Escanear el QR del alumno</h2>
+      <div class="row"><button class="btn go" id="camOn">📷 Abrir la cámara</button><button class="btn" id="camOff" hidden>Cerrar la cámara</button></div>
+      <p class="note">Apunta a la última página del PDF del alumno (en papel o en la pantalla). También vale abrir el enlace del QR con la cámara del móvil.</p>
+      <div class="scanbox" id="scanbox" hidden><video id="video" playsinline muted></video></div>
+      <p class="err" id="camErr"></p>
+      <details><summary class="note">…o pegar el código a mano</summary>
+        <textarea id="paste" placeholder="Pega aquí el enlace o el código del QR"></textarea>
+        <button class="btn" id="pasteGo">Corregir</button>
+      </details>
+    </div>
+    <div id="result"></div>
+  </section>
+</main>
+<canvas id="cv" hidden></canvas>
+
+<script src="nucleo.js"></script>
+<script>
+(function () {
+  'use strict';
+  var R = VistasNucleo;
+  // Huella (SHA-256) de la contraseña: la contraseña no aparece escrita en el código.
+  var HASH = '9ce6568a8423eb39e54a5d5d9aca6c4305b882cfc36a185edcb4dc8704037cc1';
+  function sha256(s) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)).then(function (b) {
+      return Array.from(new Uint8Array(b)).map(function (x) { return x.toString(16).padStart(2, '0'); }).join('');
+    });
+  }
+  function unlock() { document.getElementById('lock').hidden = true; document.getElementById('app').hidden = false; fromHash(); }
+  function tryPw() {
+    sha256(document.getElementById('pw').value).then(function (h) {
+      if (h === HASH) { try { sessionStorage.setItem('vistasProfe', HASH); } catch (e) { /* nada */ } unlock(); }
+      else document.getElementById('pwErr').textContent = 'Contraseña incorrecta';
+    });
+  }
+  document.getElementById('pwGo').onclick = tryPw;
+  document.getElementById('pw').addEventListener('keydown', function (e) { if (e.key === 'Enter') tryPw(); });
+
+  /* ---------- cámara + lector de QR ---------- */
+  var stream = null, raf = 0, video = document.getElementById('video'), cv = document.getElementById('cv'), cx = cv.getContext('2d', { willReadFrequently: true });
+  function loadJsQR() {
+    return new Promise(function (ok, ko) {
+      if (window.jsQR) { ok(); return; }
+      var s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+      s.onload = ok; s.onerror = function () { ko(new Error('no se pudo cargar el lector de QR (¿hay internet?)')); }; document.head.appendChild(s);
+    });
+  }
+  document.getElementById('camOn').onclick = function () {
+    document.getElementById('camErr').textContent = '';
+    loadJsQR().then(function () { return navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false }); })
+      .then(function (s) {
+        stream = s; video.srcObject = s; video.play();
+        document.getElementById('scanbox').hidden = false; document.getElementById('camOn').hidden = true; document.getElementById('camOff').hidden = false;
+        scan();
+      })
+      .catch(function (e) { document.getElementById('camErr').textContent = 'No se puede usar la cámara: ' + (e.message || e.name) + '. Da permiso a la cámara o pega el código a mano.'; });
+  };
+  function stopCam() {
+    cancelAnimationFrame(raf); if (stream) stream.getTracks().forEach(function (t) { t.stop(); }); stream = null;
+    document.getElementById('scanbox').hidden = true; document.getElementById('camOn').hidden = false; document.getElementById('camOff').hidden = true;
+  }
+  document.getElementById('camOff').onclick = stopCam;
+  function scan() {
+    if (!stream) return;
+    if (video.readyState >= 2) {
+      cv.width = video.videoWidth; cv.height = video.videoHeight; cx.drawImage(video, 0, 0);
+      var code = jsQR(cx.getImageData(0, 0, cv.width, cv.height).data, cv.width, cv.height, { inversionAttempts: 'dontInvert' });
+      if (code && code.data && /r=/.test(code.data)) { stopCam(); if (navigator.vibrate) navigator.vibrate(80); show(code.data); return; }
+    }
+    raf = requestAnimationFrame(scan);
+  }
+  document.getElementById('pasteGo').onclick = function () { show(document.getElementById('paste').value); };
+  function fromHash() { if (/r=/.test(location.hash)) show(location.hash); }
+  window.addEventListener('hashchange', function () { if (!document.getElementById('app').hidden) fromHash(); });
+
+  /* ---------- mostrar la corrección ---------- */
+  var VN = { alzado: 'Alzado', planta: 'Planta', izq: 'Perfil izquierdo', der: 'Perfil derecho' };
+  var TIPO = { 1: 'cubos 2×2×2', 2: 'cubos 3×3×3', 3: 'con caras inclinadas' };
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function fmt(ms) { var s = Math.round(ms / 1000); return Math.floor(s / 60) + ' min ' + String(s % 60).padStart(2, '0') + ' s'; }
+  // dibujo de una vista: lo del alumno (bien en negro, mal en rojo) y lo que falta (azul)
+  function viewSVG(N, mine, sol, res) {
+    var C = 60, P = 18, W = N * C + 2 * P, o = [];
+    o.push('<svg viewBox="0 0 ' + W + ' ' + W + '" xmlns="http://www.w3.org/2000/svg">');
+    for (var i = 0; i <= N; i++) {
+      o.push('<line x1="' + (P + i * C) + '" y1="' + P + '" x2="' + (P + i * C) + '" y2="' + (P + N * C) + '" stroke="#ddd5c2" stroke-dasharray="2 5"/>');
+      o.push('<line x1="' + P + '" y1="' + (P + i * C) + '" x2="' + (P + N * C) + '" y2="' + (P + i * C) + '" stroke="#ddd5c2" stroke-dasharray="2 5"/>');
+    }
+    function seg(k, color, w, dashed, op) {
+      var s = R.segUV(k);
+      return '<line x1="' + (P + s[0] * C) + '" y1="' + (P + (N - s[1]) * C) + '" x2="' + (P + s[2] * C) + '" y2="' + (P + (N - s[3]) * C) + '" stroke="' + color + '" stroke-width="' + w + '" stroke-linecap="round"' + (dashed ? ' stroke-dasharray="9 7"' : '') + (op ? ' opacity="' + op + '"' : '') + '/>';
+    }
+    res.faltan.forEach(function (k) { o.push(seg(k, '#1f5bd0', 7, sol[k] === 'dashed', .55)); });
+    res.tipo.forEach(function (k) { o.push(seg(k, '#1f5bd0', 9, sol[k] === 'dashed', .3)); });
+    Object.keys(mine).forEach(function (k) {
+      var mal = res.sobran.indexOf(k) >= 0 || res.tipo.indexOf(k) >= 0;
+      o.push(seg(k, mal ? '#d7262c' : '#14201a', 4, mine[k] === 'dashed'));
+    });
+    o.push('</svg>');
+    return o.join('');
+  }
+  function show(txt) {
+    var out = document.getElementById('result'), data, cor;
+    try { data = R.decodificar(txt); cor = R.corregir(data); }
+    catch (e) { out.innerHTML = '<div class="card"><p class="err">No se ha podido leer el código: ' + esc(e.message) + '</p></div>'; return; }
+    var d = new Date(data.inicio), html = [];
+    html.push('<div class="card"><div class="head"><div class="who"><b>' + esc(data.nombre || 'Sin nombre') + '</b><span>' + esc(data.curso || '') +
+      ' · ' + d.toLocaleDateString('es-ES') + ' ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) +
+      ' · tiempo: ' + fmt(data.duracion) + ' · perfil ' + (data.perfil === 'izq' ? 'izquierdo' : 'derecho') + '</span></div>' +
+      '<div class="grade"><b>' + String(cor.nota).replace('.', ',') + '</b><small>' + cor.bien + ' / ' + cor.total + ' vistas</small></div></div>' +
+      '<div class="legend"><span><i style="border-color:#14201a"></i>bien dibujado</span><span><i style="border-color:#d7262c"></i>sobra o tipo de línea equivocado</span><span><i style="border-color:#1f5bd0;opacity:.55"></i>faltaba</span></div>' +
+      '<p class="note">Nota = vistas perfectas × 10 / ' + cor.total + '. Una vista cuenta como bien solo si tiene todas sus líneas, sin ninguna de más y con el tipo correcto (continua u oculta).</p></div>');
+    html.push('<div class="card"><h2>Pieza a pieza</h2><div class="pieces">');
+    cor.piezas.forEach(function (p, i) {
+      var b = R.BATERIA[p.idx], N = R.tam(b), ok = ['alzado', 'planta', data.perfil].filter(function (v) { return p.vistas[v].ok; }).length;
+      html.push('<div class="piece"><h3>Pieza ' + (i + 1) + ' <small>nº ' + (p.idx + 1) + ' de la batería · ' + TIPO[p.tipo] + ' · ' + ok + '/3 bien</small></h3><div class="views">');
+      ['alzado', 'planta', data.perfil].forEach(function (v) {
+        var r = p.vistas[v], txt = r.ok ? 'BIEN ✓' : [r.faltan.length ? 'faltan ' + r.faltan.length : '', r.sobran.length ? 'sobran ' + r.sobran.length : '', r.tipo.length ? 'tipo mal ' + r.tipo.length : ''].filter(Boolean).join(' · ');
+        html.push('<div class="view"><div class="t"><span>' + VN[v].toUpperCase() + '</span><span class="' + (r.ok ? 'ok' : 'ko') + '">' + txt + '</span></div>' +
+          viewSVG(N, data.dibujos[i][v] || {}, R.solucion(b, v), r) + '</div>');
+      });
+      html.push('</div></div>');
+    });
+    html.push('</div></div>');
+    html.push('<div class="row noprint"><button class="btn" onclick="window.print()">🖨 Imprimir esta corrección</button><button class="btn go" onclick="document.getElementById(\'scan\').scrollIntoView();document.getElementById(\'camOn\').click()">📷 Escanear otro</button></div>');
+    out.innerHTML = html.join('');
+    out.scrollIntoView({ behavior: 'smooth' });
+    if (location.hash) history.replaceState(null, '', location.pathname); // el código no se queda en la barra de direcciones
+  }
+
+  // al final (antes se hacía arriba y fallaba al abrir el enlace con la sesión ya iniciada: aún no existían VN y TIPO)
+  try { if (sessionStorage.getItem('vistasProfe') === HASH) unlock(); } catch (e) { /* nada */ }
+})();
+</script>
+</body>
+</html>
