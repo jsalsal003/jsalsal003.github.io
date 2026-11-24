@@ -29,7 +29,7 @@
     --body:"Atkinson Hyperlegible Next","Atkinson Hyperlegible",system-ui,sans-serif;
     --mono:"Martian Mono",ui-monospace,monospace;
     --hand:"Caveat",cursive;
-    font-size:clamp(11px, min(100vw / 82, 100vh / 58), 18px);
+    font-size:clamp(12px, min(100vw / 88, 100vh / 44), 17px);
   }
   *{box-sizing:border-box}
   html,body{margin:0;min-height:100%}
@@ -65,7 +65,9 @@
   .angles{position:fixed;right:-7rem;bottom:-7rem;width:22rem;height:22rem;pointer-events:none;opacity:.35;z-index:0}
 
   .page{position:relative;z-index:2;max-width:112rem;margin:0 auto;padding:2.8rem 3.2rem 1.2rem 4rem;display:grid;gap:1.6rem 2rem;
-    grid-template-columns:repeat(6,minmax(0,1fr));grid-template-areas:"hero hero hero hero hero hero" "a b c d e f" "note note note block block block";gap:1.6rem 1.5rem}
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"hero hero" "busca busca" "laminas laminas" "note block";gap:1.5rem 2rem}
+  .laminas{grid-area:laminas;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2.4rem 2.6rem;padding-top:.6rem}
+  .vacio{grid-column:1/-1;font-family:var(--hand);font-size:1.9rem;color:var(--yellow);margin:.5rem 0 1rem;transform:rotate(-1.5deg)}
 
   /* ---------- cabecera ---------- */
   .hero{grid-area:hero;display:flex;align-items:flex-end;justify-content:space-between;gap:2rem}
@@ -84,12 +86,12 @@
     border-radius:.15rem;box-shadow:0 .1rem 0 rgba(0,0,0,.18),0 1.1rem 1.8rem -.6rem rgba(0,0,0,.55);
     transform:rotate(var(--r));transition:transform .25s cubic-bezier(.3,1.4,.5,1),box-shadow .25s;
     animation:drop .7s cubic-bezier(.2,.9,.25,1.15) both}
-  .sheet.a{grid-area:a;animation-delay:.25s}
-  .sheet.b{grid-area:b;--r:.8deg;animation-delay:.4s}
-  .sheet.c{grid-area:c;--r:-.6deg;animation-delay:.55s}
-  .sheet.d{grid-area:d;--r:1.1deg;animation-delay:.7s}
-  .sheet.e{grid-area:e;--r:-.9deg;animation-delay:.85s}
-  .sheet.f{grid-area:f;--r:.7deg;animation-delay:1s}
+  .sheet.a{animation-delay:.25s}
+  .sheet.b{--r:.8deg;animation-delay:.4s}
+  .sheet.c{--r:-.6deg;animation-delay:.55s}
+  .sheet.d{--r:1.1deg;animation-delay:.7s}
+  .sheet.e{--r:-.9deg;animation-delay:.85s}
+  .sheet.f{--r:.7deg;animation-delay:1s}
   .sheet:hover,.sheet:focus-visible{transform:rotate(0) translateY(-.35rem);box-shadow:0 .1rem 0 rgba(0,0,0,.18),0 1.8rem 2.6rem -.6rem rgba(0,0,0,.65)}
   .sheet:focus-visible{outline:.22rem solid var(--yellow);outline-offset:.35rem}
   /* cinta adhesiva */
@@ -105,17 +107,38 @@
   .sheet.f::before,.sheet.f::after{animation-delay:1.6s}
   /* margen de la lámina */
   .frame{margin:.7rem;border:2px solid var(--ink);display:flex;flex-direction:column;flex:1}
-  .art{height:8.6rem;position:relative;border-bottom:1.5px solid var(--ink);overflow:hidden;
+  .art{height:9rem;position:relative;border-bottom:1.5px solid var(--ink);overflow:hidden;
     background-image:linear-gradient(var(--paper-grid) 1px,transparent 1px),linear-gradient(90deg,var(--paper-grid) 1px,transparent 1px);background-size:.8rem .8rem}
   .art svg{position:absolute;inset:0;width:100%;height:100%}
   .view{position:absolute;left:.6rem;top:.5rem;font-family:var(--mono);font-size:.56rem;font-weight:600;letter-spacing:.12em;color:var(--ink-2);background:var(--paper);padding:.1rem .35rem;z-index:1}
-  .body{padding:.8rem .85rem .8rem;display:flex;flex-direction:column;gap:.6rem;flex:1}
-  h2{font-family:var(--display);font-weight:900;font-size:1.85rem;flex-wrap:wrap;line-height:.9;text-transform:uppercase;letter-spacing:.01em;margin:0;display:flex;align-items:baseline;gap:.6rem}
+  .body{padding:1rem 1.2rem .95rem;display:flex;flex-direction:column;gap:.6rem;flex:1}
+  h2{font-family:var(--display);font-weight:900;font-size:2.15rem;flex-wrap:wrap;line-height:.9;text-transform:uppercase;letter-spacing:.01em;margin:0;display:flex;align-items:baseline;gap:.6rem}
   h2 small{font-family:var(--mono);font-weight:600;font-size:.62rem;letter-spacing:.08em;color:#fff;background:var(--ink);padding:.2rem .45rem;border-radius:.15rem;text-transform:lowercase}
-  .body p{margin:0;font-size:.84rem;line-height:1.36;color:var(--ink-2)}
-  .row{display:flex;flex-direction:column;align-items:stretch;gap:.55rem;margin-top:auto}
+  .body p{margin:0;font-size:.92rem;line-height:1.42;color:var(--ink-2)}
+  .row{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:.7rem;margin-top:auto}
   .row .go{margin-left:auto}
-  .parts{width:100%}
+  .sheet[hidden]{display:none}
+  /* etiqueta de la asignatura, como una pegatina en la esquina de la lámina */
+  .asig{position:absolute;right:1.3rem;top:1.25rem;z-index:2;font-family:var(--mono);font-size:.6rem;font-weight:800;letter-spacing:.12em;padding:.2rem .5rem;border:1.5px solid var(--ink);color:var(--ink);transform:rotate(4deg);box-shadow:.12rem .12rem 0 var(--ink)}
+  .asig.tyd{background:var(--yellow)} .asig.cyr{background:#7fe0a8}
+  /* buscador: una regla de dibujo con la lupa y las asignaturas como pestañas de cinta */
+  .busca{grid-area:busca;display:flex;flex-wrap:wrap;align-items:center;gap:.9rem 1.4rem;animation:fade .6s .2s both}
+  .campo-busca{flex:1 1 20rem;max-width:30rem;display:flex;align-items:center;gap:.6rem;background:var(--paper);border:2px solid var(--ink);box-shadow:.25rem .25rem 0 rgba(0,0,0,.35);padding:.45rem .75rem;color:var(--ink)}
+  .campo-busca svg{width:1.25rem;height:1.25rem;flex:none}
+  .campo-busca input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:1rem;color:var(--ink);outline:none}
+  .campo-busca input::placeholder{color:#7d877f}
+  .campo-busca kbd{font-family:var(--mono);font-size:.65rem;border:1px solid var(--ink-2);border-bottom-width:2px;border-radius:.2rem;padding:0 .35rem;color:var(--ink-2)}
+  .campo-busca:focus-within{outline:.2rem solid var(--yellow);outline-offset:.2rem}
+  .filtros{display:flex;gap:.5rem;flex-wrap:wrap}
+  .filtros button{font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:.1rem;padding:.35rem .8rem .4rem;border:2px solid var(--chalk-2);background:rgba(10,30,22,.35);color:var(--chalk);font-family:var(--display);font-weight:900;font-size:1.25rem;letter-spacing:.04em;text-transform:uppercase;line-height:1;transition:transform .15s,background .15s}
+  .filtros button small{font-family:var(--mono);font-weight:600;font-size:.52rem;letter-spacing:.04em;text-transform:none;color:var(--chalk-2)}
+  .filtros button:hover{transform:translateY(-.1rem);border-color:var(--chalk)}
+  .filtros button.on{background:var(--yellow);border-color:var(--ink);color:var(--ink);box-shadow:.2rem .2rem 0 var(--ink)}
+  .filtros button.on small{color:var(--ink)}
+  .filtros button[data-f="cyr"].on{background:#7fe0a8}
+  .filtros button:focus-visible{outline:.2rem solid var(--yellow);outline-offset:.2rem}
+  .cuenta{font-family:var(--mono);font-size:.65rem;color:var(--chalk-2);letter-spacing:.08em;text-transform:uppercase}
+  @media (max-width:1100px){ .laminas{grid-template-columns:repeat(2,minmax(0,1fr))} }
   /* lista de características, como una lista de piezas */
   .parts{border-collapse:collapse;font-family:var(--mono);font-size:.55rem;color:var(--ink)}
   .parts td{border:1px solid var(--ink);padding:.18rem .45rem;white-space:nowrap}
@@ -161,10 +184,12 @@
   /* ---------- pantallas estrechas ---------- */
   @media (max-width:760px){
     :root{font-size:14px}
-    .page{grid-template-columns:minmax(0,1fr);grid-template-areas:"hero" "a" "b" "c" "d" "e" "f" "note" "block";padding:2.6rem 1.2rem 1.5rem 2.4rem}
+    .page{grid-template-columns:minmax(0,1fr);grid-template-areas:"hero" "busca" "laminas" "note" "block";padding:2.6rem 1.2rem 1.5rem 2.4rem}
     .hero > div{min-width:0}
     .tag{letter-spacing:.08em;flex-wrap:wrap}
     .row{flex-direction:column;align-items:stretch}
+    .laminas{grid-template-columns:minmax(0,1fr)}
+    .campo-busca{max-width:none}
     .parts td{white-space:normal}
     .go{justify-content:center}
     .art{height:9.5rem}
@@ -173,7 +198,7 @@
     h1{font-size:3.1rem}
     .block{justify-self:stretch}
   }
-  /* en pantallas anchas el titular va en una sola línea para que quepan las seis láminas */
+  /* en pantallas anchas el titular va en una sola línea para que quepan el titular entero */
   @media (min-width:761px){ h1 br{display:none} }
   @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important;transition:none !important}.ink{stroke-dashoffset:0}}
 </style>
@@ -195,7 +220,7 @@
     <div>
       <p class="tag">Taller de Tecnología · Herramientas del aula</p>
       <h1>Diseña, programa <br><span class="hi">y fabrica.</span></h1>
-      <p class="lead">Seis herramientas para clase que funcionan en el <b>Chromebook</b>, <b>sin cuenta</b> y <b>sin instalar nada</b>. Elige una lámina para empezar.</p>
+      <p class="lead">Seis herramientas para clase que funcionan en el <b>Chromebook</b>, <b>sin cuenta</b> y <b>sin instalar nada</b>. Busca una o elige la asignatura.</p>
     </div>
     <div class="stamp" aria-label="Funciona en Chromebook y Linux, sin iniciar sesión y se guarda solo">
       <svg viewBox="0 0 120 120" aria-hidden="true">
@@ -209,8 +234,21 @@
     </div>
   </header>
 
+  <!-- Buscador y filtro por asignatura (se puede enlazar directamente: …/#tyd o …/#cyr) -->
+  <div class="busca" role="search">
+    <label class="campo-busca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6"/></svg><input id="q" type="search" placeholder="Buscar: planos, 3D, Arduino, web…" aria-label="Buscar una herramienta" autocomplete="off" spellcheck="false"><kbd>/</kbd></label>
+    <div class="filtros" role="group" aria-label="Asignatura">
+      <button type="button" data-f="todas" class="on" aria-pressed="true">Todas<small>All tools</small></button>
+      <button type="button" data-f="tyd" aria-pressed="false">TyD<small>Tecnología y Digitalización</small></button>
+      <button type="button" data-f="cyr" aria-pressed="false">CyR<small>Computación y Robótica</small></button>
+    </div>
+    <span class="cuenta" id="cuenta" aria-live="polite">6 herramientas</span>
+  </div>
+
+  <div class="laminas" id="laminas">
   <!-- Lámina 01: AulaCAD 3D -->
-  <a class="sheet a" href="https://jsalsal003.github.io/aulacad/">
+  <a class="sheet a" href="https://jsalsal003.github.io/aulacad/" data-asig="tyd" data-buscar="diseño 3d impresión impresora stl tinkercad pieza modelado">
+    <span class="asig tyd" title="Tecnología y Digitalización">TyD</span>
     <div class="frame">
       <div class="art" aria-hidden="true">
         <span class="view">LÁMINA 01 · PERSPECTIVA ISOMÉTRICA</span>
@@ -259,7 +297,8 @@
   </a>
 
   <!-- Lámina 02: Editor HTML -->
-  <a class="sheet b" href="https://jsalsal003.github.io/aulacad/editor-html/">
+  <a class="sheet b" href="https://jsalsal003.github.io/aulacad/editor-html/" data-asig="cyr" data-buscar="web página html css etiquetas código programación">
+    <span class="asig cyr" title="Computación y Robótica">CyR</span>
     <div class="frame">
       <div class="art" aria-hidden="true">
         <span class="view">LÁMINA 02 · CÓDIGO Y RESULTADO</span>
@@ -300,7 +339,8 @@
   </a>
 
   <!-- Lámina 03: Vistas 3D -->
-  <a class="sheet c" href="https://jsalsal003.github.io/aulacad/vistas/">
+  <a class="sheet c" href="https://jsalsal003.github.io/aulacad/vistas/" data-asig="tyd" data-buscar="diédrico vistas alzado planta perfil dibujo técnico cubos">
+    <span class="asig tyd" title="Tecnología y Digitalización">TyD</span>
     <div class="frame">
       <div class="art" aria-hidden="true">
         <span class="view">LÁMINA 03 · SISTEMA DIÉDRICO</span>
@@ -352,7 +392,8 @@
   </a>
 
   <!-- Lámina 04: Placa virtual -->
-  <a class="sheet d" href="https://jsalsal003.github.io/aulacad/robotica/">
+  <a class="sheet d" href="https://jsalsal003.github.io/aulacad/robotica/" data-asig="cyr" data-buscar="arduino bitbloq bloques programar led sensores zumbador servo robótica placa">
+    <span class="asig cyr" title="Computación y Robótica">CyR</span>
     <div class="frame">
       <div class="art" aria-hidden="true">
         <span class="view">LÁMINA 04 · PLACA Y ACTUADORES</span>
@@ -399,7 +440,8 @@
   </a>
 
   <!-- Lámina 05: Plano 2D -->
-  <a class="sheet e" href="https://jsalsal003.github.io/aulacad/plano/">
+  <a class="sheet e" href="https://jsalsal003.github.io/aulacad/plano/" data-asig="tyd" data-buscar="autocad plano escala cotas acotar dibujo técnico vivienda dormitorio pdf">
+    <span class="asig tyd" title="Tecnología y Digitalización">TyD</span>
     <div class="frame">
       <div class="art" aria-hidden="true">
         <span class="view">LÁMINA 05 · PLANTA A ESCALA</span>
@@ -444,7 +486,8 @@
   </a>
 
   <!-- Lámina 06: Casa 3D -->
-  <a class="sheet f" href="https://jsalsal003.github.io/aulacad/casa3d/">
+  <a class="sheet f" href="https://jsalsal003.github.io/aulacad/casa3d/" data-asig="tyd" data-buscar="vivienda casa interiores muebles habitación planos sweet home 3d">
+    <span class="asig tyd" title="Tecnología y Digitalización">TyD</span>
     <div class="frame">
       <div class="art" aria-hidden="true">
         <span class="view">LÁMINA 06 · INTERIOR EN 3D</span>
@@ -492,6 +535,9 @@
     </div>
   </a>
 
+  <p class="vacio" id="vacio" hidden></p>
+  </div>
+
   <aside class="note">
     <h3>¡Antes de cerrar!</h3>
     <p>Guarda tu trabajo en un archivo: <b>«Guardar archivo»</b> en AulaCAD, Plano 2D y Casa 3D, <b>«Descargar»</b> en el Editor (<kbd>Ctrl</kbd>+<kbd>S</kbd>), <b>«Descargar imagen»</b> en Vistas 3D o <b>«⬇ Imagen»</b> en la Placa virtual, y entrégalo en Classroom.</p>
@@ -523,6 +569,41 @@
     }
     function all() { rem = parseFloat(getComputedStyle(document.documentElement).fontSize); fill(document.querySelector('.ruler.x'), true); fill(document.querySelector('.ruler.y'), false); }
     all(); addEventListener('resize', all);
+  })();
+</script>
+<script>
+  // Buscador y filtro por asignatura. El filtro elegido se recuerda en este navegador y se puede enlazar con #tyd o #cyr.
+  (function () {
+    var q = document.getElementById('q'), botones = [].slice.call(document.querySelectorAll('.filtros button'));
+    var laminas = [].slice.call(document.querySelectorAll('.laminas .sheet')), cuenta = document.getElementById('cuenta'), vacio = document.getElementById('vacio');
+    var NOMBRES = { tyd: 'Tecnología y Digitalización', cyr: 'Computación y Robótica' };
+    var filtro = 'todas';
+    function normal(t) { return String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+    laminas.forEach(function (l) { l._texto = normal(l.textContent + ' ' + (l.dataset.buscar || '') + ' ' + (NOMBRES[l.dataset.asig] || '') + ' ' + l.dataset.asig); });
+    function aplicar(guardar) {
+      var palabras = normal(q.value).split(/\s+/).filter(Boolean), n = 0;
+      laminas.forEach(function (l) {
+        var ok = (filtro === 'todas' || l.dataset.asig === filtro) && palabras.every(function (p) { var sin = p.replace(/(es|s)$/, ''); return l._texto.indexOf(p) >= 0 || (sin.length >= 3 && l._texto.indexOf(sin) >= 0); });
+        l.hidden = !ok; if (ok) n++;
+      });
+      botones.forEach(function (b) { var on = b.dataset.f === filtro; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+      cuenta.textContent = n === 1 ? '1 herramienta' : n + ' herramientas';
+      vacio.hidden = n > 0;
+      if (!n) vacio.textContent = 'No hay ninguna herramienta' + (q.value.trim() ? ' con «' + q.value.trim() + '»' : '') + (filtro !== 'todas' ? ' en ' + NOMBRES[filtro] : '') + '.';
+      if (guardar) {
+        try { localStorage.setItem('portada.asignatura', filtro); } catch (e) { /* sin almacenamiento: no pasa nada */ }
+        try { history.replaceState(null, '', filtro === 'todas' ? location.pathname : '#' + filtro); } catch (e) { /* nada */ }
+      }
+    }
+    botones.forEach(function (b) { b.addEventListener('click', function () { filtro = b.dataset.f; aplicar(true); }); });
+    q.addEventListener('input', function () { aplicar(false); });
+    q.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { q.value = ''; aplicar(false); q.blur(); } });
+    document.addEventListener('keydown', function (ev) { if (ev.key === '/' && document.activeElement !== q) { ev.preventDefault(); q.focus(); } });
+    var h = location.hash.replace('#', '').toLowerCase();
+    if (NOMBRES[h]) filtro = h;
+    else { try { var g = localStorage.getItem('portada.asignatura'); if (g === 'todas' || NOMBRES[g]) filtro = g; } catch (e) { /* nada */ } }
+    window.addEventListener('hashchange', function () { var x = location.hash.replace('#', '').toLowerCase(); filtro = NOMBRES[x] ? x : 'todas'; aplicar(false); });
+    aplicar(false);
   })();
 </script>
 </body>
