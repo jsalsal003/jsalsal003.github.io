@@ -6,7 +6,7 @@
 <meta name="author" content="Juan Salguero Salguero">
 <meta name="copyright" content="© 2026 Juan Salguero Salguero · CC BY-NC-SA 4.0">
 <title>Taller de Tecnología · Herramientas del aula</title>
-<meta name="description" content="AulaCAD 3D y Editor HTML: herramientas para las clases de Tecnología que funcionan en el Chromebook, sin cuenta y sin instalar nada.">
+<meta name="description" content="AulaCAD 3D, Plano 2D, Casa 3D y más: herramientas para las clases de Tecnología que funcionan en el Chromebook, sin cuenta y sin instalar nada.">
 <meta name="theme-color" content="#1d4a37">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231d4a37'/%3E%3Cpath d='M0 8h32M0 16h32M0 24h32M8 0v32M16 0v32M24 0v32' stroke='%23e8f2b0' stroke-opacity='.25'/%3E%3Cpath d='M9 21l7 3.5 7-3.5v-9l-7-3.5-7 3.5z' fill='%23ffd23f' stroke='%2314201a' stroke-width='1.4'/%3E%3Cpath d='M9 12l7 3.5 7-3.5M16 15.5v9' stroke='%2314201a' stroke-width='1.4' fill='none'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,7 +18,7 @@
      Idea: una alfombrilla de corte verde (con reglas en los bordes) sobre la que hay
      dos láminas de dibujo técnico pegadas con cinta, un pósit y el cajetín de autoría.
      Todo se mide en rem, y el rem depende del ancho y del alto de la ventana:
-     en un Chromebook (1366×660) cabe entera sin desplazarse.
+     en un Chromebook (1366×660, o 1366×768 a pantalla completa) cabe entera sin desplazarse.
      =================================================================== */
   :root{
     --mat:#1d4a37; --mat-2:#173d2d; --mat-line:rgba(232,242,176,.13); --mat-line-2:rgba(232,242,176,.28);
@@ -29,7 +29,7 @@
     --body:"Atkinson Hyperlegible Next","Atkinson Hyperlegible",system-ui,sans-serif;
     --mono:"Martian Mono",ui-monospace,monospace;
     --hand:"Caveat",cursive;
-    font-size:clamp(11px, min(100vw / 82, 100vh / 56), 18px);
+    font-size:clamp(11px, min(100vw / 82, 100vh / 58), 18px);
   }
   *{box-sizing:border-box}
   html,body{margin:0;min-height:100%}
@@ -65,7 +65,7 @@
   .angles{position:fixed;right:-7rem;bottom:-7rem;width:22rem;height:22rem;pointer-events:none;opacity:.35;z-index:0}
 
   .page{position:relative;z-index:2;max-width:112rem;margin:0 auto;padding:2.8rem 3.2rem 1.2rem 4rem;display:grid;gap:1.6rem 2rem;
-    grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"hero hero hero hero" "a b c d" "note note block block"}
+    grid-template-columns:repeat(6,minmax(0,1fr));grid-template-areas:"hero hero hero hero hero hero" "a b c d e f" "note note note block block block";gap:1.6rem 1.5rem}
 
   /* ---------- cabecera ---------- */
   .hero{grid-area:hero;display:flex;align-items:flex-end;justify-content:space-between;gap:2rem}
@@ -88,6 +88,8 @@
   .sheet.b{grid-area:b;--r:.8deg;animation-delay:.4s}
   .sheet.c{grid-area:c;--r:-.6deg;animation-delay:.55s}
   .sheet.d{grid-area:d;--r:1.1deg;animation-delay:.7s}
+  .sheet.e{grid-area:e;--r:-.9deg;animation-delay:.85s}
+  .sheet.f{grid-area:f;--r:.7deg;animation-delay:1s}
   .sheet:hover,.sheet:focus-visible{transform:rotate(0) translateY(-.35rem);box-shadow:0 .1rem 0 rgba(0,0,0,.18),0 1.8rem 2.6rem -.6rem rgba(0,0,0,.65)}
   .sheet:focus-visible{outline:.22rem solid var(--yellow);outline-offset:.35rem}
   /* cinta adhesiva */
@@ -99,18 +101,21 @@
   .sheet.b::before,.sheet.b::after{animation-delay:1s}
   .sheet.c::before,.sheet.c::after{animation-delay:1.15s}
   .sheet.d::before,.sheet.d::after{animation-delay:1.3s}
+  .sheet.e::before,.sheet.e::after{animation-delay:1.45s}
+  .sheet.f::before,.sheet.f::after{animation-delay:1.6s}
   /* margen de la lámina */
   .frame{margin:.7rem;border:2px solid var(--ink);display:flex;flex-direction:column;flex:1}
-  .art{height:10.4rem;position:relative;border-bottom:1.5px solid var(--ink);overflow:hidden;
+  .art{height:8.6rem;position:relative;border-bottom:1.5px solid var(--ink);overflow:hidden;
     background-image:linear-gradient(var(--paper-grid) 1px,transparent 1px),linear-gradient(90deg,var(--paper-grid) 1px,transparent 1px);background-size:.8rem .8rem}
   .art svg{position:absolute;inset:0;width:100%;height:100%}
   .view{position:absolute;left:.6rem;top:.5rem;font-family:var(--mono);font-size:.56rem;font-weight:600;letter-spacing:.12em;color:var(--ink-2);background:var(--paper);padding:.1rem .35rem;z-index:1}
-  .body{padding:1rem 1.2rem .9rem;display:flex;flex-direction:column;gap:.6rem;flex:1}
-  h2{font-family:var(--display);font-weight:900;font-size:2.15rem;line-height:.9;text-transform:uppercase;letter-spacing:.01em;margin:0;display:flex;align-items:baseline;gap:.6rem}
+  .body{padding:.8rem .85rem .8rem;display:flex;flex-direction:column;gap:.6rem;flex:1}
+  h2{font-family:var(--display);font-weight:900;font-size:1.85rem;flex-wrap:wrap;line-height:.9;text-transform:uppercase;letter-spacing:.01em;margin:0;display:flex;align-items:baseline;gap:.6rem}
   h2 small{font-family:var(--mono);font-weight:600;font-size:.62rem;letter-spacing:.08em;color:#fff;background:var(--ink);padding:.2rem .45rem;border-radius:.15rem;text-transform:lowercase}
-  .body p{margin:0;font-size:.92rem;line-height:1.42;color:var(--ink-2)}
-  .row{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:.7rem;margin-top:auto}
+  .body p{margin:0;font-size:.84rem;line-height:1.36;color:var(--ink-2)}
+  .row{display:flex;flex-direction:column;align-items:stretch;gap:.55rem;margin-top:auto}
   .row .go{margin-left:auto}
+  .parts{width:100%}
   /* lista de características, como una lista de piezas */
   .parts{border-collapse:collapse;font-family:var(--mono);font-size:.55rem;color:var(--ink)}
   .parts td{border:1px solid var(--ink);padding:.18rem .45rem;white-space:nowrap}
@@ -120,6 +125,8 @@
   .sheet.b .go{background:var(--chalk)}
   .sheet.c .go{background:#ff9f6b}
   .sheet.d .go{background:#7fe0a8}
+  .sheet.e .go{background:#a9c5ff}
+  .sheet.f .go{background:#ffd6a5}
   .go i{font-style:normal;transition:transform .2s}
   .sheet:hover .go{transform:translate(-.1rem,-.1rem);box-shadow:.35rem .35rem 0 var(--ink)}
   .sheet:hover .go i{transform:translateX(.35rem)}
@@ -154,7 +161,7 @@
   /* ---------- pantallas estrechas ---------- */
   @media (max-width:760px){
     :root{font-size:14px}
-    .page{grid-template-columns:minmax(0,1fr);grid-template-areas:"hero" "a" "b" "c" "d" "note" "block";padding:2.6rem 1.2rem 1.5rem 2.4rem}
+    .page{grid-template-columns:minmax(0,1fr);grid-template-areas:"hero" "a" "b" "c" "d" "e" "f" "note" "block";padding:2.6rem 1.2rem 1.5rem 2.4rem}
     .hero > div{min-width:0}
     .tag{letter-spacing:.08em;flex-wrap:wrap}
     .row{flex-direction:column;align-items:stretch}
@@ -166,7 +173,7 @@
     h1{font-size:3.1rem}
     .block{justify-self:stretch}
   }
-  /* en pantallas anchas el titular va en una sola línea para que quepan las cuatro láminas */
+  /* en pantallas anchas el titular va en una sola línea para que quepan las seis láminas */
   @media (min-width:761px){ h1 br{display:none} }
   @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important;transition:none !important}.ink{stroke-dashoffset:0}}
 </style>
@@ -188,7 +195,7 @@
     <div>
       <p class="tag">Taller de Tecnología · Herramientas del aula</p>
       <h1>Diseña, programa <br><span class="hi">y fabrica.</span></h1>
-      <p class="lead">Cuatro herramientas para clase que funcionan en el <b>Chromebook</b>, <b>sin cuenta</b> y <b>sin instalar nada</b>. Elige una lámina para empezar.</p>
+      <p class="lead">Seis herramientas para clase que funcionan en el <b>Chromebook</b>, <b>sin cuenta</b> y <b>sin instalar nada</b>. Elige una lámina para empezar.</p>
     </div>
     <div class="stamp" aria-label="Funciona en Chromebook y Linux, sin iniciar sesión y se guarda solo">
       <svg viewBox="0 0 120 120" aria-hidden="true">
@@ -391,9 +398,103 @@
     </div>
   </a>
 
+  <!-- Lámina 05: Plano 2D -->
+  <a class="sheet e" href="https://jsalsal003.github.io/aulacad/plano/">
+    <div class="frame">
+      <div class="art" aria-hidden="true">
+        <span class="view">LÁMINA 05 · PLANTA A ESCALA</span>
+        <svg viewBox="0 0 360 140" preserveAspectRatio="xMidYMid meet" font-family="Martian Mono, monospace">
+          <!-- habitación: paredes con su grosor -->
+          <path d="M104 32h160v80H104z" fill="none" stroke="#14201a" stroke-width="8"/>
+          <path d="M104 32h160v80H104z" fill="none" stroke="#cfc8b6" stroke-width="5.4"/>
+          <!-- ventana en la pared izquierda -->
+          <rect x="99" y="52" width="10" height="30" fill="#fbf8ef"/>
+          <path d="M100 52v30M108 52v30M104 52v30" stroke="#14201a" stroke-width="1"/>
+          <!-- puerta en la pared de abajo -->
+          <rect x="212" y="107" width="28" height="10" fill="#fbf8ef"/>
+          <path d="M240 108V80M240 80a28 28 0 0 0-28 28" fill="none" stroke="#14201a" stroke-width="1.1"/>
+          <!-- cama -->
+          <rect x="156" y="37" width="34" height="56" fill="#fbf8ef" stroke="#3d4b44" stroke-width="1"/>
+          <rect x="161" y="40" width="24" height="9" fill="none" stroke="#3d4b44" stroke-width=".9"/>
+          <!-- cotas en tinta azul -->
+          <g class="ink" stroke="#1f5bd0" stroke-width="1" fill="none">
+            <path d="M104 120v12M264 120v12M104 128h160"/>
+            <path d="M94 32H82M94 112H82M86 32v80"/>
+          </g>
+          <path d="M104 128l7-2.2v4.4zM264 128l-7-2.2v4.4zM86 32l-2.2 7h4.4zM86 112l-2.2-7h4.4z" fill="#1f5bd0"/>
+          <g font-size="8" font-weight="600" fill="#1f5bd0"><text x="174" y="125">320</text><text x="83" y="81" transform="rotate(-90 83 81)">280</text></g>
+          <text x="282" y="58" font-family="Caveat, cursive" font-weight="700" font-size="22" fill="#d7262c" transform="rotate(-8 282 58)">1:20</text>
+          <path class="ink" d="M280 68 c 10 6, 26 6, 36 -2" fill="none" stroke="#d7262c" stroke-width="1.6"/>
+        </svg>
+      </div>
+      <div class="body">
+        <h2>Plano 2D <small>.pdf</small></h2>
+        <p>Dibuja a escala una pieza, tu cuarto o el aula, como en AutoCAD. Acota según la norma y sácalo en PDF a tamaño real.</p>
+        <div class="row">
+          <table class="parts" aria-label="Características">
+            <tr><td>1</td><td>Escala y cajetín</td></tr>
+            <tr><td>2</td><td>Cotas · revisar</td></tr>
+            <tr><td>3</td><td>Puertas y muebles</td></tr>
+            <tr><td>4</td><td>PDF a escala real</td></tr>
+          </table>
+          <span class="go">Abrir <i>→</i></span>
+        </div>
+      </div>
+    </div>
+  </a>
+
+  <!-- Lámina 06: Casa 3D -->
+  <a class="sheet f" href="https://jsalsal003.github.io/aulacad/casa3d/">
+    <div class="frame">
+      <div class="art" aria-hidden="true">
+        <span class="view">LÁMINA 06 · INTERIOR EN 3D</span>
+        <svg viewBox="0 0 360 140" preserveAspectRatio="xMidYMid meet">
+          <g stroke="#14201a" stroke-width="1.4" stroke-linejoin="round">
+            <!-- dos paredes y el suelo de parqué -->
+            <path d="M84 84V30L172 -2V52Z" fill="#f4efe4" transform="translate(0 30)"/>
+            <path d="M172 82V28L264 60V114Z" fill="#e6dfd0"/>
+            <path d="M172 82L84 114L176 140L264 114Z" fill="#d9b48a" transform="translate(0 -0)"/>
+            <path d="M150 90L240 122M128 98L212 128M196 86L254 106" stroke="#b58a5e" stroke-width=".8"/>
+            <!-- ventana -->
+            <path d="M104 92V70L134 59V81Z" fill="#9fc6e8"/>
+            <path d="M119 64V86" stroke-width="1"/>
+            <!-- armario -->
+            <path d="M210 98V60l24 8v38z" fill="#d9c6a5"/>
+            <path d="M210 98l-14 5V65l14-5z" fill="#c4b08e"/>
+            <path d="M196 65l14-5 24 8-14 5z" fill="#e8d9bd"/>
+            <!-- cama -->
+            <path d="M136 112l38-14 30 10-38 14z" fill="#7d9cc0"/>
+            <path d="M136 112v7l30 10v-7z" fill="#5d7ca0"/>
+            <path d="M166 122v7l38-14v-7z" fill="#6d8cb0"/>
+            <path d="M174 98v-14l30 10v14z" fill="#8a6440"/>
+          </g>
+          <!-- huellas: vista de visitante -->
+          <g fill="#14201a" opacity=".75">
+            <ellipse cx="296" cy="120" rx="3.6" ry="6.5" transform="rotate(30 296 120)"/><ellipse cx="308" cy="112" rx="3.6" ry="6.5" transform="rotate(30 308 112)"/>
+            <ellipse cx="312" cy="97" rx="3.6" ry="6.5" transform="rotate(30 312 97)"/><ellipse cx="324" cy="89" rx="3.6" ry="6.5" transform="rotate(30 324 89)"/>
+          </g>
+          <text x="280" y="46" font-family="Caveat, cursive" font-weight="700" font-size="18" fill="#d7262c" transform="rotate(-6 280 46)">¡a pasear!</text>
+        </svg>
+      </div>
+      <div class="body">
+        <h2>Casa 3D <small>interiores</small></h2>
+        <p>Levanta en 3D tu plano, pon puertas, ventanas y muebles, y recorre la casa como si estuvieras dentro.</p>
+        <div class="row">
+          <table class="parts" aria-label="Características">
+            <tr><td>1</td><td>Planta y 3D a la vez</td></tr>
+            <tr><td>2</td><td>Abre los de Plano 2D</td></tr>
+            <tr><td>3</td><td>Catálogo de muebles</td></tr>
+            <tr><td>4</td><td>Vista de visitante</td></tr>
+          </table>
+          <span class="go">Abrir <i>→</i></span>
+        </div>
+      </div>
+    </div>
+  </a>
+
   <aside class="note">
     <h3>¡Antes de cerrar!</h3>
-    <p>Guarda tu trabajo en un archivo: <b>«Guardar archivo»</b> en AulaCAD, <b>«Descargar»</b> en el Editor (<kbd>Ctrl</kbd>+<kbd>S</kbd>), <b>«Descargar imagen»</b> en Vistas 3D o <b>«⬇ Imagen»</b> en la Placa virtual, y entrégalo en Classroom.</p>
+    <p>Guarda tu trabajo en un archivo: <b>«Guardar archivo»</b> en AulaCAD, Plano 2D y Casa 3D, <b>«Descargar»</b> en el Editor (<kbd>Ctrl</kbd>+<kbd>S</kbd>), <b>«Descargar imagen»</b> en Vistas 3D o <b>«⬇ Imagen»</b> en la Placa virtual, y entrégalo en Classroom.</p>
   </aside>
 
   <footer class="block" aria-label="Autoría y licencia">
